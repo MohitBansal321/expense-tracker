@@ -1,6 +1,6 @@
 // Import the User model
 import User from "../models/User.js";
-import { v4 as uuidv4 } from 'uuid';
+import mongoose from 'mongoose';
 
 // Controller function for deleting a category
 export const destroy = async (req, res) => {
@@ -23,7 +23,7 @@ export const create = async (req, res) => {
   const { label, icon } = req.body;
 
   const newCategory = {
-    _id: uuidv4(),
+    _id: new mongoose.Types.ObjectId(),
     label,
     icon,
   };
