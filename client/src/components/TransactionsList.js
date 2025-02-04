@@ -17,7 +17,7 @@ import * as React from "react";
 import { useSelector } from "react-redux";
 
 // Define the TransactionsList component
-export default function TransactionsList({ data, fetchTransctions, setEditTransaction,setCategoryFilter }) {
+export default function TransactionsList({ data, fetchTransactions, setEditTransaction,setCategoryFilter }) {
   // Get the user data from the Redux store
   const user = useSelector((state) => state.auth.user);
   const [selectedCategory, setSelectedCategory] = React.useState(null);
@@ -57,7 +57,7 @@ export default function TransactionsList({ data, fetchTransctions, setEditTransa
 
     if (res.ok) {
       // Fetch transactions again to update the list
-      fetchTransctions();
+      fetchTransactions();
       window.alert("Deleted Successfully");
     }
   }
