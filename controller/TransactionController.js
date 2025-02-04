@@ -11,7 +11,10 @@ export const index = async (req, res) => {
     {
       // Group transactions by month
       $group: {
-        _id: { $month: "$date" }, // Group by month extracted from the 'date' field
+        _id: { 
+          year: { $year: "$date" },  
+          month: { $month: "$date" } 
+        }, // Group by year,month extracted from the 'date' field
         transactions: {
           $push: {
             amount: "$amount",
@@ -25,7 +28,7 @@ export const index = async (req, res) => {
         totalExpenses: { $sum: "$amount" }, // Calculate the total expenses for each month
       },
     },
-    { $sort: { _id: -1 } }, // Sort the results by month
+    { $sort: { "_id.year": -1, "_id.month": -1 }  }, // Sort the results by month
   ]);
 
   // Respond with the aggregated transaction data in JSON format
