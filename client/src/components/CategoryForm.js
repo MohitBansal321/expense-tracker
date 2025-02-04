@@ -98,11 +98,23 @@ export default function CategoryForm({ editCategory }) {
         Authorization: `Bearer ${token}`,
       },
     });
-    const _user = {
-      ...user,
-      categories: [...user.categories, { ...form }],
-    };
-    reload(res, _user);
+
+    if (!res.ok) {
+      alert("Failed to create category");
+      return;
+    }
+  
+    const data = await res.json(); // Get the response data
+  
+    if (data.category) {
+      // Append the new category to the user's category list
+      const _user = {
+        ...user,
+        categories: [...user.categories, data.category], // Add the new category
+      };
+  
+      reload(res, _user); // Update the Redux store and reset the form
+    }
   }
 
   // Update an existing category

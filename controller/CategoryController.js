@@ -1,5 +1,6 @@
 // Import the User model
 import User from "../models/User.js";
+import { v4 as uuidv4 } from 'uuid';
 
 // Controller function for deleting a category
 export const destroy = async (req, res) => {
@@ -21,14 +22,20 @@ export const create = async (req, res) => {
   // Extract label and icon from the request body
   const { label, icon } = req.body;
 
+  const newCategory = {
+    _id: uuidv4(),
+    label,
+    icon,
+  };
+
   // Add the new category to the user's categories list
   const response = await User.updateOne(
     { _id: req.user.id },
-    { $set: { categories: [...req.user.categories, { label, icon }] } }
+    { $set: { categories: [...req.user.categories, newCategory] } }
   );
 
   // Respond with the updated user information
-  res.json({ response });
+  res.json({ response , category: newCategory });
 };
 
 // Controller function for updating a category
