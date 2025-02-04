@@ -16,11 +16,12 @@ import * as React from "react";
 export default function TransactionChart({ data }) {
   // Map transaction data to include a 'month' property based on '_id'
   const chartData = data.map((item) => {
-    item.month = dayjs()
-      .month(item._id - 1)
-      .format("MMMM");
-    return item;
+    return {
+      monthYear: `${dayjs().month(item._id.month - 1).format("MMMM")} ${item._id.year}`,
+      totalExpenses: item.totalExpenses,
+    };
   });
+  
 
   return (
     // Render a Material-UI Paper component to provide a background
@@ -37,7 +38,7 @@ export default function TransactionChart({ data }) {
         <ValueAxis />
         
         {/* Render the bar series for expenses */}
-        <BarSeries valueField="totalExpenses" argumentField="month" />
+        <BarSeries valueField="totalExpenses" argumentField="monthYear" />
         
         {/* Add animation to the chart */}
         <Animation />
