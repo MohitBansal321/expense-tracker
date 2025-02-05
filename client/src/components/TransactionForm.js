@@ -63,8 +63,25 @@ export default function TransactionForm({ fetchTransactions, editTransaction }) 
     }
   }
 
+  function formValidation(form) {
+    if (form.description === "" || form.category_id === "") {
+      alert(`Please fill all the fields`);
+      return false;
+    }
+    if (form.amount <= 0) {
+      alert(`Please enter a valid amount`);
+      return false;
+    }
+    if((!form.date || isNaN(new Date(form.date).getTime()))) {
+      alert(`Please enter a valid date`);
+      return false;
+    }
+    return true;
+  }
+
   // Create a new transaction
   async function create() {
+    if(!formValidation(form)) return;
     const res = await fetch(`${process.env.REACT_APP_BASE_URL}/transaction`, {
       method: "POST",
       body: JSON.stringify(form),
@@ -78,6 +95,7 @@ export default function TransactionForm({ fetchTransactions, editTransaction }) 
 
   // Update an existing transaction
   async function update() {
+    if(!formValidation(form)) return;
     const res = await fetch(
       `${process.env.REACT_APP_BASE_URL}/transaction/${editTransaction._id}`,
       {
