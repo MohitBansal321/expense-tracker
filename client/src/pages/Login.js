@@ -15,7 +15,6 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { setUser } from "../store/auth.js";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CircularProgress from "@mui/material/CircularProgress";
 import Paper from "@mui/material/Paper";
 
 export default function Login() {
