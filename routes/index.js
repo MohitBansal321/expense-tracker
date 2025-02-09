@@ -5,6 +5,7 @@ import AuthApi from "./AuthApi.js";
 import CategoryApi from "./CategoryApi.js";
 import TransactionApi from "./TransactionApi.js";
 import UserApi from "./UserApi.js";
+import StatsApi from "./StatsApi.js";
 
 // Create an instance of an Express router
 const router = Router();
@@ -25,6 +26,9 @@ router.use("/user", UserApi);
 
 // Category-related routes require authentication (JWT)
 router.use("/category", auth, CategoryApi);
+
+// routes related to statistics
+router.use("/stats",StatsApi);
 
 // Export the configured router for use in your Express application
 export default router;
