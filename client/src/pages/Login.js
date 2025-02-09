@@ -13,13 +13,35 @@ import * as React from "react";
 import { useDispatch } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { setUser } from "../store/auth.js";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CircularProgress from "@mui/material/CircularProgress";
+import Paper from "@mui/material/Paper";
 
-// A React component for the Login page
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [stats, setStats] = React.useState({ userCount: 0, transactionCount: 0 });
+  const [loading, setLoading] = React.useState(true);
+
+  // Fetch user and transaction count
+  React.useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch(`${process.env.REACT_APP_BASE_URL}/stats/count`);
+        const data = await res.json();
+        setStats({
+          userCount: data.data.userCounts,
+          transactionCount: data.data.transactionCounts,
+        });
+      } catch (error) {
+        toast.error("Failed to load stats.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
 
   // Function to handle form submission
   const handleSubmit = async (event) => {
@@ -30,7 +52,6 @@ export default function Login() {
       password: data.get("password"),
     };
 
-    // Send a POST request to the server for user login
     const res = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/login`, {
       method: "POST",
       body: JSON.stringify(form),
@@ -39,25 +60,17 @@ export default function Login() {
       },
     });
 
-    // Parse the response data
     const { token, user } = await res.json();
 
     if (res.ok) {
-      // Set the JWT token in cookies
       Cookie.set("token", token);
-
-      // Update user data in Redux store
       await dispatch(setUser(user));
-
-      // Navigate to the home page
       navigate("/");
     } else {
-      // Display an error toast if login fails
       toast.error("Email or Password are Incorrect");
     }
   };
 
-  // Render the Login page
   return (
     <Container>
       <Box
@@ -74,10 +87,7 @@ export default function Login() {
         </Avatar>
 
         {/* Toast notifications */}
-        <ToastContainer
-          position="top-center"
-          theme="light"
-        />
+        <ToastContainer position="top-center" theme="light" />
 
         {/* Title */}
         <Typography component="h1" variant="h5">
@@ -116,7 +126,7 @@ export default function Login() {
           </Button>
 
           {/* Link to Sign Up */}
-          <Grid container>
+          <Grid container sx={{ mt: 2 }}>
             <Grid item>
               <RouterLink to="/register">
                 <Link component="span" variant="body2">
@@ -125,6 +135,41 @@ export default function Login() {
               </RouterLink>
             </Grid>
           </Grid>
+
+          {/* User and Transaction Stats Box */}
+        {!loading && stats.userCount > 0 && stats.transactionCount > 0 && (
+          <Paper elevation={3} sx={{ 
+            mt: 2, 
+            width: "100%", 
+            textAlign: "center", 
+            py: 2, 
+            display: "flex", 
+            justifyContent: "center", 
+            alignItems: "center", 
+            gap: 3 
+        }}>
+          <Typography variant="h6" sx={{ 
+              color: "#1976D2", 
+              fontWeight: "bold", 
+              display: "flex", 
+              alignItems: "center", 
+              fontSize: "1rem"
+          }}>
+            🌍 <span style={{ marginLeft: "5px" }}>{stats.userCount} Users Registered</span>
+          </Typography>
+          <Typography variant="h6" sx={{ 
+              color: "#9C27B0", 
+              fontWeight: "bold", 
+              display: "flex", 
+              alignItems: "center", 
+              fontSize: "1rem"
+          }}>
+            <span style={{ color: "#FFC107" }}>💰</span> 
+            <span style={{ marginLeft: "5px" }}>{stats.transactionCount} Transactions Processed</span>
+          </Typography>
+        </Paper>
+        
+        )}
         </Box>
       </Box>
     </Container>
