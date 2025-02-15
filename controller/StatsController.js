@@ -17,7 +17,7 @@ export const index = async (req, res) => {
   };
     
   await client.set("stats", JSON.stringify(data));
-
+  await client.expire('stats', 6000);
   res.json({ data: data });
 };
 
