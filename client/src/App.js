@@ -20,6 +20,10 @@ function App() {
   async function fetchUser() {
     setIsLoading(true);
 
+    if(token===null || token===undefined) {
+      setIsLoading(false);
+      return;
+    }
     // Send a request to the server to retrieve user information
     const res = await fetch(`${process.env.REACT_APP_BASE_URL}/user`, {
       headers: {
