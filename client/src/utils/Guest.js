@@ -13,6 +13,6 @@ export default function Guest({ children }) {
   return !auth.isAuthenticated ? (
     children
   ) : (
-    <Navigate to="/" replace={true} /> // Redirect to the home page
+    <Navigate to="/dashboard" replace={true} /> // Redirect to the dashboard
   );
 }

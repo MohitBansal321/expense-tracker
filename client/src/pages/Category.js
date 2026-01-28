@@ -1,15 +1,17 @@
 // Import necessary modules and libraries from React and Material-UI
-import DeleteSharpIcon from "@mui/icons-material/DeleteSharp";
-import EditSharpIcon from "@mui/icons-material/EditSharp";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
 import Container from "@mui/material/Container";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import Fab from "@mui/material/Fab";
+import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import Cookies from "js-cookie";
 import * as React from "react";
@@ -26,17 +28,26 @@ export default function Category() {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
 
-  // State to manage the category being edited
+  // State to manage the category being edited and modal visibility
   const [editCategory, setEditCategory] = React.useState({});
+  const [open, setOpen] = React.useState(false);
 
-  // Function to set the category being edited
-  function setEdit(category) {
+  // Function to open modal for new or existing category
+  function handleOpen(category = {}) {
     setEditCategory(category);
+    setOpen(true);
+  }
+
+  function handleClose() {
+    setOpen(false);
+    setEditCategory({});
   }
 
   // Function to remove a category
   async function remove(id) {
-    const res = await fetch(`${process.env.REACT_APP_BASE_URL}/category/${id}`, {
+    if (!window.confirm("Are you sure you want to delete this category?")) return;
+
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/category/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -55,49 +66,102 @@ export default function Category() {
 
   // Render the Category page with category list and form
   return (
-    <Container>
-      {/* CategoryForm component for adding/editing categories */}
-      <CategoryForm editCategory={editCategory} />
+    <Container maxWidth="md" sx={{ py: 4, position: 'relative', minHeight: '80vh' }}>
 
-      {/* Typography to display the title */}
-      <Typography sx={{ marginTop: 10 }} variant="h6">
-        List of Categories
-      </Typography>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" fontWeight={700} gutterBottom>
+          Manage Categories
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Customize your expense categories with icons.
+        </Typography>
+      </Box>
 
-      {/* TableContainer to display category list */}
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center">Label</TableCell>
-              <TableCell align="center">Icon</TableCell>
-              <TableCell align="center">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {/* Map through user's categories and display them in the table */}
-            {user.categories.map((row) => (
-              <TableRow key={row._id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                <TableCell align="center" component="th" scope="row">
+      <Grid container spacing={3}>
+        {user.categories.map((row) => (
+          <Grid item xs={6} sm={4} md={3} key={row._id}>
+            <Card
+              elevation={0}
+              sx={{
+                height: '100%',
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 4,
+                transition: 'all 0.2s',
+                position: 'relative',
+                '&:hover': {
+                  borderColor: 'primary.main',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                  '& .actions': { opacity: 1 }
+                }
+              }}
+            >
+              <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                <Box sx={{ fontSize: '3rem', mb: 1 }}>
+                  {row.icon}
+                </Box>
+                <Typography variant="subtitle1" fontWeight={600} noWrap>
                   {row.label}
-                </TableCell>
-                <TableCell align="center">{row.icon}</TableCell>
-                <TableCell align="center">
-                  {/* IconButton for editing the category */}
-                  <IconButton color="primary" component="label" onClick={() => setEdit(row)}>
-                    <EditSharpIcon />
-                  </IconButton>
+                </Typography>
 
-                  {/* IconButton for deleting the category */}
-                  <IconButton color="warning" component="label" onClick={() => remove(row._id)}>
-                    <DeleteSharpIcon />
+                <Box
+                  className="actions"
+                  sx={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    opacity: 0,
+                    transition: 'opacity 0.2s',
+                    bgcolor: 'background.paper',
+                    borderRadius: 2,
+                    boxShadow: 2
+                  }}
+                >
+                  <IconButton size="small" onClick={() => handleOpen(row)} color="primary">
+                    <EditOutlinedIcon fontSize="small" />
                   </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                  <IconButton size="small" onClick={() => remove(row._id)} color="error">
+                    <DeleteOutlineIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Floating Action Button for adding new category */}
+      <Fab
+        color="primary"
+        aria-label="add"
+        onClick={() => handleOpen()}
+        sx={{
+          position: 'fixed',
+          bottom: 32,
+          right: 32,
+          boxShadow: '0 4px 20px rgba(33, 150, 243, 0.4)'
+        }}
+      >
+        <AddIcon />
+      </Fab>
+
+      {/* Modal Dialog for Category Form */}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullWidth
+        maxWidth="xs"
+        PaperProps={{ sx: { borderRadius: 4 } }}
+      >
+        <DialogTitle sx={{ pb: 0, fontWeight: 700 }}>
+          {editCategory._id ? "Edit Category" : "New Category"}
+        </DialogTitle>
+        <DialogContent>
+          <CategoryForm editCategory={editCategory} onClose={handleClose} />
+        </DialogContent>
+      </Dialog>
+
     </Container>
   );
 }

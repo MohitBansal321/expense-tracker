@@ -2,11 +2,14 @@
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import AppBar from "./components/AppBar";
+import MainBottomNav from "./components/MainBottomNav";
 import { setUser } from "./store/auth.js";
 
 function App() {
+  const location = useLocation();
   // Retrieve the JWT token from cookies
   const token = Cookies.get("token");
 
@@ -20,12 +23,12 @@ function App() {
   async function fetchUser() {
     setIsLoading(true);
 
-    if(token===null || token===undefined) {
+    if (token === null || token === undefined) {
       setIsLoading(false);
       return;
     }
     // Send a request to the server to retrieve user information
-    const res = await fetch(`${process.env.REACT_APP_BASE_URL}/user`, {
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/user`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -43,7 +46,7 @@ function App() {
   useEffect(() => {
     fetchUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);  
+  }, []);
 
   // If still loading, display a loading message
   if (isLoading) {
@@ -54,7 +57,19 @@ function App() {
   return (
     <>
       <AppBar />
-      <Outlet />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={location.pathname}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 20 }}
+          transition={{ duration: 0.3 }}
+          style={{ width: '100%' }}
+        >
+          <Outlet />
+        </motion.div>
+      </AnimatePresence>
+      <MainBottomNav />
     </>
   );
 }

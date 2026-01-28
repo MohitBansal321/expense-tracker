@@ -22,11 +22,7 @@ export const create = async (req, res) => {
   // Extract label and icon from the request body
   const { label, icon } = req.body;
 
-  const newCategory = {
-    _id: new mongoose.Types.ObjectId(),
-    label,
-    icon,
-  };
+  const newCategory = { label, icon };
 
   // Add the new category to the user's categories list
   const response = await User.updateOne(
@@ -35,7 +31,7 @@ export const create = async (req, res) => {
   );
 
   // Respond with the updated user information
-  res.json({ response , category: newCategory });
+  res.json({ response, category: newCategory });
 };
 
 // Controller function for updating a category
@@ -50,7 +46,7 @@ export const update = async (req, res) => {
       $set: {
         categories: req.user.categories.map((category) => {
           if (category._id == req.params.id) {
-            return { label, icon };
+            return { label, icon, _id: category._id };
           }
           return category;
         }),

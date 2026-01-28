@@ -11,5 +11,8 @@ const router = Router();
 // Route to retrieve user information, protected by JWT authentication
 router.get("/", passport.authenticate("jwt", { session: false }), UserController.index);
 
+// Route to update user profile
+router.patch("/", passport.authenticate("jwt", { session: false }), UserController.update);
+
 // Export the configured router for use in your Express application
 export default router;

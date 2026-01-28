@@ -2,7 +2,11 @@
 import { Router } from "express";
 import passport from "passport";
 import AuthApi from "./AuthApi.js";
+import BudgetApi from "./BudgetApi.js";
 import CategoryApi from "./CategoryApi.js";
+import DashboardApi from "./DashboardApi.js";
+import RecurringTransactionApi from "./RecurringTransactionApi.js";
+import ReportsApi from "./ReportsApi.js";
 import TransactionApi from "./TransactionApi.js";
 import UserApi from "./UserApi.js";
 import StatsApi from "./StatsApi.js";
@@ -14,6 +18,18 @@ const router = Router();
 const auth = passport.authenticate("jwt", { session: false });
 
 // Define routes and associate them with their respective APIs/controllers
+
+// Dashboard routes require authentication (JWT)
+router.use("/dashboard", auth, DashboardApi);
+
+// Budget routes require authentication (JWT)
+router.use("/budget", auth, BudgetApi);
+
+// Recurring transaction routes require authentication (JWT)
+router.use("/recurring", auth, RecurringTransactionApi);
+
+// Reports routes require authentication (JWT)
+router.use("/reports", auth, ReportsApi);
 
 // Transaction-related routes require authentication (JWT)
 router.use("/transaction", auth, TransactionApi);
@@ -27,8 +43,12 @@ router.use("/user", UserApi);
 // Category-related routes require authentication (JWT)
 router.use("/category", auth, CategoryApi);
 
-// routes related to statistics
-router.use("/stats",StatsApi);
+// Routes related to statistics
+router.use("/stats", StatsApi);
 
 // Export the configured router for use in your Express application
 export default router;
+
+
+
+

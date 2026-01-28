@@ -5,10 +5,11 @@ import User from "../models/User.js";
 
 // Default categories for a new user
 const categories = [
-  { label: "Travel", icon: "user" },
-  { label: "Shopping", icon: "user" },
-  { label: "Investment", icon: "user" },
-  { label: "Bills", icon: "user" },
+  { label: "Travel", icon: "✈️" },
+  { label: "Shopping", icon: "🛍️" },
+  { label: "Investment", icon: "📈" },
+  { label: "Bills", icon: "🧾" },
+  { label: "Food", icon: "🍔" },
 ];
 
 // Controller function for user registration
@@ -64,7 +65,7 @@ export const login = async (req, res) => {
     username: email,
     _id: user._id,
   };
-  const token = jwt.sign(payload, process.env.JWT_SECRET,{expiresIn:'1h'});
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
   // Respond with a success message, token, and user information
   res.json({ message: "Successfully logged in.", token, user });
