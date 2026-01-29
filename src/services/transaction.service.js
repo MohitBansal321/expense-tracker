@@ -54,7 +54,9 @@ class TransactionService {
      * @returns {Array} Filtered transactions
      */
     async getTransactionsByCategory(userId, categoryId) {
-        const category_id = new mongoose.Types.ObjectId(categoryId);
+        const category_id = mongoose.Types.ObjectId.isValid(categoryId)
+            ? new mongoose.Types.ObjectId(categoryId)
+            : categoryId;
 
         const transactions = await Transaction.aggregate([
             {
@@ -115,7 +117,9 @@ class TransactionService {
 
         // Filter by category
         if (category_id) {
-            matchConditions.category_id = new mongoose.Types.ObjectId(category_id);
+            matchConditions.category_id = mongoose.Types.ObjectId.isValid(category_id)
+                ? new mongoose.Types.ObjectId(category_id)
+                : category_id;
         }
 
         // Filter by type

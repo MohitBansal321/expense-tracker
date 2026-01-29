@@ -1,6 +1,6 @@
 import Transaction from "../../models/Transaction.js";
 import User from "../../models/User.js";
-import client from "../../config/redisClient.js";
+import client from "../config/redis.js";
 
 /**
  * Stats Service
