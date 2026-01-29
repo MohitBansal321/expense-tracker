@@ -4,10 +4,13 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 import express from "express";
 import passport from "passport";
-import passportConfig from "./config/passport.js";
-import connect from "./database/mongdb.js";
-import routes from "./routes/index.js";
 import path from "path";
+
+// Import configurations and middleware
+import passportConfig from "./src/config/passport.js";
+import connect from "./src/config/database.js";
+import routes from "./src/routes/index.js";
+import { errorHandler, notFoundHandler } from "./src/middleware/error.middleware.js";
 
 // Load environment variables from a .env file
 dotenv.config();
@@ -31,9 +34,6 @@ passportConfig(passport);
 // Use the defined routes for routing
 app.use("/", routes);
 
-// Connect to the MongoDB database
-await connect();
-
 // Deployment configuration
 const __dirname1 = path.resolve();
 if (process.env.NODE_ENV === "production") {
@@ -50,7 +50,15 @@ if (process.env.NODE_ENV === "production") {
     res.send("API is running..");
   });
 }
-// Start the server and listen on the specified ports
+
+// Error handling middleware (must be last)
+app.use(notFoundHandler);
+app.use(errorHandler);
+
+// Connect to the MongoDB database
+await connect();
+
+// Start the server and listen on the specified port
 app.listen(PORT, () => {
   console.log(`Server is running at ${PORT}`);
 });
