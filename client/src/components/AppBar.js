@@ -1,199 +1,125 @@
-// Import necessary modules and libraries from Material-UI and React
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Toolbar from "@mui/material/Toolbar";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material/styles";
-import Cookies from "js-cookie";
+// Modern navigation bar with Shadcn UI styling
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+import { Moon, Sun } from "lucide-react";
 import { useThemeMode } from "../context/ThemeContext";
 import { logout } from "../store/auth.js";
 import NotificationBell from "./NotificationBell";
+import { Button } from "./ui/button";
 
-// A React component for the application's top navigation bar
 export default function ButtonAppBar() {
-  // Use the `useNavigate` hook to manage navigation
   const navigate = useNavigate();
-
-  // Get the authentication status from the Redux store
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-
-  // Get the dispatch function to dispatch actions to the Redux store
   const dispatch = useDispatch();
-
-  // Get theme and mobile status
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
-  // Get theme mode and toggle function
   const { mode, toggleTheme } = useThemeMode();
 
-  // Function to handle user logout
   function _logout() {
-    // Remove the authentication token stored in cookies
     Cookies.remove("token");
-
-    // Dispatch the logout action to update the Redux store
     dispatch(logout());
-
-    // Navigate the user to the login page
     navigate("/login");
   }
 
-  // Render the top navigation bar
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar
-        position="static"
-        sx={{
-          backdropFilter: "blur(10px)",
-          boxShadow: mode === "dark" ? "0 2px 10px rgba(0,0,0,0.3)" : "0 2px 10px rgba(0,0,0,0.1)",
-        }}
-      >
-        <Toolbar>
-          {/* Application title with a link to the home page */}
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{
-              flexGrow: 1,
-              fontWeight: 700,
-              letterSpacing: 1,
-            }}
-          >
-            <Link
-              to="/"
-              style={{
-                color: "inherit",
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                gap: 8
-              }}
-            >
-              💰 Expensor
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container max-w-7xl mx-auto flex h-14 items-center px-4">
+        {/* Logo */}
+        <Link
+          to="/"
+          className="flex items-center gap-2 font-bold text-xl mr-6 hover:opacity-80 transition-opacity"
+        >
+          <span>💰</span>
+          <span>Expensor</span>
+        </Link>
+
+        {/* Navigation Links */}
+        {isAuthenticated && (
+          <nav className="hidden md:flex items-center gap-1 flex-1">
+            <Link to="/dashboard">
+              <Button variant="ghost" size="sm">
+                Dashboard
+              </Button>
             </Link>
-          </Typography>
+            <Link to="/transactions">
+              <Button variant="ghost" size="sm">
+                Transactions
+              </Button>
+            </Link>
+            <Link to="/budget">
+              <Button variant="ghost" size="sm">
+                Budget
+              </Button>
+            </Link>
+            <Link to="/recurring">
+              <Button variant="ghost" size="sm">
+                Recurring
+              </Button>
+            </Link>
+            <Link to="/reports">
+              <Button variant="ghost" size="sm">
+                Reports
+              </Button>
+            </Link>
+            <Link to="/smart-entry">
+              <Button variant="ghost" size="sm">
+                Smart Entry
+              </Button>
+            </Link>
+            <Link to="/category">
+              <Button variant="ghost" size="sm">
+                Category
+              </Button>
+            </Link>
+            <Link to="/settings">
+              <Button variant="ghost" size="sm">
+                Settings
+              </Button>
+            </Link>
+          </nav>
+        )}
 
-          {/* Dark mode toggle button */}
-          <Tooltip title={mode === "dark" ? "Light Mode" : "Dark Mode"}>
-            <IconButton
-              color="inherit"
-              onClick={toggleTheme}
-              sx={{
-                mr: 1,
-                transition: "transform 0.3s ease",
-                "&:hover": {
-                  transform: "rotate(30deg)",
-                }
-              }}
-            >
-              {mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
-            </IconButton>
-          </Tooltip>
+        {/* Right side actions */}
+        <div className="flex items-center gap-2 ml-auto">
+          {/* Dark mode toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            aria-label={mode === "dark" ? "Light Mode" : "Dark Mode"}
+            className="transition-transform hover:rotate-12"
+          >
+            {mode === "dark" ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+          </Button>
 
-          {/* Notification Bell (Only if authenticated) */}
+          {/* Notification Bell */}
           {isAuthenticated && <NotificationBell />}
 
-          {/* Render navigation buttons based on authentication status */}
-          {isAuthenticated && (
-            <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
-              {/* Link to the Dashboard page */}
-              <Link to="/dashboard" style={{ color: "inherit", textDecoration: "none" }}>
-                <Button color="inherit" sx={{ mx: 0.5 }}>Dashboard</Button>
-              </Link>
-
-              {/* Link to the Transactions page */}
-              <Link to="/transactions" style={{ color: "inherit", textDecoration: "none" }}>
-                <Button color="inherit" sx={{ mx: 0.5 }}>Transactions</Button>
-              </Link>
-
-              {/* Link to the Budget page */}
-              <Link to="/budget" style={{ color: "inherit", textDecoration: "none" }}>
-                <Button color="inherit" sx={{ mx: 0.5 }}>Budget</Button>
-              </Link>
-
-              {/* Link to the Recurring Transactions page */}
-              <Link to="/recurring" style={{ color: "inherit", textDecoration: "none" }}>
-                <Button color="inherit" sx={{ mx: 0.5 }}>Recurring</Button>
-              </Link>
-
-              {/* Link to the Reports page */}
-              <Link to="/reports" style={{ color: "inherit", textDecoration: "none" }}>
-                <Button color="inherit" sx={{ mx: 0.5 }}>Reports</Button>
-              </Link>
-
-              {/* Link to the Smart Entry page */}
-              <Link to="/smart-entry" style={{ color: "inherit", textDecoration: "none" }}>
-                <Button color="inherit" sx={{ mx: 0.5 }}>Smart Entry</Button>
-              </Link>
-
-              <Link to="/category" style={{ color: "inherit", textDecoration: "none" }}>
-                <Button color="inherit" sx={{ mx: 0.5 }}>Category</Button>
-              </Link>
-
-              {/* Link to the Settings page */}
-              <Link to="/settings" style={{ color: "inherit", textDecoration: "none" }}>
-                <Button color="inherit" sx={{ mx: 0.5 }}>Settings</Button>
-              </Link>
-            </Box>
-          )}
-
-          {isAuthenticated && (
-            /* Logout button */
-            <Button
-              color="inherit"
-              onClick={_logout}
-              sx={{
-                ml: 1,
-                border: "1px solid rgba(255,255,255,0.3)",
-                "&:hover": {
-                  backgroundColor: "rgba(255,255,255,0.1)",
-                }
-              }}
-            >
+          {/* Auth buttons */}
+          {isAuthenticated ? (
+            <Button variant="outline" size="sm" onClick={_logout}>
               Logout
             </Button>
-          )}
-
-          {/* Render Login and Register buttons if user is not authenticated */}
-          {!isAuthenticated && (
+          ) : (
             <>
-              {/* Link to the Login page */}
-              <Link to="/login" style={{ color: "inherit", textDecoration: "none" }}>
-                <Button color="inherit">Login</Button>
+              <Link to="/login">
+                <Button variant="ghost" size="sm">
+                  Login
+                </Button>
               </Link>
-
-              {/* Link to the Register page */}
-              <Link to="/register" style={{ color: "inherit", textDecoration: "none" }}>
-                <Button
-                  variant="outlined"
-                  sx={{
-                    color: "inherit",
-                    borderColor: "rgba(255,255,255,0.5)",
-                    ml: 1,
-                    "&:hover": {
-                      borderColor: "white",
-                      backgroundColor: "rgba(255,255,255,0.1)",
-                    }
-                  }}
-                >
+              <Link to="/register">
+                <Button variant="outline" size="sm">
                   Register
                 </Button>
               </Link>
             </>
           )}
-        </Toolbar>
-      </AppBar>
-    </Box>
+        </div>
+      </div>
+    </header>
   );
 }
-

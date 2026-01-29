@@ -1,139 +1,136 @@
-// Budget management page
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import WarningIcon from "@mui/icons-material/Warning";
-import ErrorIcon from "@mui/icons-material/Error";
-import Autocomplete from "@mui/material/Autocomplete";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Chip from "@mui/material/Chip";
-import Container from "@mui/material/Container";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import FormControl from "@mui/material/FormControl";
-import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
-import InputLabel from "@mui/material/InputLabel";
-import LinearProgress from "@mui/material/LinearProgress";
-import MenuItem from "@mui/material/MenuItem";
-import Paper from "@mui/material/Paper";
-import Select from "@mui/material/Select";
-import Skeleton from "@mui/material/Skeleton";
-import Slider from "@mui/material/Slider";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Alert from "@mui/material/Alert";
-import Cookies from "js-cookie";
+// Budget management page with modern Shadcn UI
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import Cookies from "js-cookie";
+import { Plus, Edit2, Trash2, AlertTriangle, AlertCircle } from "lucide-react";
+
+// Shadcn UI Components
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "../components/ui/select";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "../components/ui/dialog";
+import { Card, CardContent } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Progress } from "../components/ui/progress";
+import { Slider } from "../components/ui/slider";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import { Skeleton } from "../components/ui/skeleton";
 
 // Summary Card Component
 function SummaryCard({ title, value, color, prefix = "$" }) {
     return (
-        <Paper sx={{ p: 2, borderLeft: `4px solid ${color}`, height: "100%" }}>
-            <Typography variant="body2" color="text.secondary">{title}</Typography>
-            <Typography variant="h5" sx={{ fontWeight: 600, color }}>
-                {prefix}{typeof value === "number" ? value.toLocaleString() : value}
-            </Typography>
-        </Paper>
+        <Card className="border-l-4" style={{ borderLeftColor: color }}>
+            <CardContent className="p-4">
+                <p className="text-sm text-muted-foreground mb-1">{title}</p>
+                <p className="text-2xl font-semibold" style={{ color }}>
+                    {prefix}
+                    {typeof value === "number" ? value.toLocaleString() : value}
+                </p>
+            </CardContent>
+        </Card>
     );
 }
 
 // Budget Card Component
 function BudgetCard({ budget, onEdit, onDelete }) {
     const progressColor = budget.isOverBudget
-        ? "#f44336"
+        ? "#ef4444"
         : budget.isNearLimit
-            ? "#ff9800"
-            : "#4CAF50";
+            ? "#f97316"
+            : "#22c55e";
 
     return (
         <Card
-            sx={{
-                height: "100%",
-                borderLeft: `4px solid ${progressColor}`,
-                transition: "transform 0.2s, box-shadow 0.2s",
-                "&:hover": {
-                    transform: "translateY(-2px)",
-                    boxShadow: 3
-                }
-            }}
+            className="border-l-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
+            style={{ borderLeftColor: progressColor }}
         >
-            <CardContent>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
-                    <Box>
-                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            <CardContent className="p-5">
+                {/* Header */}
+                <div className="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 className="text-lg font-semibold mb-1">
                             {budget.categoryName}
-                        </Typography>
-                        <Chip
-                            label={budget.period}
-                            size="small"
-                            sx={{ mt: 0.5, textTransform: "capitalize" }}
-                        />
-                    </Box>
-                    <Box>
-                        <IconButton size="small" onClick={() => onEdit(budget)} color="primary">
-                            <EditIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton size="small" onClick={() => onDelete(budget._id)} color="error">
-                            <DeleteIcon fontSize="small" />
-                        </IconButton>
-                    </Box>
-                </Box>
-
-                <Box sx={{ mb: 2 }}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-                        <Typography variant="body2" color="text.secondary">
-                            ${budget.currentSpending.toLocaleString()} of ${budget.amount.toLocaleString()}
-                        </Typography>
-                        <Typography
-                            variant="body2"
-                            sx={{ fontWeight: 600, color: progressColor }}
+                        </h3>
+                        <Badge variant="secondary" className="capitalize">
+                            {budget.period}
+                        </Badge>
+                    </div>
+                    <div className="flex gap-1">
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => onEdit(budget)}
+                            className="h-8 w-8"
                         >
-                            {budget.percentageUsed}%
-                        </Typography>
-                    </Box>
-                    <LinearProgress
-                        variant="determinate"
-                        value={Math.min(budget.percentageUsed, 100)}
-                        sx={{
-                            height: 10,
-                            borderRadius: 5,
-                            backgroundColor: `${progressColor}20`,
-                            "& .MuiLinearProgress-bar": {
-                                backgroundColor: progressColor,
-                                borderRadius: 5
-                            }
-                        }}
-                    />
-                </Box>
+                            <Edit2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => onDelete(budget._id)}
+                            className="h-8 w-8 hover:text-destructive"
+                        >
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
 
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Typography variant="body2" color="text.secondary">
-                        Remaining: <strong>${budget.remaining.toLocaleString()}</strong>
-                    </Typography>
-                    {budget.isOverBudget && (
-                        <Chip
-                            icon={<ErrorIcon />}
-                            label="Over Budget"
-                            size="small"
-                            color="error"
+                {/* Progress */}
+                <div className="mb-4">
+                    <div className="flex justify-between mb-2 text-sm">
+                        <span className="text-muted-foreground">
+                            ${budget.currentSpending.toLocaleString()} of $
+                            {budget.amount.toLocaleString()}
+                        </span>
+                        <span className="font-semibold" style={{ color: progressColor }}>
+                            {budget.percentageUsed}%
+                        </span>
+                    </div>
+                    <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-secondary">
+                        <div
+                            className="h-full transition-all duration-300 rounded-full"
+                            style={{
+                                width: `${Math.min(budget.percentageUsed, 100)}%`,
+                                backgroundColor: progressColor,
+                            }}
                         />
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <div className="flex justify-between items-center">
+                    <p className="text-sm text-muted-foreground">
+                        Remaining:{" "}
+                        <strong className="text-foreground">
+                            ${budget.remaining.toLocaleString()}
+                        </strong>
+                    </p>
+                    {budget.isOverBudget && (
+                        <Badge variant="destructive" className="gap-1">
+                            <AlertCircle className="h-3 w-3" />
+                            Over Budget
+                        </Badge>
                     )}
                     {budget.isNearLimit && !budget.isOverBudget && (
-                        <Chip
-                            icon={<WarningIcon />}
-                            label="Near Limit"
-                            size="small"
-                            color="warning"
-                        />
+                        <Badge className="gap-1 bg-orange-500 hover:bg-orange-600">
+                            <AlertTriangle className="h-3 w-3" />
+                            Near Limit
+                        </Badge>
                     )}
-                </Box>
+                </div>
             </CardContent>
         </Card>
     );
@@ -145,7 +142,7 @@ function BudgetDialog({ open, onClose, onSave, budget, categories }) {
         category_id: "",
         amount: 1000,
         period: "monthly",
-        alertThreshold: 80
+        alertThreshold: 80,
     });
 
     useEffect(() => {
@@ -154,14 +151,14 @@ function BudgetDialog({ open, onClose, onSave, budget, categories }) {
                 category_id: budget.category_id || "",
                 amount: budget.amount || 1000,
                 period: budget.period || "monthly",
-                alertThreshold: budget.alertThreshold || 80
+                alertThreshold: budget.alertThreshold || 80,
             });
         } else {
             setForm({
                 category_id: "",
                 amount: 1000,
                 period: "monthly",
-                alertThreshold: 80
+                alertThreshold: 80,
             });
         }
     }, [budget, open]);
@@ -174,76 +171,99 @@ function BudgetDialog({ open, onClose, onSave, budget, categories }) {
         onSave(form, budget?._id);
     };
 
-    const getCategoryById = () => {
-        return categories.find(c => c._id === form.category_id) || null;
-    };
-
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle sx={{ fontWeight: 600 }}>
-                {budget ? "Edit Budget" : "Create New Budget"}
-            </DialogTitle>
-            <DialogContent>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 3, pt: 1 }}>
-                    <Autocomplete
-                        value={getCategoryById()}
-                        onChange={(e, newValue) => setForm({ ...form, category_id: newValue?._id || "" })}
-                        options={categories}
-                        getOptionLabel={(option) => option.label || ""}
-                        isOptionEqualToValue={(option, value) => option._id === value._id}
-                        disabled={!!budget}
-                        renderInput={(params) => (
-                            <TextField {...params} label="Category" required />
-                        )}
-                    />
+        <Dialog open={open} onOpenChange={onClose}>
+            <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                    <DialogTitle className="text-xl">
+                        {budget ? "Edit Budget" : "Create New Budget"}
+                    </DialogTitle>
+                </DialogHeader>
 
-                    <TextField
-                        label="Budget Amount ($)"
-                        type="number"
-                        value={form.amount}
-                        onChange={(e) => setForm({ ...form, amount: parseFloat(e.target.value) || 0 })}
-                        required
-                        InputProps={{ inputProps: { min: 0 } }}
-                    />
+                <div className="space-y-5 py-4">
+                    {/* Category Selection */}
+                    <div className="space-y-2">
+                        <Label htmlFor="category">Category *</Label>
+                        <Select
+                            value={form.category_id}
+                            onValueChange={(value) =>
+                                setForm({ ...form, category_id: value })
+                            }
+                            disabled={!!budget}
+                        >
+                            <SelectTrigger id="category">
+                                <SelectValue placeholder="Select a category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {categories.map((cat) => (
+                                    <SelectItem key={cat._id} value={cat._id}>
+                                        {cat.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
 
-                    <FormControl fullWidth>
-                        <InputLabel>Period</InputLabel>
+                    {/* Amount */}
+                    <div className="space-y-2">
+                        <Label htmlFor="amount">Budget Amount ($) *</Label>
+                        <Input
+                            id="amount"
+                            type="number"
+                            min="0"
+                            value={form.amount}
+                            onChange={(e) =>
+                                setForm({ ...form, amount: parseFloat(e.target.value) || 0 })
+                            }
+                        />
+                    </div>
+
+                    {/* Period */}
+                    <div className="space-y-2">
+                        <Label htmlFor="period">Period</Label>
                         <Select
                             value={form.period}
-                            label="Period"
-                            onChange={(e) => setForm({ ...form, period: e.target.value })}
+                            onValueChange={(value) => setForm({ ...form, period: value })}
                         >
-                            <MenuItem value="weekly">Weekly</MenuItem>
-                            <MenuItem value="monthly">Monthly</MenuItem>
-                            <MenuItem value="yearly">Yearly</MenuItem>
+                            <SelectTrigger id="period">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="weekly">Weekly</SelectItem>
+                                <SelectItem value="monthly">Monthly</SelectItem>
+                                <SelectItem value="yearly">Yearly</SelectItem>
+                            </SelectContent>
                         </Select>
-                    </FormControl>
+                    </div>
 
-                    <Box>
-                        <Typography gutterBottom>
-                            Alert Threshold: {form.alertThreshold}%
-                        </Typography>
+                    {/* Alert Threshold */}
+                    <div className="space-y-3">
+                        <Label>Alert Threshold: {form.alertThreshold}%</Label>
                         <Slider
-                            value={form.alertThreshold}
-                            onChange={(e, val) => setForm({ ...form, alertThreshold: val })}
+                            value={[form.alertThreshold]}
+                            onValueChange={([val]) =>
+                                setForm({ ...form, alertThreshold: val })
+                            }
                             min={50}
                             max={100}
                             step={5}
-                            marks
-                            valueLabelDisplay="auto"
+                            className="py-2"
                         />
-                        <Typography variant="caption" color="text.secondary">
+                        <p className="text-xs text-muted-foreground">
                             You'll be warned when spending reaches this percentage
-                        </Typography>
-                    </Box>
-                </Box>
+                        </p>
+                    </div>
+                </div>
+
+                <DialogFooter>
+                    <Button variant="outline" onClick={onClose}>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleSubmit}>
+                        {budget ? "Update" : "Create"}
+                    </Button>
+                </DialogFooter>
             </DialogContent>
-            <DialogActions sx={{ p: 2 }}>
-                <Button onClick={onClose}>Cancel</Button>
-                <Button variant="contained" onClick={handleSubmit}>
-                    {budget ? "Update" : "Create"}
-                </Button>
-            </DialogActions>
         </Dialog>
     );
 }
@@ -268,7 +288,7 @@ export default function Budget() {
 
         try {
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/budget`, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             });
 
             if (res.ok) {
@@ -292,9 +312,9 @@ export default function Budget() {
                 method: budgetId ? "PATCH" : "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(form)
+                body: JSON.stringify(form),
             });
 
             if (res.ok) {
@@ -311,15 +331,19 @@ export default function Budget() {
     }
 
     async function handleDelete(budgetId) {
-        if (!window.confirm("Are you sure you want to delete this budget?")) return;
+        if (!window.confirm("Are you sure you want to delete this budget?"))
+            return;
 
         const token = Cookies.get("token");
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/budget/${budgetId}`, {
-                method: "DELETE",
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await fetch(
+                `${import.meta.env.VITE_BASE_URL}/budget/${budgetId}`,
+                {
+                    method: "DELETE",
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
 
             if (res.ok) {
                 fetchBudgets();
@@ -344,128 +368,118 @@ export default function Budget() {
 
     // Get categories that don't have budgets yet
     const availableCategories = categories.filter(
-        cat => !budgets.some(b => b.category_id?.toString() === cat._id?.toString())
+        (cat) => !budgets.some((b) => b.category_id?.toString() === cat._id?.toString())
     );
 
     return (
-        <Container maxWidth="lg" sx={{ py: 4 }}>
+        <div className="container max-w-7xl mx-auto py-6 px-4">
             {/* Page Header */}
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
-                <Box>
-                    <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                        Budget Manager
-                    </Typography>
-                    <Typography variant="body1" color="text.secondary">
+            <div className="flex justify-between items-start mb-6">
+                <div>
+                    <h1 className="text-4xl font-bold mb-1">Budget Manager</h1>
+                    <p className="text-muted-foreground">
                         Set spending limits and track your progress
-                    </Typography>
-                </Box>
+                    </p>
+                </div>
                 <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
                     onClick={handleAdd}
                     disabled={availableCategories.length === 0}
+                    className="gap-2"
                 >
+                    <Plus className="h-4 w-4" />
                     Add Budget
                 </Button>
-            </Box>
+            </div>
 
             {/* Alerts */}
-            {budgets.filter(b => b.isOverBudget).length > 0 && (
-                <Alert severity="error" sx={{ mb: 3 }}>
-                    <strong>{budgets.filter(b => b.isOverBudget).length}</strong> budget(s) exceeded!
-                    Review your spending in the highlighted categories.
+            {budgets.filter((b) => b.isOverBudget).length > 0 && (
+                <Alert variant="destructive" className="mb-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                        <strong>{budgets.filter((b) => b.isOverBudget).length}</strong>{" "}
+                        budget(s) exceeded! Review your spending in the highlighted
+                        categories.
+                    </AlertDescription>
                 </Alert>
             )}
-            {budgets.filter(b => b.isNearLimit && !b.isOverBudget).length > 0 && (
-                <Alert severity="warning" sx={{ mb: 3 }}>
-                    <strong>{budgets.filter(b => b.isNearLimit && !b.isOverBudget).length}</strong> budget(s)
-                    approaching limit. Consider reducing spending.
+            {budgets.filter((b) => b.isNearLimit && !b.isOverBudget).length > 0 && (
+                <Alert variant="warning" className="mb-4">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>
+                        <strong>
+                            {budgets.filter((b) => b.isNearLimit && !b.isOverBudget).length}
+                        </strong>{" "}
+                        budget(s) approaching limit. Consider reducing spending.
+                    </AlertDescription>
                 </Alert>
             )}
 
             {/* Summary Cards */}
-            <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid item xs={12} sm={6} md={3}>
-                    {isLoading ? (
-                        <Skeleton variant="rectangular" height={80} />
-                    ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                {isLoading ? (
+                    <>
+                        {[1, 2, 3, 4].map((i) => (
+                            <Skeleton key={i} className="h-24" />
+                        ))}
+                    </>
+                ) : (
+                    <>
                         <SummaryCard
                             title="Total Budget"
                             value={summary.totalBudget || 0}
-                            color="#2196F3"
+                            color="#3b82f6"
                         />
-                    )}
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                    {isLoading ? (
-                        <Skeleton variant="rectangular" height={80} />
-                    ) : (
                         <SummaryCard
                             title="Total Spent"
                             value={summary.totalSpending || 0}
-                            color="#f44336"
+                            color="#ef4444"
                         />
-                    )}
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                    {isLoading ? (
-                        <Skeleton variant="rectangular" height={80} />
-                    ) : (
                         <SummaryCard
                             title="Remaining"
                             value={(summary.totalBudget || 0) - (summary.totalSpending || 0)}
-                            color="#4CAF50"
+                            color="#22c55e"
                         />
-                    )}
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                    {isLoading ? (
-                        <Skeleton variant="rectangular" height={80} />
-                    ) : (
                         <SummaryCard
                             title="Over Budget"
                             value={summary.budgetsOverLimit || 0}
-                            color="#ff9800"
+                            color="#f97316"
                             prefix=""
                         />
-                    )}
-                </Grid>
-            </Grid>
+                    </>
+                )}
+            </div>
 
             {/* Budget Cards */}
-            <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                Your Budgets
-            </Typography>
+            <h2 className="text-xl font-semibold mb-4">Your Budgets</h2>
 
             {isLoading ? (
-                <Grid container spacing={3}>
-                    {[1, 2, 3].map(i => (
-                        <Grid item xs={12} sm={6} md={4} key={i}>
-                            <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 1 }} />
-                        </Grid>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[1, 2, 3].map((i) => (
+                        <Skeleton key={i} className="h-48 rounded-lg" />
                     ))}
-                </Grid>
+                </div>
             ) : budgets.length > 0 ? (
-                <Grid container spacing={3}>
-                    {budgets.map(budget => (
-                        <Grid item xs={12} sm={6} md={4} key={budget._id}>
-                            <BudgetCard
-                                budget={budget}
-                                onEdit={handleEdit}
-                                onDelete={handleDelete}
-                            />
-                        </Grid>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {budgets.map((budget) => (
+                        <BudgetCard
+                            key={budget._id}
+                            budget={budget}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                        />
                     ))}
-                </Grid>
+                </div>
             ) : (
-                <Paper sx={{ p: 4, textAlign: "center" }}>
-                    <Typography color="text.secondary" sx={{ mb: 2 }}>
-                        No budgets set yet. Create your first budget to start tracking your spending!
-                    </Typography>
-                    <Button variant="outlined" startIcon={<AddIcon />} onClick={handleAdd}>
+                <Card className="p-8 text-center">
+                    <p className="text-muted-foreground mb-4">
+                        No budgets set yet. Create your first budget to start tracking your
+                        spending!
+                    </p>
+                    <Button variant="outline" onClick={handleAdd} className="gap-2">
+                        <Plus className="h-4 w-4" />
                         Create Your First Budget
                     </Button>
-                </Paper>
+                </Card>
             )}
 
             {/* Budget Form Dialog */}
@@ -479,6 +493,6 @@ export default function Budget() {
                 budget={editingBudget}
                 categories={editingBudget ? categories : availableCategories}
             />
-        </Container>
+        </div>
     );
 }

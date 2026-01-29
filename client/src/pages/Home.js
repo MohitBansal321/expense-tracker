@@ -1,43 +1,45 @@
-// Import necessary modules and libraries from React and your application
-import ClearIcon from "@mui/icons-material/Clear";
-import DownloadIcon from "@mui/icons-material/Download";
-import SearchIcon from "@mui/icons-material/Search";
-import AddIcon from "@mui/icons-material/Add";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
-import FormControl from "@mui/material/FormControl";
-import IconButton from "@mui/material/IconButton";
-import InputAdornment from "@mui/material/InputAdornment";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Paper from "@mui/material/Paper";
-import Select from "@mui/material/Select";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import Fab from "@mui/material/Fab";
-import Cookies from "js-cookie";
+// Home page (Transactions) with modern Shadcn UI design
 import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { Search, X, Download, Plus, Calendar, Filter } from "lucide-react";
+
+// Shadcn UI Components
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../components/ui/dialog";
+import { Card, CardContent } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+
+// Components
 import TransactionChart from "../components/TransactionChart";
 import TransactionForm from "../components/TransactionForm";
 import TransactionsList from "../components/TransactionsList";
 
-// A React component for the Home page
 export default function Home() {
   // State to store transaction data and the transaction being edited
   const [transactions, setTransactions] = useState([]);
   const [editTransaction, setEditTransaction] = useState({});
-  const [categoryFilter, setCategoryFilter] = React.useState('');
+  const [categoryFilter, setCategoryFilter] = useState("");
   const [openForm, setOpenForm] = useState(false);
 
   // Search states
-  const [searchQuery, setSearchQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState('all');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   // Use useEffect to fetch transactions when the component mounts
   useEffect(() => {
@@ -56,10 +58,10 @@ export default function Home() {
   }, [editTransaction]);
 
   // Function to fetch transactions from the server
-  async function fetchTransactions(categoryFilter = '') {
+  async function fetchTransactions(categoryFilter = "") {
     const token = Cookies.get("token");
     let url = `${import.meta.env.VITE_BASE_URL}/transaction`;
-    if (categoryFilter !== '') {
+    if (categoryFilter !== "") {
       url += `/${categoryFilter}`;
     }
 
@@ -75,16 +77,16 @@ export default function Home() {
     const token = Cookies.get("token");
     const params = new URLSearchParams();
 
-    if (searchQuery) params.append('query', searchQuery);
-    if (startDate) params.append('startDate', startDate);
-    if (endDate) params.append('endDate', endDate);
-    if (typeFilter && typeFilter !== 'all') params.append('type', typeFilter);
+    if (searchQuery) params.append("query", searchQuery);
+    if (startDate) params.append("startDate", startDate);
+    if (endDate) params.append("endDate", endDate);
+    if (typeFilter && typeFilter !== "all") params.append("type", typeFilter);
 
     try {
       const res = await fetch(
         `${import.meta.env.VITE_BASE_URL}/transaction/search?${params.toString()}`,
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       const result = await res.json();
@@ -92,23 +94,25 @@ export default function Home() {
       if (result.success) {
         // Convert flat list to grouped format for compatibility with existing components
         const grouped = {};
-        result.data.forEach(tx => {
+        result.data.forEach((tx) => {
           const date = new Date(tx.date);
           const key = `${date.getFullYear()}-${date.getMonth() + 1}`;
           if (!grouped[key]) {
             grouped[key] = {
               _id: { year: date.getFullYear(), month: date.getMonth() + 1 },
               transactions: [],
-              totalExpenses: 0
+              totalExpenses: 0,
             };
           }
           grouped[key].transactions.push(tx);
           grouped[key].totalExpenses += tx.amount || 0;
         });
-        setTransactions(Object.values(grouped).sort((a, b) => {
-          if (a._id.year !== b._id.year) return b._id.year - a._id.year;
-          return b._id.month - a._id.month;
-        }));
+        setTransactions(
+          Object.values(grouped).sort((a, b) => {
+            if (a._id.year !== b._id.year) return b._id.year - a._id.year;
+            return b._id.month - a._id.month;
+          })
+        );
       }
     } catch (error) {
       console.error("Search failed:", error);
@@ -117,11 +121,11 @@ export default function Home() {
 
   // Function to clear search filters
   function clearFilters() {
-    setSearchQuery('');
-    setTypeFilter('all');
-    setStartDate('');
-    setEndDate('');
-    setCategoryFilter('');
+    setSearchQuery("");
+    setTypeFilter("all");
+    setStartDate("");
+    setEndDate("");
+    setCategoryFilter("");
     fetchTransactions();
   }
 
@@ -130,22 +134,22 @@ export default function Home() {
     const token = Cookies.get("token");
     const params = new URLSearchParams();
 
-    if (startDate) params.append('startDate', startDate);
-    if (endDate) params.append('endDate', endDate);
+    if (startDate) params.append("startDate", startDate);
+    if (endDate) params.append("endDate", endDate);
 
     try {
       const res = await fetch(
         `${import.meta.env.VITE_BASE_URL}/transaction/export?${params.toString()}`,
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = `transactions_${new Date().toISOString().split('T')[0]}.csv`;
+      a.download = `transactions_${new Date().toISOString().split("T")[0]}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -162,101 +166,151 @@ export default function Home() {
     fetchTransactions(); // Refresh on close
   }
 
+  const hasActiveFilters =
+    searchQuery || typeFilter !== "all" || startDate || endDate;
+
   // Render the Home page with various components
   return (
-    <Container maxWidth="lg" sx={{ py: 4, position: 'relative', minHeight: '80vh' }}>
+    <div className="container max-w-7xl mx-auto py-6 px-4 min-h-screen">
       {/* Page Header */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 800 }}>
-            Transactions
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
+      <div className="flex justify-between items-start mb-6">
+        <div>
+          <h1 className="text-4xl font-bold mb-1">Transactions</h1>
+          <p className="text-muted-foreground">
             Manage and track your financial history
-          </Typography>
-        </Box>
+          </p>
+        </div>
         <Button
-          variant="outlined"
-          startIcon={<DownloadIcon />}
+          variant="outline"
           onClick={handleExport}
-          size="small"
+          className="gap-2"
         >
+          <Download className="h-4 w-4" />
           Export CSV
         </Button>
-      </Box>
+      </div>
 
       {/* TransactionChart component */}
-      <TransactionChart data={transactions} />
+      <div className="mb-6">
+        <TransactionChart data={transactions} />
+      </div>
 
       {/* Search and Filter Section */}
-      <Paper elevation={0} sx={{ p: 2, mb: 4, mt: 4, border: '1px solid', borderColor: 'divider', borderRadius: 3 }}>
-        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", alignItems: "center" }}>
-          <TextField
-            label="Search transactions..."
-            size="small"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-            sx={{ flexGrow: 1, minWidth: 200 }}
-            InputProps={{
-              endAdornment: searchQuery && (
-                <InputAdornment position="end">
-                  <IconButton size="small" onClick={() => setSearchQuery('')}>
-                    <ClearIcon fontSize="small" />
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-          />
+      <Card className="mb-6">
+        <CardContent className="p-4">
+          <div className="flex flex-wrap gap-3 items-end">
+            {/* Search Input */}
+            <div className="flex-grow min-w-[200px]">
+              <Label htmlFor="search" className="mb-1.5 block text-sm">
+                Search transactions
+              </Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="search"
+                  placeholder="Search by description..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+                  className="pl-9 pr-9"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            </div>
 
-          <TextField
-            label="From"
-            type="date"
-            size="small"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            sx={{ width: 140 }}
-          />
+            {/* Start Date */}
+            <div className="w-[140px]">
+              <Label htmlFor="start-date" className="mb-1.5 block text-sm">
+                From
+              </Label>
+              <Input
+                id="start-date"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
 
-          <TextField
-            label="To"
-            type="date"
-            size="small"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            sx={{ width: 140 }}
-          />
+            {/* End Date */}
+            <div className="w-[140px]">
+              <Label htmlFor="end-date" className="mb-1.5 block text-sm">
+                To
+              </Label>
+              <Input
+                id="end-date"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+            </div>
 
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>Type</InputLabel>
-            <Select
-              value={typeFilter}
-              label="Type"
-              onChange={(e) => setTypeFilter(e.target.value)}
+            {/* Type Filter */}
+            <div className="w-[130px]">
+              <Label htmlFor="type-filter" className="mb-1.5 block text-sm">
+                Type
+              </Label>
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <SelectTrigger id="type-filter">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="income">Income</SelectItem>
+                  <SelectItem value="expense">Expense</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Search Button */}
+            <Button
+              onClick={handleSearch}
+              className="gap-2"
             >
-              <MenuItem value="all">All</MenuItem>
-              <MenuItem value="income">Income</MenuItem>
-              <MenuItem value="expense">Expense</MenuItem>
-            </Select>
-          </FormControl>
-
-          <Button
-            variant="contained"
-            startIcon={<SearchIcon />}
-            onClick={handleSearch}
-          >
-            Search
-          </Button>
-
-          {(searchQuery || typeFilter !== 'all' || startDate || endDate) && (
-            <Button variant="text" onClick={clearFilters} color="inherit">
-              Clear
+              <Search className="h-4 w-4" />
+              Search
             </Button>
+
+            {/* Clear Button */}
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                onClick={clearFilters}
+                className="gap-2"
+              >
+                <X className="h-4 w-4" />
+                Clear
+              </Button>
+            )}
+          </div>
+
+          {/* Active Filters Badge */}
+          {hasActiveFilters && (
+            <div className="flex gap-2 items-center mt-3 pt-3 border-t">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">
+                Active filters:
+              </span>
+              {searchQuery && (
+                <Badge variant="secondary">Search: {searchQuery}</Badge>
+              )}
+              {typeFilter !== "all" && (
+                <Badge variant="secondary">
+                  Type: {typeFilter.charAt(0).toUpperCase() + typeFilter.slice(1)}
+                </Badge>
+              )}
+              {startDate && <Badge variant="secondary">From: {startDate}</Badge>}
+              {endDate && <Badge variant="secondary">To: {endDate}</Badge>}
+            </div>
           )}
-        </Box>
-      </Paper>
+        </CardContent>
+      </Card>
 
       {/* TransactionsList component */}
       <TransactionsList
@@ -267,32 +321,28 @@ export default function Home() {
       />
 
       {/* Floating Action Button */}
-      <Fab
-        color="primary"
-        aria-label="add"
+      <button
         onClick={() => setOpenForm(true)}
-        sx={{
-          position: 'fixed',
-          bottom: 32,
-          right: 32,
-          boxShadow: '0 4px 20px rgba(33, 150, 243, 0.4)'
-        }}
+        className="fixed bottom-8 right-8 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 flex items-center justify-center z-50"
+        aria-label="Add transaction"
       >
-        <AddIcon />
-      </Fab>
+        <Plus className="h-6 w-6" />
+      </button>
 
       {/* Helper Dialog for Transaction Form */}
-      <Dialog open={openForm} onClose={() => setOpenForm(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>{editTransaction._id ? "Edit Transaction" : "New Transaction"}</DialogTitle>
-        <DialogContent>
+      <Dialog open={openForm} onOpenChange={setOpenForm}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>
+              {editTransaction._id ? "Edit Transaction" : "New Transaction"}
+            </DialogTitle>
+          </DialogHeader>
           <TransactionForm
             fetchTransactions={handleFormClose}
             editTransaction={editTransaction}
           />
         </DialogContent>
       </Dialog>
-
-    </Container>
+    </div>
   );
 }
-

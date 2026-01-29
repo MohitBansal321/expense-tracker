@@ -1,8 +1,164 @@
-body {
-  background-color: #f5f5f5;
+@import "tailwindcss";
+
+/* Import Google Font - Inter for excellent readability */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* Enhanced Light Mode Colors - Finance App Optimized */
+@theme {
+  /* Primary - Modern Cyan-Teal (Trust + Growth) */
+  --primary: 199 89% 48%;
+  /* #0EA5E9 - Trustworthy and modern */
+  --primary-foreground: 0 0% 100%;
+  /* White text */
+
+  /* Secondary - Professional Slate */
+  --secondary: 215 25% 27%;
+  /* Deep blue-gray */
+  --secondary-foreground: 210 40% 98%;
+  /* Off-white */
+
+  /* Background & Surfaces */
+  --background: 0 0% 100%;
+  /* Pure white */
+  --foreground: 222 47% 11%;
+  /* Rich dark blue-gray (not pure black) */
+  --card: 0 0% 100%;
+  /* White cards */
+  --card-foreground: 222 47% 11%;
+  /* Dark text */
+
+  /* Borders & Inputs */
+  --border: 214 32% 91%;
+  /* Soft gray */
+  --input: 214 32% 91%;
+  /* Soft gray */
+  --ring: 199 89% 48%;
+  /* Cyan focus ring */
+
+  /* Muted Elements */
+  --muted: 210 40% 96.1%;
+  /* Very light gray */
+  --muted-foreground: 215 16% 47%;
+  /* Medium gray */
+
+  /* Accent */
+  --accent: 199 89% 95%;
+  /* Very light cyan */
+  --accent-foreground: 199 89% 35%;
+  /* Dark cyan */
+
+  /* Popover */
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+
+  /* Destructive/Danger */
+  --destructive: 0 84% 60%;
+  /* Clear red */
+  --destructive-foreground: 0 0% 100%;
+  /* White */
+
+  /* Border radius */
+  --radius: 0.5rem;
 }
 
-.text-white {
-  color: white;
-  text-decoration: none;
+/* Enhanced Dark Mode Colors - Warmer, More Professional */
+.dark {
+  /* Backgrounds - Warmer dark blue-gray (less harsh) */
+  --background: 222 47% 11%;
+  /* Rich dark blue-gray */
+  --foreground: 210 40% 98%;
+  /* Off-white (not harsh white) */
+  --card: 217 33% 17%;
+  /* Slightly lighter than background */
+  --card-foreground: 210 40% 98%;
+  /* Off-white */
+
+  /* Primary - Brighter cyan for dark mode */
+  --primary: 199 89% 51%;
+  /* Brighter cyan */
+  --primary-foreground: 222 47% 11%;
+  /* Dark text on cyan */
+
+  /* Secondary - Light gray for dark mode */
+  --secondary: 217 20% 65%;
+  /* Light gray */
+  --secondary-foreground: 222 47% 11%;
+  /* Dark text */
+
+  /* Borders & Inputs - Subtle in dark mode */
+  --border: 215 28% 22%;
+  /* Subtle border */
+  --input: 215 28% 22%;
+  /* Subtle input border */
+  --ring: 199 89% 51%;
+  /* Bright cyan focus */
+
+  /* Muted */
+  --muted: 217 33% 17%;
+  /* Slightly lighter than bg */
+  --muted-foreground: 217 20% 65%;
+  /* Light gray */
+
+  /* Accent */
+  --accent: 199 89% 20%;
+  /* Dark cyan */
+  --accent-foreground: 199 89% 80%;
+  /* Light cyan */
+
+  /* Popover */
+  --popover: 217 33% 17%;
+  --popover-foreground: 210 40% 98%;
+
+  /* Destructive */
+  --destructive: 0 84% 60%;
+  /* Same red, works in dark */
+  --destructive-foreground: 210 40% 98%;
+  /* Off-white */
+}
+
+/* System preference for dark mode */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 217 33% 17%;
+    --card-foreground: 210 40% 98%;
+    --primary: 199 89% 51%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 20% 65%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 217 20% 65%;
+    --accent: 199 89% 20%;
+    --accent-foreground: 199 89% 80%;
+    --popover: 217 33% 17%;
+    --popover-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 215 28% 22%;
+    --input: 215 28% 22%;
+    --ring: 199 89% 51%;
+  }
+}
+
+/* Base Styles */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+/* Financial number formatting - tabular nums for alignment */
+.financial-number {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }

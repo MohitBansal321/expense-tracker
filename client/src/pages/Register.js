@@ -1,24 +1,27 @@
-// Import necessary modules and libraries from React and Material-UI
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
-import Link from "@mui/material/Link";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
+// Register page with modern Shadcn UI design
 import * as React from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { UserPlus } from "lucide-react";
+import { toast } from "react-toastify";
+
+// Shadcn UI Components
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Card, CardContent } from "../components/ui/card";
+
+// Auth Layout
 import AuthLayout from "../components/AuthLayout";
 
-// A React component for the Register page
 export default function Register() {
-  // Use the `useNavigate` hook to manage navigation
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   // Function to handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsLoading(true);
+
     const data = new FormData(event.currentTarget);
 
     // Extract form data
@@ -29,113 +32,134 @@ export default function Register() {
       password: data.get("password"),
     };
 
-    // Send a POST request to the server for user registration
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/register`, {
-      method: "POST",
-      body: JSON.stringify(form),
-      headers: {
-        "content-type": "application/json",
-      },
-    });
+    try {
+      // Send a POST request to the server for user registration
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/register`, {
+        method: "POST",
+        body: JSON.stringify(form),
+        headers: {
+          "content-type": "application/json",
+        },
+      });
 
-    if (res.ok) {
-      // If registration is successful, navigate to the login page
-      navigate("/login");
+      if (res.ok) {
+        toast.success("Account created successfully! Please sign in.");
+        // If registration is successful, navigate to the login page
+        navigate("/login");
+      } else {
+        const error = await res.json();
+        toast.error(error.message || "Registration failed. Please try again.");
+      }
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Render the Register page
   return (
     <AuthLayout>
-      <Avatar sx={{ m: 1, bgcolor: "secondary.main", width: 56, height: 56 }}>
-        <LockOutlinedIcon fontSize="large" />
-      </Avatar>
-      <Typography component="h1" variant="h4" fontWeight={700} sx={{ mb: 1 }}>
-        Create Account
-      </Typography>
-      <Typography color="text.secondary" sx={{ mb: 3 }}>
-        Join us and start tracking your expenses
-      </Typography>
+      <div className="flex flex-col items-center w-full max-w-md mx-auto">
+        {/* Icon */}
+        <div className="mb-6 p-4 rounded-full bg-primary/10">
+          <UserPlus className="h-8 w-8 text-primary" />
+        </div>
 
-      <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, width: "100%" }}>
-        <Grid container spacing={2}>
-          {/* First Name input */}
-          <Grid item xs={12} sm={6}>
-            <TextField
-              autoComplete="given-name"
-              name="firstName"
-              required
-              fullWidth
-              id="firstName"
-              label="First Name"
-              autoFocus
-              InputProps={{ sx: { borderRadius: 2 } }}
-            />
-          </Grid>
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold mb-2">Create Account</h1>
+          <p className="text-muted-foreground">
+            Join us and start tracking your expenses
+          </p>
+        </div>
 
-          {/* Last Name input */}
-          <Grid item xs={12} sm={6}>
-            <TextField
-              required
-              fullWidth
-              id="lastName"
-              label="Last Name"
-              name="lastName"
-              autoComplete="family-name"
-              InputProps={{ sx: { borderRadius: 2 } }}
-            />
-          </Grid>
+        {/* Register Card */}
+        <Card className="w-full border shadow-lg">
+          <CardContent className="pt-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Name Fields */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    placeholder="John"
+                    required
+                    autoComplete="given-name"
+                    autoFocus
+                    disabled={isLoading}
+                  />
+                </div>
 
-          {/* Email input */}
-          <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              InputProps={{ sx: { borderRadius: 2 } }}
-            />
-          </Grid>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    placeholder="Doe"
+                    required
+                    autoComplete="family-name"
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
 
-          {/* Password input */}
-          <Grid item xs={12}>
-            <TextField
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="new-password"
-              InputProps={{ sx: { borderRadius: 2 } }}
-            />
-          </Grid>
-        </Grid>
+              {/* Email Field */}
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  required
+                  autoComplete="email"
+                  disabled={isLoading}
+                />
+              </div>
 
-        {/* Sign Up button */}
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          size="large"
-          sx={{ mt: 4, mb: 2, borderRadius: 2, height: 48, fontWeight: 700 }}
-        >
-          Sign Up
-        </Button>
+              {/* Password Field */}
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="••••••••"
+                  required
+                  autoComplete="new-password"
+                  disabled={isLoading}
+                />
+              </div>
 
-        {/* Link to the login page */}
-        <Grid container justifyContent="center">
-          <Grid item>
-            <RouterLink to="/login" style={{ textDecoration: 'none' }}>
-              <Link component="span" variant="body2" sx={{ fontWeight: 500 }}>
-                Already have an account? Sign in
-              </Link>
-            </RouterLink>
-          </Grid>
-        </Grid>
-      </Box>
+              {/* Sign Up Button */}
+              <Button
+                type="submit"
+                className="w-full h-12 text-base font-semibold mt-6"
+                disabled={isLoading}
+              >
+                {isLoading ? "Creating account..." : "Sign Up"}
+              </Button>
+
+              {/* Sign In Link */}
+              <div className="text-center mt-4">
+                <p className="text-sm text-muted-foreground">
+                  Already have an account?{" "}
+                  <RouterLink
+                    to="/login"
+                    className="font-medium text-primary hover:underline"
+                  >
+                    Sign In
+                  </RouterLink>
+                </p>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </AuthLayout>
   );
 }

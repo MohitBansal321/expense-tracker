@@ -1,31 +1,31 @@
-import AssessmentIcon from "@mui/icons-material/Assessment";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import PrintIcon from "@mui/icons-material/Print";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Chip from "@mui/material/Chip";
-import Container from "@mui/material/Container";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogActions from "@mui/material/DialogActions";
-import FormControl from "@mui/material/FormControl";
-import Grid from "@mui/material/Grid";
-import InputLabel from "@mui/material/InputLabel";
-import LinearProgress from "@mui/material/LinearProgress";
-import MenuItem from "@mui/material/MenuItem";
-import Paper from "@mui/material/Paper";
-import Select from "@mui/material/Select";
-import Skeleton from "@mui/material/Skeleton";
-import Tab from "@mui/material/Tab";
-import Tabs from "@mui/material/Tabs";
-import Typography from "@mui/material/Typography";
-import Cookies from "js-cookie";
+// Reports page with modern Shadcn UI
 import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { BarChart3, Calendar, Printer, TrendingUp, TrendingDown } from "lucide-react";
+
+// Shadcn UI Components
+import { Button } from "../components/ui/button";
+import { Label } from "../components/ui/label";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "../components/ui/select";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "../components/ui/dialog";
+import { Card, CardContent } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Skeleton } from "../components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+
+// DevExpress Charts
 import {
     ArgumentAxis,
     BarSeries,
@@ -37,13 +37,25 @@ import {
 } from "@devexpress/dx-react-chart-material-ui";
 
 const MONTHS = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
 ];
 
 export default function Reports() {
-    const [tabValue, setTabValue] = useState(0);
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+    const [tabValue, setTabValue] = useState("monthly");
+    const [selectedMonth, setSelectedMonth] = useState(
+        new Date().getMonth() + 1
+    );
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [monthlyData, setMonthlyData] = useState(null);
     const [yearlyData, setYearlyData] = useState(null);
@@ -55,7 +67,7 @@ export default function Reports() {
     const [drillDownTitle, setDrillDownTitle] = useState("");
     const [isDrillLoading, setIsDrillLoading] = useState(false);
 
-    async function handleDrillDown({ type, value, categoryId }) {
+    async function handleDrillDown({ type, value }) {
         setDrillDownOpen(true);
         setIsDrillLoading(true);
         setDrillDownData([]);
@@ -64,40 +76,36 @@ export default function Reports() {
         let queryParams = "";
         let title = "";
 
-        if (type === "category") {
-            // value is category name
-            title = `Transactions for ${value}`;
-            // We need start/end date for the current view (month or year)
-            const year = selectedYear;
-            const month = tabValue === 0 ? selectedMonth : null;
-
-            let startDate, endDate;
-            if (month) {
-                startDate = new Date(year, month - 1, 1).toISOString();
-                endDate = new Date(year, month, 0).toISOString();
-            } else {
-                startDate = new Date(year, 0, 1).toISOString();
-                endDate = new Date(year, 11, 31).toISOString();
-            }
-
-            // We need category ID. In the chart data we might need to embed it. 
-            // The API response for categoryBreakdown doesn't have ID in the mapped array currently?
-            // Wait, ReportsController sends icon and label. We might need to adjust ReportsController to send ID too.
-            // For now, let's assume we can pass categoryId if available.
-        }
-
         if (type === "day") {
             const day = value;
-            title = `Transactions on ${new Date(selectedYear, selectedMonth - 1, day).toLocaleDateString()}`;
-            const startDate = new Date(selectedYear, selectedMonth - 1, day).toISOString();
-            const endDate = new Date(selectedYear, selectedMonth - 1, day, 23, 59, 59).toISOString();
+            title = `Transactions on ${new Date(
+                selectedYear,
+                selectedMonth - 1,
+                day
+            ).toLocaleDateString()}`;
+            const startDate = new Date(
+                selectedYear,
+                selectedMonth - 1,
+                day
+            ).toISOString();
+            const endDate = new Date(
+                selectedYear,
+                selectedMonth - 1,
+                day,
+                23,
+                59,
+                59
+            ).toISOString();
             queryParams = `startDate=${startDate}&endDate=${endDate}`;
         }
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/transaction/search?${queryParams}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await fetch(
+                `${import.meta.env.VITE_BASE_URL}/transaction/search?${queryParams}`,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
             const result = await res.json();
             if (result.success) {
                 setDrillDownData(result.data);
@@ -114,7 +122,7 @@ export default function Reports() {
     for (let y = new Date().getFullYear(); y >= 2020; y--) years.push(y);
 
     useEffect(() => {
-        if (tabValue === 0) {
+        if (tabValue === "monthly") {
             fetchMonthlyReport();
         } else {
             fetchYearlyReport();
@@ -165,293 +173,404 @@ export default function Reports() {
 
     function SummaryCard({ title, value, change, isPositive, icon }) {
         return (
-            <Card sx={{ height: "100%" }}>
-                <CardContent>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                        <Box>
-                            <Typography color="text.secondary" variant="body2">{title}</Typography>
-                            <Typography variant="h5" sx={{ fontWeight: 700, mt: 1 }}>
-                                ${typeof value === 'number' ? value.toLocaleString() : value}
-                            </Typography>
+            <Card>
+                <CardContent className="p-5">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <p className="text-sm text-muted-foreground mb-1">{title}</p>
+                            <p className="text-2xl font-bold">
+                                ${typeof value === "number" ? value.toLocaleString() : value}
+                            </p>
                             {change !== undefined && (
-                                <Chip
-                                    size="small"
-                                    icon={isPositive ? <TrendingUpIcon /> : <TrendingDownIcon />}
-                                    label={`${change > 0 ? "+" : ""}${change}%`}
-                                    color={isPositive ? "success" : "error"}
-                                    sx={{ mt: 1 }}
-                                />
+                                <Badge
+                                    variant={isPositive ? "default" : " destructive"}
+                                    className="mt-2 gap-1"
+                                >
+                                    {isPositive ? (
+                                        <TrendingUp className="h-3 w-3" />
+                                    ) : (
+                                        <TrendingDown className="h-3 w-3" />
+                                    )}
+                                    {change > 0 ? "+" : ""}
+                                    {change}%
+                                </Badge>
                             )}
-                        </Box>
-                        {icon}
-                    </Box>
+                        </div>
+                        <div className="text-muted-foreground">{icon}</div>
+                    </div>
                 </CardContent>
             </Card>
         );
     }
 
     return (
-        <Container maxWidth="lg" sx={{ py: 3 }} className="print-container">
+        <div className="container max-w-7xl mx-auto py-6 px-4 print-container">
             {/* Header */}
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3, flexWrap: "wrap", gap: 2 }}>
-                <Typography variant="h4" sx={{ fontWeight: 700, display: "flex", alignItems: "center", gap: 1 }}>
-                    <AssessmentIcon fontSize="large" /> Reports
-                </Typography>
-                <Box sx={{ display: "flex", gap: 2, alignItems: "center", flexWrap: "wrap" }}>
-                    <FormControl size="small" sx={{ minWidth: 100 }}>
-                        <InputLabel>Year</InputLabel>
-                        <Select value={selectedYear} label="Year" onChange={(e) => setSelectedYear(e.target.value)}>
-                            {years.map((y) => <MenuItem key={y} value={y}>{y}</MenuItem>)}
+            <div className="flex justify-between items-start mb-6 flex-wrap gap-4">
+                <div className="flex items-center gap-3">
+                    <BarChart3 className="h-8 w-8" />
+                    <h1 className="text-4xl font-bold">Reports</h1>
+                </div>
+                <div className="flex gap-3 items-center flex-wrap">
+                    <div className="w-28">
+                        <Select
+                            value={selectedYear.toString()}
+                            onValueChange={(v) => setSelectedYear(parseInt(v))}
+                        >
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {years.map((y) => (
+                                    <SelectItem key={y} value={y.toString()}>
+                                        {y}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
                         </Select>
-                    </FormControl>
-                    {tabValue === 0 && (
-                        <FormControl size="small" sx={{ minWidth: 130 }}>
-                            <InputLabel>Month</InputLabel>
-                            <Select value={selectedMonth} label="Month" onChange={(e) => setSelectedMonth(e.target.value)}>
-                                {MONTHS.map((m, i) => <MenuItem key={i} value={i + 1}>{m}</MenuItem>)}
+                    </div>
+                    {tabValue === "monthly" && (
+                        <div className="w-36">
+                            <Select
+                                value={selectedMonth.toString()}
+                                onValueChange={(v) => setSelectedMonth(parseInt(v))}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {MONTHS.map((m, i) => (
+                                        <SelectItem key={i} value={(i + 1).toString()}>
+                                            {m}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
                             </Select>
-                        </FormControl>
+                        </div>
                     )}
-                    <Button variant="outlined" startIcon={<PrintIcon />} onClick={handlePrint}>
+                    <Button variant="outline" onClick={handlePrint} className="gap-2">
+                        <Printer className="h-4 w-4" />
                         Print
                     </Button>
-                </Box>
-            </Box>
+                </div>
+            </div>
 
             {/* Tabs */}
-            <Paper sx={{ mb: 3 }}>
-                <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)} centered>
-                    <Tab icon={<CalendarTodayIcon />} label="Monthly Report" />
-                    <Tab icon={<AssessmentIcon />} label="Yearly Report" />
-                </Tabs>
-            </Paper>
+            <Tabs value={tabValue} onValueChange={setTabValue} className="mb-6">
+                <TabsList className="grid w-full max-w-md grid-cols-2">
+                    <TabsTrigger value="monthly" className="gap-2">
+                        <Calendar className="h-4 w-4" />
+                        Monthly Report
+                    </TabsTrigger>
+                    <TabsTrigger value="yearly" className="gap-2">
+                        <BarChart3 className="h-4 w-4" />
+                        Yearly Report
+                    </TabsTrigger>
+                </TabsList>
 
-            {/* Monthly Report */}
-            {tabValue === 0 && (
-                <>
+                {/* Monthly Report */}
+                <TabsContent value="monthly" className="space-y-4 mt-6">
                     {isLoading ? (
-                        <Grid container spacing={2}>
-                            {[...Array(4)].map((_, i) => <Grid item xs={12} sm={6} md={3} key={i}><Skeleton variant="rounded" height={120} /></Grid>)}
-                            <Grid item xs={12}><Skeleton variant="rounded" height={300} /></Grid>
-                        </Grid>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {[...Array(4)].map((_, i) => (
+                                <Skeleton key={i} className="h-32" />
+                            ))}
+                        </div>
                     ) : monthlyData ? (
                         <>
                             {/* Summary Cards */}
-                            <Grid container spacing={2} sx={{ mb: 3 }}>
-                                <Grid item xs={12} sm={6} md={3}>
-                                    <SummaryCard
-                                        title="Total Income"
-                                        value={monthlyData.summary.totalIncome}
-                                        change={monthlyData.summary.incomeChange}
-                                        isPositive={monthlyData.summary.incomeChange >= 0}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={3}>
-                                    <SummaryCard
-                                        title="Total Expenses"
-                                        value={monthlyData.summary.totalExpenses}
-                                        change={monthlyData.summary.expenseChange}
-                                        isPositive={monthlyData.summary.expenseChange <= 0}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={3}>
-                                    <SummaryCard
-                                        title="Net Savings"
-                                        value={monthlyData.summary.netSavings}
-                                        isPositive={monthlyData.summary.netSavings >= 0}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={3}>
-                                    <SummaryCard
-                                        title="Transactions"
-                                        value={monthlyData.summary.transactionCount}
-                                    />
-                                </Grid>
-                            </Grid>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <SummaryCard
+                                    title="Total Income"
+                                    value={monthlyData.summary.totalIncome}
+                                    change={monthlyData.summary.incomeChange}
+                                    isPositive={monthlyData.summary.incomeChange >= 0}
+                                />
+                                <SummaryCard
+                                    title="Total Expenses"
+                                    value={monthlyData.summary.totalExpenses}
+                                    change={monthlyData.summary.expenseChange}
+                                    isPositive={monthlyData.summary.expenseChange <= 0}
+                                />
+                                <SummaryCard
+                                    title="Net Savings"
+                                    value={monthlyData.summary.netSavings}
+                                    isPositive={monthlyData.summary.netSavings >= 0}
+                                />
+                                <SummaryCard
+                                    title="Transactions"
+                                    value={monthlyData.summary.transactionCount}
+                                />
+                            </div>
 
                             {/* Daily Trend Chart */}
-                            <Paper sx={{ p: 2, mb: 3 }}>
-                                <Typography variant="h6" sx={{ mb: 2 }}>Daily Spending Trend</Typography>
-                                {monthlyData.dailyData.length > 0 ? (
-                                    <Chart data={monthlyData.dailyData} height={300}>
-                                        <ArgumentAxis />
-                                        <ValueAxis />
-                                        <BarSeries
-                                            name="Expense"
-                                            valueField="expense"
-                                            argumentField="day"
-                                            color="#f44336"
-                                            pointComponent={(props) => (
-                                                <BarSeries.Point
-                                                    {...props}
-                                                    style={{ cursor: 'pointer' }}
-                                                    onClick={() => handleDrillDown({ type: 'day', value: props.arg })}
-                                                />
-                                            )}
-                                        />
-                                        <BarSeries
-                                            name="Income"
-                                            valueField="income"
-                                            argumentField="day"
-                                            color="#4CAF50"
-                                            pointComponent={(props) => (
-                                                <BarSeries.Point
-                                                    {...props}
-                                                    style={{ cursor: 'pointer' }}
-                                                    onClick={() => handleDrillDown({ type: 'day', value: props.arg })}
-                                                />
-                                            )}
-                                        />
-                                        <Legend />
-                                    </Chart>
-                                ) : (
-                                    <Typography color="text.secondary" textAlign="center" py={4}>No data for this month</Typography>
-                                )}
-                            </Paper>
+                            <Card>
+                                <CardContent className="p-5">
+                                    <h2 className="text-xl font-semibold mb-4">
+                                        Daily Spending Trend
+                                    </h2>
+                                    {monthlyData.dailyData.length > 0 ? (
+                                        <Chart data={monthlyData.dailyData} height={300}>
+                                            <ArgumentAxis />
+                                            <ValueAxis />
+                                            <BarSeries
+                                                name="Expense"
+                                                valueField="expense"
+                                                argumentField="day"
+                                                color="#ef4444"
+                                                pointComponent={(props) => (
+                                                    <BarSeries.Point
+                                                        {...props}
+                                                        style={{ cursor: "pointer" }}
+                                                        onClick={() =>
+                                                            handleDrillDown({ type: "day", value: props.arg })
+                                                        }
+                                                    />
+                                                )}
+                                            />
+                                            <BarSeries
+                                                name="Income"
+                                                valueField="income"
+                                                argumentField="day"
+                                                color="#22c55e"
+                                                pointComponent={(props) => (
+                                                    <BarSeries.Point
+                                                        {...props}
+                                                        style={{ cursor: "pointer" }}
+                                                        onClick={() =>
+                                                            handleDrillDown({ type: "day", value: props.arg })
+                                                        }
+                                                    />
+                                                )}
+                                            />
+                                            <Legend />
+                                        </Chart>
+                                    ) : (
+                                        <p className="text-center text-muted-foreground py-8">
+                                            No data for this month
+                                        </p>
+                                    )}
+                                </CardContent>
+                            </Card>
 
                             {/* Category Breakdown & Top Expenses */}
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} md={6}>
-                                    <Paper sx={{ p: 2, height: "100%" }}>
-                                        <Typography variant="h6" sx={{ mb: 2 }}>Spending by Category</Typography>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                <Card>
+                                    <CardContent className="p-5">
+                                        <h2 className="text-xl font-semibold mb-4">
+                                            Spending by Category
+                                        </h2>
                                         {monthlyData.categoryBreakdown.length > 0 ? (
-                                            monthlyData.categoryBreakdown.map((cat, i) => (
-                                                <Box key={i} sx={{ mb: 2 }}>
-                                                    <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
-                                                        <Typography variant="body2">{cat.icon} {cat.category}</Typography>
-                                                        <Typography variant="body2" fontWeight={600}>${cat.amount.toFixed(2)}</Typography>
-                                                    </Box>
-                                                    <LinearProgress
-                                                        variant="determinate"
-                                                        value={(cat.amount / monthlyData.summary.totalExpenses) * 100}
-                                                        sx={{ height: 8, borderRadius: 4 }}
-                                                    />
-                                                </Box>
-                                            ))
+                                            <div className="space-y-4">
+                                                {monthlyData.categoryBreakdown.map((cat, i) => (
+                                                    <div key={i}>
+                                                        <div className="flex justify-between mb-1.5 text-sm">
+                                                            <span>
+                                                                {cat.icon} {cat.category}
+                                                            </span>
+                                                            <span className="font-semibold">
+                                                                ${cat.amount.toFixed(2)}
+                                                            </span>
+                                                        </div>
+                                                        <div className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
+                                                            <div
+                                                                className="h-full bg-primary transition-all rounded-full"
+                                                                style={{
+                                                                    width: `${(cat.amount /
+                                                                            monthlyData.summary.totalExpenses) *
+                                                                        100
+                                                                        }%`,
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         ) : (
-                                            <Typography color="text.secondary">No expense data</Typography>
+                                            <p className="text-muted-foreground">No expense data</p>
                                         )}
-                                    </Paper>
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <Paper sx={{ p: 2, height: "100%" }}>
-                                        <Typography variant="h6" sx={{ mb: 2 }}>Top 5 Expenses</Typography>
+                                    </CardContent>
+                                </Card>
+
+                                <Card>
+                                    <CardContent className="p-5">
+                                        <h2 className="text-xl font-semibold mb-4">
+                                            Top 5 Expenses
+                                        </h2>
                                         {monthlyData.topExpenses.length > 0 ? (
-                                            monthlyData.topExpenses.map((exp, i) => (
-                                                <Box key={i} sx={{ display: "flex", justifyContent: "space-between", py: 1, borderBottom: "1px solid rgba(0,0,0,0.1)" }}>
-                                                    <Box>
-                                                        <Typography variant="body2" fontWeight={600}>{exp.description}</Typography>
-                                                        <Typography variant="caption" color="text.secondary">{exp.category}</Typography>
-                                                    </Box>
-                                                    <Typography variant="body2" color="error" fontWeight={600}>${exp.amount.toFixed(2)}</Typography>
-                                                </Box>
-                                            ))
+                                            <div className="space-y-3">
+                                                {monthlyData.topExpenses.map((exp, i) => (
+                                                    <div
+                                                        key={i}
+                                                        className="flex justify-between py-2 border-b last:border-0"
+                                                    >
+                                                        <div>
+                                                            <p className="font-medium">{exp.description}</p>
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {exp.category}
+                                                            </p>
+                                                        </div>
+                                                        <p className="font-semibold text-destructive">
+                                                            ${exp.amount.toFixed(2)}
+                                                        </p>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         ) : (
-                                            <Typography color="text.secondary">No expenses</Typography>
+                                            <p className="text-muted-foreground">No expenses</p>
                                         )}
-                                    </Paper>
-                                </Grid>
-                            </Grid>
+                                    </CardContent>
+                                </Card>
+                            </div>
                         </>
                     ) : (
-                        <Typography>No data available</Typography>
+                        <p className="text-center text-muted-foreground">
+                            No data available
+                        </p>
                     )}
-                </>
-            )}
+                </TabsContent>
 
-            {/* Yearly Report */}
-            {tabValue === 1 && (
-                <>
+                {/* Yearly Report */}
+                <TabsContent value="yearly" className="space-y-4 mt-6">
                     {isLoading ? (
-                        <Grid container spacing={2}>
-                            {[...Array(4)].map((_, i) => <Grid item xs={12} sm={6} md={3} key={i}><Skeleton variant="rounded" height={120} /></Grid>)}
-                            <Grid item xs={12}><Skeleton variant="rounded" height={300} /></Grid>
-                        </Grid>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {[...Array(4)].map((_, i) => (
+                                <Skeleton key={i} className="h-32" />
+                            ))}
+                        </div>
                     ) : yearlyData ? (
                         <>
                             {/* Summary Cards */}
-                            <Grid container spacing={2} sx={{ mb: 3 }}>
-                                <Grid item xs={12} sm={6} md={3}>
-                                    <SummaryCard title="Total Income" value={yearlyData.summary.totalIncome} />
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={3}>
-                                    <SummaryCard title="Total Expenses" value={yearlyData.summary.totalExpenses} />
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={3}>
-                                    <SummaryCard title="Net Savings" value={yearlyData.summary.netSavings} isPositive={yearlyData.summary.netSavings >= 0} />
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={3}>
-                                    <SummaryCard title="Avg Monthly Expense" value={yearlyData.summary.averageMonthlyExpense} />
-                                </Grid>
-                            </Grid>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <SummaryCard
+                                    title="Total Income"
+                                    value={yearlyData.summary.totalIncome}
+                                />
+                                <SummaryCard
+                                    title="Total Expenses"
+                                    value={yearlyData.summary.totalExpenses}
+                                />
+                                <SummaryCard
+                                    title="Net Savings"
+                                    value={yearlyData.summary.netSavings}
+                                    isPositive={yearlyData.summary.netSavings >= 0}
+                                />
+                                <SummaryCard
+                                    title="Avg Monthly Expense"
+                                    value={yearlyData.summary.averageMonthlyExpense}
+                                />
+                            </div>
 
                             {/* Monthly Trend Chart */}
-                            <Paper sx={{ p: 2, mb: 3 }}>
-                                <Typography variant="h6" sx={{ mb: 2 }}>Monthly Trend</Typography>
-                                <Chart data={yearlyData.monthlyData} height={300}>
-                                    <ArgumentAxis />
-                                    <ValueAxis />
-                                    <LineSeries name="Income" valueField="income" argumentField="monthName" color="#4CAF50" />
-                                    <LineSeries name="Expense" valueField="expense" argumentField="monthName" color="#f44336" />
-                                    <Legend />
-                                    <Title text={`${selectedYear} Overview`} />
-                                </Chart>
-                            </Paper>
+                            <Card>
+                                <CardContent className="p-5">
+                                    <h2 className="text-xl font-semibold mb-4">
+                                        Monthly Trend
+                                    </h2>
+                                    <Chart data={yearlyData.monthlyData} height={300}>
+                                        <ArgumentAxis />
+                                        <ValueAxis />
+                                        <LineSeries
+                                            name="Income"
+                                            valueField="income"
+                                            argumentField="monthName"
+                                            color="#22c55e"
+                                        />
+                                        <LineSeries
+                                            name="Expense"
+                                            valueField="expense"
+                                            argumentField="monthName"
+                                            color="#ef4444"
+                                        />
+                                        <Legend />
+                                        <Title text={`${selectedYear} Overview`} />
+                                    </Chart>
+                                </CardContent>
+                            </Card>
 
                             {/* Insights & Category Breakdown */}
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} md={4}>
-                                    <Paper sx={{ p: 2, height: "100%" }}>
-                                        <Typography variant="h6" sx={{ mb: 2 }}>Insights</Typography>
-                                        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                                            <Box>
-                                                <Typography variant="body2" color="text.secondary">Best Month</Typography>
-                                                <Typography variant="h6" color="success.main">
-                                                    {yearlyData.insights.bestMonth} (+${yearlyData.insights.bestMonthSavings.toLocaleString()})
-                                                </Typography>
-                                            </Box>
-                                            <Box>
-                                                <Typography variant="body2" color="text.secondary">Worst Month</Typography>
-                                                <Typography variant="h6" color="error.main">
-                                                    {yearlyData.insights.worstMonth} (${yearlyData.insights.worstMonthDeficit.toLocaleString()})
-                                                </Typography>
-                                            </Box>
-                                            <Box>
-                                                <Typography variant="body2" color="text.secondary">Top Category</Typography>
-                                                <Typography variant="h6">
-                                                    {yearlyData.insights.topCategory} (${yearlyData.insights.topCategoryAmount.toLocaleString()})
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                    </Paper>
-                                </Grid>
-                                <Grid item xs={12} md={8}>
-                                    <Paper sx={{ p: 2, height: "100%" }}>
-                                        <Typography variant="h6" sx={{ mb: 2 }}>Yearly Category Breakdown</Typography>
-                                        <Grid container spacing={1}>
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                                <Card>
+                                    <CardContent className="p-5">
+                                        <h2 className="text-xl font-semibold mb-4">Insights</h2>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <p className="text-sm text-muted-foreground mb-1">
+                                                    Best Month
+                                                </p>
+                                                <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+                                                    {yearlyData.insights.bestMonth} (+$
+                                                    {yearlyData.insights.bestMonthSavings.toLocaleString()}
+                                                    )
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm text-muted-foreground mb-1">
+                                                    Worst Month
+                                                </p>
+                                                <p className="text-lg font-semibold text-red-600 dark:text-red-400">
+                                                    {yearlyData.insights.worstMonth} ($
+                                                    {yearlyData.insights.worstMonthDeficit.toLocaleString()}
+                                                    )
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm text-muted-foreground mb-1">
+                                                    Top Category
+                                                </p>
+                                                <p className="text-lg font-semibold">
+                                                    {yearlyData.insights.topCategory} ($
+                                                    {yearlyData.insights.topCategoryAmount.toLocaleString()}
+                                                    )
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+
+                                <Card className="lg:col-span-2">
+                                    <CardContent className="p-5">
+                                        <h2 className="text-xl font-semibold mb-4">
+                                            Yearly Category Breakdown
+                                        </h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             {yearlyData.categoryBreakdown.slice(0, 8).map((cat, i) => (
-                                                <Grid item xs={6} key={i}>
-                                                    <Box sx={{ display: "flex", justifyContent: "space-between", py: 1 }}>
-                                                        <Typography variant="body2">{cat.icon} {cat.category}</Typography>
-                                                        <Typography variant="body2" fontWeight={600}>${cat.amount.toLocaleString()}</Typography>
-                                                    </Box>
-                                                    <LinearProgress
-                                                        variant="determinate"
-                                                        value={(cat.amount / yearlyData.summary.totalExpenses) * 100}
-                                                        sx={{ height: 6, borderRadius: 3 }}
-                                                    />
-                                                </Grid>
+                                                <div key={i}>
+                                                    <div className="flex justify-between py-1.5">
+                                                        <span className="text-sm">
+                                                            {cat.icon} {cat.category}
+                                                        </span>
+                                                        <span className="text-sm font-semibold">
+                                                            ${cat.amount.toLocaleString()}
+                                                        </span>
+                                                    </div>
+                                                    <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+                                                        <div
+                                                            className="h-full bg-primary transition-all rounded-full"
+                                                            style={{
+                                                                width: `${(cat.amount /
+                                                                        yearlyData.summary.totalExpenses) *
+                                                                    100
+                                                                    }%`,
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
                                             ))}
-                                        </Grid>
-                                    </Paper>
-                                </Grid>
-                            </Grid>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
                         </>
                     ) : (
-                        <Typography>No data available</Typography>
+                        <p className="text-center text-muted-foreground">
+                            No data available
+                        </p>
                     )}
-                </>
-            )}
+                </TabsContent>
+            </Tabs>
+
+            {/* Drill Down Dialog */}
             <DrillDownDialog
                 open={drillDownOpen}
                 onClose={() => setDrillDownOpen(false)}
@@ -459,44 +578,60 @@ export default function Reports() {
                 transactions={drillDownData}
                 isLoading={isDrillLoading}
             />
-        </Container>
+        </div>
     );
 }
 
 function DrillDownDialog({ open, onClose, title, transactions, isLoading }) {
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogContent dividers>
-                {isLoading ? (
-                    [...Array(3)].map((_, i) => <Skeleton key={i} height={60} />)
-                ) : transactions.length > 0 ? (
-                    transactions.map((tx) => (
-                        <Box key={tx._id} sx={{ display: "flex", justifyContent: "space-between", py: 1.5, borderBottom: "1px solid #eee" }}>
-                            <Box>
-                                <Typography variant="body1" fontWeight={500}>{tx.description}</Typography>
-                                <Typography variant="caption" color="text.secondary">
-                                    {new Date(tx.date).toLocaleDateString()}
-                                </Typography>
-                            </Box>
-                            <Typography
-                                variant="body1"
-                                fontWeight={600}
-                                color={tx.type === "income" ? "success.main" : "error.main"}
-                            >
-                                {tx.type === "income" ? "+" : "-"}${tx.amount.toFixed(2)}
-                            </Typography>
-                        </Box>
-                    ))
-                ) : (
-                    <Typography textAlign="center" color="text.secondary" py={4}>
-                        No transactions found.
-                    </Typography>
-                )}
+        <Dialog open={open} onOpenChange={onClose}>
+            <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                    <DialogTitle>{title}</DialogTitle>
+                </DialogHeader>
+                <div className="max-h-96 overflow-y-auto">
+                    {isLoading ? (
+                        <div className="space-y-3">
+                            {[...Array(3)].map((_, i) => (
+                                <Skeleton key={i} className="h-16" />
+                            ))}
+                        </div>
+                    ) : transactions.length > 0 ? (
+                        <div className="space-y-2">
+                            {transactions.map((tx) => (
+                                <div
+                                    key={tx._id}
+                                    className="flex justify-between py-3 border-b last:border-0"
+                                >
+                                    <div>
+                                        <p className="font-medium">{tx.description}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {new Date(tx.date).toLocaleDateString()}
+                                        </p>
+                                    </div>
+                                    <p
+                                        className={`font-semibold ${tx.type === "income"
+                                                ? "text-green-600 dark:text-green-400"
+                                                : "text-red-600 dark:text-red-400"
+                                            }`}
+                                    >
+                                        {tx.type === "income" ? "+" : "-"}${tx.amount.toFixed(2)}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-center text-muted-foreground py-8">
+                            No transactions found.
+                        </p>
+                    )}
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={onClose}>
+                        Close
+                    </Button>
+                </DialogFooter>
             </DialogContent>
-            <DialogActions>
-                <Button onClick={onClose}>Close</Button>
-            </DialogActions>
         </Dialog>
     );
 }
