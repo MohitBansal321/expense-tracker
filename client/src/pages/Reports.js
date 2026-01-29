@@ -9,6 +9,10 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
 import Container from "@mui/material/Container";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogActions from "@mui/material/DialogActions";
 import FormControl from "@mui/material/FormControl";
 import Grid from "@mui/material/Grid";
 import InputLabel from "@mui/material/InputLabel";
@@ -44,6 +48,67 @@ export default function Reports() {
     const [monthlyData, setMonthlyData] = useState(null);
     const [yearlyData, setYearlyData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    // Drill Down State
+    const [drillDownOpen, setDrillDownOpen] = useState(false);
+    const [drillDownData, setDrillDownData] = useState([]);
+    const [drillDownTitle, setDrillDownTitle] = useState("");
+    const [isDrillLoading, setIsDrillLoading] = useState(false);
+
+    async function handleDrillDown({ type, value, categoryId }) {
+        setDrillDownOpen(true);
+        setIsDrillLoading(true);
+        setDrillDownData([]);
+
+        const token = Cookies.get("token");
+        let queryParams = "";
+        let title = "";
+
+        if (type === "category") {
+            // value is category name
+            title = `Transactions for ${value}`;
+            // We need start/end date for the current view (month or year)
+            const year = selectedYear;
+            const month = tabValue === 0 ? selectedMonth : null;
+
+            let startDate, endDate;
+            if (month) {
+                startDate = new Date(year, month - 1, 1).toISOString();
+                endDate = new Date(year, month, 0).toISOString();
+            } else {
+                startDate = new Date(year, 0, 1).toISOString();
+                endDate = new Date(year, 11, 31).toISOString();
+            }
+
+            // We need category ID. In the chart data we might need to embed it. 
+            // The API response for categoryBreakdown doesn't have ID in the mapped array currently?
+            // Wait, ReportsController sends icon and label. We might need to adjust ReportsController to send ID too.
+            // For now, let's assume we can pass categoryId if available.
+        }
+
+        if (type === "day") {
+            const day = value;
+            title = `Transactions on ${new Date(selectedYear, selectedMonth - 1, day).toLocaleDateString()}`;
+            const startDate = new Date(selectedYear, selectedMonth - 1, day).toISOString();
+            const endDate = new Date(selectedYear, selectedMonth - 1, day, 23, 59, 59).toISOString();
+            queryParams = `startDate=${startDate}&endDate=${endDate}`;
+        }
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/transaction/search?${queryParams}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const result = await res.json();
+            if (result.success) {
+                setDrillDownData(result.data);
+                setDrillDownTitle(title);
+            }
+        } catch (error) {
+            console.error("Drill down error", error);
+        } finally {
+            setIsDrillLoading(false);
+        }
+    }
 
     const years = [];
     for (let y = new Date().getFullYear(); y >= 2020; y--) years.push(y);
@@ -211,8 +276,32 @@ export default function Reports() {
                                     <Chart data={monthlyData.dailyData} height={300}>
                                         <ArgumentAxis />
                                         <ValueAxis />
-                                        <BarSeries name="Expense" valueField="expense" argumentField="day" color="#f44336" />
-                                        <BarSeries name="Income" valueField="income" argumentField="day" color="#4CAF50" />
+                                        <BarSeries
+                                            name="Expense"
+                                            valueField="expense"
+                                            argumentField="day"
+                                            color="#f44336"
+                                            pointComponent={(props) => (
+                                                <BarSeries.Point
+                                                    {...props}
+                                                    style={{ cursor: 'pointer' }}
+                                                    onClick={() => handleDrillDown({ type: 'day', value: props.arg })}
+                                                />
+                                            )}
+                                        />
+                                        <BarSeries
+                                            name="Income"
+                                            valueField="income"
+                                            argumentField="day"
+                                            color="#4CAF50"
+                                            pointComponent={(props) => (
+                                                <BarSeries.Point
+                                                    {...props}
+                                                    style={{ cursor: 'pointer' }}
+                                                    onClick={() => handleDrillDown({ type: 'day', value: props.arg })}
+                                                />
+                                            )}
+                                        />
                                         <Legend />
                                     </Chart>
                                 ) : (
@@ -363,6 +452,51 @@ export default function Reports() {
                     )}
                 </>
             )}
+            <DrillDownDialog
+                open={drillDownOpen}
+                onClose={() => setDrillDownOpen(false)}
+                title={drillDownTitle}
+                transactions={drillDownData}
+                isLoading={isDrillLoading}
+            />
         </Container>
+    );
+}
+
+function DrillDownDialog({ open, onClose, title, transactions, isLoading }) {
+    return (
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogContent dividers>
+                {isLoading ? (
+                    [...Array(3)].map((_, i) => <Skeleton key={i} height={60} />)
+                ) : transactions.length > 0 ? (
+                    transactions.map((tx) => (
+                        <Box key={tx._id} sx={{ display: "flex", justifyContent: "space-between", py: 1.5, borderBottom: "1px solid #eee" }}>
+                            <Box>
+                                <Typography variant="body1" fontWeight={500}>{tx.description}</Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                    {new Date(tx.date).toLocaleDateString()}
+                                </Typography>
+                            </Box>
+                            <Typography
+                                variant="body1"
+                                fontWeight={600}
+                                color={tx.type === "income" ? "success.main" : "error.main"}
+                            >
+                                {tx.type === "income" ? "+" : "-"}${tx.amount.toFixed(2)}
+                            </Typography>
+                        </Box>
+                    ))
+                ) : (
+                    <Typography textAlign="center" color="text.secondary" py={4}>
+                        No transactions found.
+                    </Typography>
+                )}
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={onClose}>Close</Button>
+            </DialogActions>
+        </Dialog>
     );
 }

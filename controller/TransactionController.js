@@ -100,6 +100,11 @@ export const search = async (req, res) => {
       }
     }
 
+    // Filter by category
+    if (req.query.category_id) {
+      matchConditions.category_id = mongoose.Types.ObjectId(req.query.category_id);
+    }
+
     // Filter by type
     if (type && ["income", "expense"].includes(type)) {
       matchConditions.type = type;

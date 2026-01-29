@@ -1,19 +1,24 @@
 // Import necessary modules and components from React Router and your application
 import { createBrowserRouter } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import App from "./App";
-import Budget from "./pages/Budget";
-import Category from "./pages/Category";
-import Dashboard from "./pages/Dashboard";
-import Home from "./pages/Home";
-import Landing from "./pages/Landing";
-import Login from "./pages/Login";
-import RecurringTransactions from "./pages/RecurringTransactions";
-import Register from "./pages/Register";
-import Reports from "./pages/Reports";
-import SmartEntry from "./pages/SmartEntry";
-import Settings from "./pages/Settings";
 import CheckAuth from "./utils/CheckAuth";
 import Guest from "./utils/Guest";
+
+// Lazy load pages
+const Budget = lazy(() => import("./pages/Budget"));
+const Category = lazy(() => import("./pages/Category"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Home = lazy(() => import("./pages/Home"));
+const Landing = lazy(() => import("./pages/Landing"));
+const Login = lazy(() => import("./pages/Login"));
+const RecurringTransactions = lazy(() => import("./pages/RecurringTransactions"));
+const Register = lazy(() => import("./pages/Register"));
+const Reports = lazy(() => import("./pages/Reports"));
+const SmartEntry = lazy(() => import("./pages/SmartEntry"));
+const Settings = lazy(() => import("./pages/Settings"));
+
+const Loading = () => <div className="p-4 text-center">Loading...</div>;
 
 // Create and export a BrowserRouter configuration
 export default createBrowserRouter([
@@ -21,78 +26,78 @@ export default createBrowserRouter([
     element: <App />, // The top-level component for your application
     children: [
       {
-        path: "/", // Landing Page (Accessible to all)
-        element: <Landing />,
+        path: "/",
+        element: <Suspense fallback={<Loading />}><Landing /></Suspense>,
       },
       {
-        path: "/dashboard", // Main Dashboard for Authenticated Users
+        path: "/dashboard",
         element: (
           <CheckAuth>
-            <Dashboard />
+            <Suspense fallback={<Loading />}><Dashboard /></Suspense>
           </CheckAuth>
         ),
       },
       {
-        path: "/transactions", // Transactions page (was previously Home)
+        path: "/transactions",
         element: (
           <CheckAuth>
-            <Home /> {/* Render the Home component with authentication check */}
+            <Suspense fallback={<Loading />}><Home /></Suspense>
           </CheckAuth>
         ),
       },
       {
-        path: "/budget", // Budget management page
+        path: "/budget",
         element: (
           <CheckAuth>
-            <Budget /> {/* Render the Budget component with authentication check */}
+            <Suspense fallback={<Loading />}><Budget /></Suspense>
           </CheckAuth>
         ),
       },
       {
-        path: "/recurring", // Recurring transactions page
+        path: "/recurring",
         element: (
           <CheckAuth>
-            <RecurringTransactions />
+            <Suspense fallback={<Loading />}><RecurringTransactions /></Suspense>
           </CheckAuth>
         ),
       },
       {
-        path: "/reports", // Reports page
+        path: "/reports",
         element: (
           <CheckAuth>
-            <Reports />
+            <Suspense fallback={<Loading />}><Reports /></Suspense>
           </CheckAuth>
         ),
       },
       {
-        path: "/smart-entry", // Smart Entry page (OCR, CSV, Voice)
+        path: "/smart-entry",
         element: (
           <CheckAuth>
-            <SmartEntry />
+            <Suspense fallback={<Loading />}><SmartEntry /></Suspense>
           </CheckAuth>
         ),
       },
       {
-        path: "/login", // Define the route path for login
+        path: "/login",
         element: (
           <Guest>
-            <Login /> {/* Render the Login component for guests */}
+            <Suspense fallback={<Loading />}><Login /></Suspense>
           </Guest>
         ),
       },
       {
-        path: "/register", // Define the route path for registration
+        path: "/register",
         element: (
           <Guest>
-            <Register /> {/* Render the Register component for guests */}
+            <Suspense fallback={<Loading />}><Register /></Suspense>
           </Guest>
         ),
       },
       {
-        path: "/category", // Define the route path for the category page
+        path: "/category",
         element: (
           <CheckAuth>
-            <Category /> {/* Render the Category component with authentication check */}
+            <Suspense fallback={<Loading />}><Category /></Suspense>
           </CheckAuth>
         ),
       },
@@ -100,7 +105,7 @@ export default createBrowserRouter([
         path: "/settings",
         element: (
           <CheckAuth>
-            <Settings />
+            <Suspense fallback={<Loading />}><Settings /></Suspense>
           </CheckAuth>
         ),
       },
