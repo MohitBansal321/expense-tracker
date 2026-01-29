@@ -26,8 +26,8 @@ const InitialForm = {
 
 // TransactionForm component for adding or editing transactions
 export default function TransactionForm({ fetchTransactions, editTransaction }) {
-  // Get user categories from Redux store
-  const { categories } = useSelector((state) => state.auth.user);
+  // Get user categories from Redux store with safe default
+  const categories = useSelector((state) => state.auth.user?.categories || []);
 
   // Get user token from cookies
   const token = Cookies.get("token");
@@ -135,7 +135,7 @@ export default function TransactionForm({ fetchTransactions, editTransaction }) 
 
   // Helper function to get the category name by its ID
   function getCategoryNameById() {
-    return categories.find((category) => category._id === form.category_id) ?? null;
+    return categories?.find((category) => category._id === form.category_id) ?? null;
   }
 
   // Determine card border color based on transaction type
