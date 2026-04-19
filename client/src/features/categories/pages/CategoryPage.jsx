@@ -16,8 +16,8 @@ import Typography from "@mui/material/Typography";
 import Cookies from "js-cookie";
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import CategoryForm from "../components/CategoryForm.js";
-import { setUser } from "../store/auth.js";
+import CategoryForm from "../components/CategoryForm.jsx";
+import { setUser } from "@/store/auth.js";
 
 // A React component for managing and displaying user categories
 export default function Category() {

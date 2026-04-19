@@ -25,21 +25,21 @@ import {
 } from "@devexpress/dx-react-chart-material-ui";
 
 // Shadcn UI Components
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Badge } from "../components/ui/badge";
-import { Skeleton } from "../components/ui/skeleton";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // ReactBits Animations
-import { CountUp } from "../components/animations/count-up";
-import { ElectricBorder } from "../components/animations/electric-border";
-import { AnimatedList } from "../components/animations/animated-list";
+import { CountUp } from "@/components/animations/count-up";
+import { ElectricBorder } from "@/components/animations/electric-border";
+import { AnimatedList } from "@/components/animations/animated-list";
 
 // Existing components
-import WelcomeTour from "../components/WelcomeTour";
+import WelcomeTour from "@/components/common/WelcomeTour";
 import DashboardActions from "../components/DashboardActions";
-import TransactionForm from "../components/TransactionForm";
+import TransactionForm from "@/features/transactions/components/TransactionForm";
 
 // Summary Card Component with Modern Design
 function SummaryCard({ title, value, icon: Icon, color, change, isLoading, highlight = false }) {

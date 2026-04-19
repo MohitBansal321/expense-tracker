@@ -8,7 +8,7 @@ import Grid from "@mui/material/Grid";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "../store/auth.js";
+import { setUser } from "@/store/auth.js";
 
 // Initial form state
 const InitialForm = {

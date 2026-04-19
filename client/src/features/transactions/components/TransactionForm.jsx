@@ -25,7 +25,7 @@ const InitialForm = {
 };
 
 // TransactionForm component for adding or editing transactions
-export default function TransactionForm({ fetchTransactions, editTransaction }) {
+export default function TransactionForm({ fetchTransactions, editTransaction = {} }) {
   // Get user categories from Redux store with safe default
   const categories = useSelector((state) => state.auth.user?.categories || []);
 
@@ -45,7 +45,7 @@ export default function TransactionForm({ fetchTransactions, editTransaction }) 
   }, [showConfetti]);
 
   useEffect(() => {
-    if (editTransaction.amount !== undefined) {
+    if (editTransaction && editTransaction.amount !== undefined) {
       setForm({
         ...editTransaction,
         type: editTransaction.type || "expense" // Default to expense if not set
@@ -73,8 +73,8 @@ export default function TransactionForm({ fetchTransactions, editTransaction }) 
   // Handle form submission (create or update transaction)
   async function handleSubmit(e) {
     e.preventDefault();
-    editTransaction.amount === undefined ? create() : update();
-    if (editTransaction.amount !== undefined) editTransaction.amount = undefined
+    const isEditing = editTransaction && editTransaction._id;
+    isEditing ? update() : create();
   }
 
   // Helper function to reload data after creating or updating a transaction
@@ -247,16 +247,17 @@ export default function TransactionForm({ fetchTransactions, editTransaction }) 
             isOptionEqualToValue={(option, value) => option._id === value._id}
             value={getCategoryNameById()}
             onChange={(event, newValue) => {
-              setForm({ ...form, category_id: newValue._id });
+              setForm({ ...form, category_id: newValue?._id || "" });
             }}
             id="controllable-states-demo"
             options={categories}
+            getOptionLabel={(option) => option?.label || ""}
             sx={{ width: 200 }}
             renderInput={(params) => <TextField {...params} size="small" label="Category" />}
           />
 
           {/* Submit button (Update or Submit) */}
-          {editTransaction.amount !== undefined && (
+          {editTransaction && editTransaction._id && (
             <Button
               type="submit"
               variant="contained"
@@ -271,7 +272,7 @@ export default function TransactionForm({ fetchTransactions, editTransaction }) 
             </Button>
           )}
 
-          {editTransaction.amount === undefined && (
+          {(!editTransaction || !editTransaction._id) && (
             <Button
               type="submit"
               variant="contained"

@@ -5,10 +5,10 @@ import { UserPlus } from "lucide-react";
 import { toast } from "react-toastify";
 
 // Shadcn UI Components
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Card, CardContent } from "../components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
 
 // Auth Layout
 import AuthLayout from "../components/AuthLayout";

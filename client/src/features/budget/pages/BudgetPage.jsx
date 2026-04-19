@@ -5,29 +5,29 @@ import Cookies from "js-cookie";
 import { Plus, Edit2, Trash2, AlertTriangle, AlertCircle } from "lucide-react";
 
 // Shadcn UI Components
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "../components/ui/select";
+} from "@/components/ui/select";
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
     DialogFooter,
-} from "../components/ui/dialog";
-import { Card, CardContent } from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
-import { Progress } from "../components/ui/progress";
-import { Slider } from "../components/ui/slider";
-import { Alert, AlertDescription } from "../components/ui/alert";
-import { Skeleton } from "../components/ui/skeleton";
+} from "@/components/ui/dialog";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Slider } from "@/components/ui/slider";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Summary Card Component
 function SummaryCard({ title, value, color, prefix = "$" }) {

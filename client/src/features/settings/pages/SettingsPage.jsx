@@ -3,15 +3,15 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import { Settings as SettingsIcon, Save, User } from "lucide-react";
-import { setUser } from "../store/auth";
+import { setUser } from "@/store/auth";
 import { toast, ToastContainer } from "react-toastify";
 
 // Shadcn UI Components
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { Separator } from "../components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 export default function Settings() {
     const user = useSelector((state) => state.auth.user);

@@ -4,24 +4,24 @@ import Cookies from "js-cookie";
 import { Search, X, Download, Plus, Calendar, Filter } from "lucide-react";
 
 // Shadcn UI Components
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "../components/ui/dialog";
-import { Card, CardContent } from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
+} from "@/components/ui/dialog";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 // Components
 import TransactionChart from "../components/TransactionChart";
