@@ -56,7 +56,7 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
-    "prebuild": "npm rebuild esbuild",
+    "prebuild": "npm rebuild",
     "build": "vite build",
     "preview": "vite preview"
   }
