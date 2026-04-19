@@ -1,6 +1,6 @@
-import RecurringTransaction from "../../models/RecurringTransaction.js";
-import Transaction from "../../models/Transaction.js";
-import User from "../../models/User.js";
+import RecurringTransaction from "../models/RecurringTransaction.js";
+import Transaction from "../models/Transaction.js";
+import User from "../models/User.js";
 import { AppError } from "../middleware/error.middleware.js";
 import { ERROR_MESSAGES } from "../constants/index.js";
 import { calculateFirstExecution, calculateNextExecution, isEndDateReached } from "../utils/date.util.js";

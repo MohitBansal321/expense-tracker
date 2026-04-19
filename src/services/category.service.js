@@ -1,4 +1,4 @@
-import User from "../../models/User.js";
+import User from "../models/User.js";
 import { AppError } from "../middleware/error.middleware.js";
 
 /**

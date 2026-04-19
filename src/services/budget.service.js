@@ -1,6 +1,6 @@
-import Budget from "../../models/Budget.js";
-import Transaction from "../../models/Transaction.js";
-import User from "../../models/User.js";
+import Budget from "../models/Budget.js";
+import Transaction from "../models/Transaction.js";
+import User from "../models/User.js";
 import { AppError } from "../middleware/error.middleware.js";
 import { ERROR_MESSAGES } from "../constants/index.js";
 

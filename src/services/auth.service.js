@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import User from "../../models/User.js";
+import User from "../models/User.js";
 import { DEFAULT_CATEGORIES, ERROR_MESSAGES } from "../constants/index.js";
 import { generateToken, createUserPayload } from "../utils/jwt.util.js";
 import { AppError } from "../middleware/error.middleware.js";

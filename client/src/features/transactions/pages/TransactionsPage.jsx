@@ -316,7 +316,10 @@ export default function Home() {
       <TransactionsList
         data={transactions}
         fetchTransactions={fetchTransactions}
-        setEditTransaction={setEditTransaction}
+        setEditTransaction={(tx) => {
+          setEditTransaction(tx);
+          setOpenForm(true);
+        }}
         setCategoryFilter={setCategoryFilter}
       />
 

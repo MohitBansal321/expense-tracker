@@ -121,7 +121,8 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
           value={selectedCategory}
           onChange={handleChange}
           id="controllable-states-demo"
-          options={user.categories}
+          options={user?.categories || []}
+          getOptionLabel={(option) => option?.label || ""}
           sx={{ width: 200 }}
           renderInput={(params) => <TextField {...params} size="small" label="Filter by Category" />}
         />
