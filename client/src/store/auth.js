@@ -6,7 +6,7 @@ export const authSlice = createSlice({
   name: "auth", // Slice name
   initialState: {
     isAuthenticated: false, // Initial authentication status
-    user: {}, // Initial user data
+    user: { categories: [] }, // Initial user data with safe defaults
   },
   reducers: {
     // Reducer function for setting the user and authentication status

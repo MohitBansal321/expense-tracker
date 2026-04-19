@@ -48,7 +48,7 @@ export default function Login() {
 
       if (res.ok) {
         Cookie.set("token", token);
-        await dispatch(setUser(user));
+        await dispatch(setUser({ user }));
         navigate("/dashboard");
       } else {
         toast.error("Email or Password are Incorrect");

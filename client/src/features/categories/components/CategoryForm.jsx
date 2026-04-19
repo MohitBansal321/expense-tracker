@@ -56,7 +56,7 @@ export default function CategoryForm({ editCategory, onClose }) {
 
     // Check dupe only if label changed or new
     if ((!editCategory?._id || editCategory.label !== form.label) &&
-      user.categories.some(c => c.label.toLowerCase() === form.label.toLowerCase())) {
+      (user?.categories || []).some(c => c.label.toLowerCase() === form.label.toLowerCase())) {
       return alert("Category already exists");
     }
 
@@ -79,7 +79,7 @@ export default function CategoryForm({ editCategory, onClose }) {
     });
     if (res.ok) {
       const data = await res.json();
-      reload(res, { ...user, categories: [...user.categories, data.category] });
+      reload(res, { ...user, categories: [...(user?.categories || []), data.category] });
     }
   }
 
@@ -91,7 +91,7 @@ export default function CategoryForm({ editCategory, onClose }) {
     });
     const _user = {
       ...user,
-      categories: user.categories.map((cat) => cat._id === editCategory._id ? form : cat),
+      categories: (user?.categories || []).map((cat) => cat._id === editCategory._id ? form : cat),
     };
     reload(res, _user);
   }

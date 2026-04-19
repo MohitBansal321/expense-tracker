@@ -50,7 +50,7 @@ export default function Settings() {
             const data = await res.json();
             if (res.ok) {
                 toast.success("Profile updated successfully!");
-                dispatch(setUser(data.user));
+                dispatch(setUser({ user: data.data }));
                 setForm((prev) => ({ ...prev, password: "", confirmPassword: "" }));
             } else {
                 toast.error(data.message || "Failed to update profile");

@@ -40,7 +40,7 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
 
   // Function to retrieve category name by its ID
   function categoryName(id) {
-    const category = user.categories.find((category) => category._id === id);
+    const category = user?.categories?.find((category) => category._id === id);
     return category ? category.label : null;
   }
 

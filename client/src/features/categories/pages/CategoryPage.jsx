@@ -58,7 +58,7 @@ export default function Category() {
       // Update user data in Redux by removing the deleted category
       const _user = {
         ...user,
-        categories: user.categories.filter((cat) => cat._id !== id),
+        categories: (user?.categories || []).filter((cat) => cat._id !== id),
       };
       dispatch(setUser({ user: _user }));
     }
@@ -78,7 +78,7 @@ export default function Category() {
       </Box>
 
       <Grid container spacing={3}>
-        {user.categories.map((row) => (
+        {(user?.categories || []).map((row) => (
           <Grid item xs={6} sm={4} md={3} key={row._id}>
             <Card
               elevation={0}

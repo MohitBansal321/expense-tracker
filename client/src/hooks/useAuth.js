@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import * as authService from "../services/auth.service.js";
-import { setUser } from "../store/auth.js";
+import { setUser, logout as logoutAction } from "../store/auth.js";
 
 /**
  * Custom hook for authentication operations
@@ -51,7 +51,7 @@ export const useAuth = () => {
 
             if (response.data?.token) {
                 Cookies.set("token", response.data.token);
-                dispatch(setUser(response.data.user));
+                dispatch(setUser({ user: response.data.user }));
             }
 
             setIsLoading(false);
@@ -75,7 +75,7 @@ export const useAuth = () => {
 
             if (response.data?.token) {
                 Cookies.set("token", response.data.token);
-                dispatch(setUser(response.data.user));
+                dispatch(setUser({ user: response.data.user }));
             }
 
             setIsLoading(false);
@@ -97,14 +97,14 @@ export const useAuth = () => {
         try {
             await authService.logout();
             Cookies.remove("token");
-            dispatch(setUser(null));
+            dispatch(logoutAction());
             setIsLoading(false);
         } catch (err) {
             setError(err.message);
             setIsLoading(false);
             // Still remove token even if API call fails
             Cookies.remove("token");
-            dispatch(setUser(null));
+            dispatch(logoutAction());
         }
     }, [dispatch]);
 
@@ -117,7 +117,7 @@ export const useAuth = () => {
 
         try {
             const response = await authService.updateProfile(data);
-            dispatch(setUser(response.data));
+            dispatch(setUser({ user: response.data }));
             setIsLoading(false);
             return response;
         } catch (err) {
