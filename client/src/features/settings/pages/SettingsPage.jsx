@@ -18,8 +18,8 @@ export default function Settings() {
     const dispatch = useDispatch();
 
     const [form, setForm] = useState({
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
+        firstName: user?.firstName || "",
+        lastName: user?.lastName || "",
         password: "",
         confirmPassword: "",
     });
@@ -121,7 +121,7 @@ export default function Settings() {
                             {/* Email Field (Read-only) */}
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email</Label>
-                                <Input id="email" value={user.email} disabled />
+                                <Input id="email" value={user?.email || ""} disabled />
                                 <p className="text-xs text-muted-foreground">
                                     Email cannot be changed
                                 </p>
