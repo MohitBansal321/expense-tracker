@@ -44,14 +44,16 @@ export default function Login() {
         },
       });
 
-      const { token, user } = await res.json();
+      const responseData = await res.json();
 
       if (res.ok) {
+        const token = responseData.data?.token || responseData.token;
+        const user = responseData.data?.user || responseData.user;
         Cookie.set("token", token);
         await dispatch(setUser({ user }));
         navigate("/dashboard");
       } else {
-        toast.error("Email or Password are Incorrect");
+        toast.error(responseData.message || "Email or Password are Incorrect");
       }
     } catch (error) {
       toast.error("An error occurred. Please try again.");

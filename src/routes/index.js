@@ -15,9 +15,9 @@ const router = Router();
 // Public routes
 router.use("/auth", authRoutes);
 router.use("/stats", statsRoutes);
-router.use("/user", userRoutes);
 
 // Protected routes (require authentication)
+router.use("/user", authenticate, userRoutes);
 router.use("/dashboard", authenticate, dashboardRoutes);
 router.use("/budget", authenticate, budgetRoutes);
 router.use("/recurring", authenticate, recurringTransactionRoutes);
