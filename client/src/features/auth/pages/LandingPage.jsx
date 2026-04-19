@@ -202,16 +202,15 @@ export default function Landing() {
                                             width: 60,
                                             height: 60,
                                             borderRadius: 3,
-                                            bgcolor: "primary.light",
+                                            bgcolor: "rgba(25, 118, 210, 0.12)",
                                             color: "primary.main",
                                             display: "flex",
                                             alignItems: "center",
                                             justifyContent: "center",
                                             mb: 3,
-                                            opacity: 0.2, // background opacity
                                         }}
                                     >
-                                        <Box sx={{ opacity: 5, color: "primary.main" }}>{feature.icon}</Box>
+                                        {feature.icon}
                                     </Box>
                                     <Typography variant="h5" fontWeight={700} gutterBottom>
                                         {feature.title}

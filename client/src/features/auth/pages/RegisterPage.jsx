@@ -138,7 +138,7 @@ export default function Register() {
               {/* Sign Up Button */}
               <Button
                 type="submit"
-                className="w-full h-12 text-base font-semibold mt-6"
+                className="w-full h-12 text-base font-semibold mt-6 bg-[hsl(199,89%,48%)] text-white hover:bg-[hsl(199,89%,40%)]"
                 disabled={isLoading}
               >
                 {isLoading ? "Creating account..." : "Sign Up"}

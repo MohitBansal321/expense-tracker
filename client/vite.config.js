@@ -18,8 +18,8 @@ export default defineConfig({
             },
             includeAssets: ['favicon.ico', 'logo192.png', 'logo512.png'],
             manifest: {
-                name: 'Expensor - Expense Tracker',
-                short_name: 'Expensor',
+                name: 'Financh - Expense Tracker',
+                short_name: 'Financh',
                 description: 'Smart financial management and expense tracking',
                 theme_color: '#ffffff',
                 background_color: '#ffffff',

@@ -74,7 +74,7 @@ export default function Login() {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-2">Welcome Back</h1>
           <p className="text-muted-foreground">
-            Sign in to continue to Expensor
+            Sign in to continue to Financh
           </p>
         </div>
 
@@ -114,7 +114,7 @@ export default function Login() {
               {/* Sign In Button */}
               <Button
                 type="submit"
-                className="w-full h-12 text-base font-semibold mt-6"
+                className="w-full h-12 text-base font-semibold mt-6 bg-[hsl(199,89%,48%)] text-white hover:bg-[hsl(199,89%,40%)]"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Sign In"}

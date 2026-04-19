@@ -77,59 +77,80 @@ export default function Category() {
         </Typography>
       </Box>
 
-      <Grid container spacing={3}>
-        {(user?.categories || []).map((row) => (
-          <Grid item xs={6} sm={4} md={3} key={row._id}>
-            <Card
-              elevation={0}
-              sx={{
-                height: '100%',
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 4,
-                transition: 'all 0.2s',
-                position: 'relative',
-                '&:hover': {
-                  borderColor: 'primary.main',
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                  '& .actions': { opacity: 1 }
-                }
-              }}
-            >
-              <CardContent sx={{ textAlign: 'center', p: 3 }}>
-                <Box sx={{ fontSize: '3rem', mb: 1 }}>
-                  {row.icon}
-                </Box>
-                <Typography variant="subtitle1" fontWeight={600} noWrap>
-                  {row.label}
-                </Typography>
+      {(user?.categories || []).length === 0 ? (
+        <Card sx={{ p: 6, textAlign: 'center', borderRadius: 4, border: '1px dashed', borderColor: 'divider' }}>
+          <Box sx={{ fontSize: '4rem', mb: 2, opacity: 0.6 }}>📁</Box>
+          <Typography variant="h6" fontWeight={600} gutterBottom>
+            No categories yet
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 360, mx: 'auto' }}>
+            Categories help you organize and track your spending. Create your first one to get started!
+          </Typography>
+          <Fab
+            variant="extended"
+            color="primary"
+            onClick={() => handleOpen()}
+            sx={{ textTransform: 'none', px: 4 }}
+          >
+            <AddIcon sx={{ mr: 1 }} />
+            Add Your First Category
+          </Fab>
+        </Card>
+      ) : (
+        <Grid container spacing={3}>
+          {(user?.categories || []).map((row) => (
+            <Grid item xs={6} sm={4} md={3} key={row._id}>
+              <Card
+                elevation={0}
+                sx={{
+                  height: '100%',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 4,
+                  transition: 'all 0.2s',
+                  position: 'relative',
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                    '& .actions': { opacity: 1 }
+                  }
+                }}
+              >
+                <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                  <Box sx={{ fontSize: '3rem', mb: 1 }}>
+                    {row.icon}
+                  </Box>
+                  <Typography variant="subtitle1" fontWeight={600} noWrap>
+                    {row.label}
+                  </Typography>
 
-                <Box
-                  className="actions"
-                  sx={{
-                    position: 'absolute',
-                    top: 8,
-                    right: 8,
-                    opacity: 0,
-                    transition: 'opacity 0.2s',
-                    bgcolor: 'background.paper',
-                    borderRadius: 2,
-                    boxShadow: 2
-                  }}
-                >
-                  <IconButton size="small" onClick={() => handleOpen(row)} color="primary">
-                    <EditOutlinedIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton size="small" onClick={() => remove(row._id)} color="error">
-                    <DeleteOutlineIcon fontSize="small" />
-                  </IconButton>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+                  <Box
+                    className="actions"
+                    sx={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      opacity: 0,
+                      transition: 'opacity 0.2s',
+                      bgcolor: 'background.paper',
+                      borderRadius: 2,
+                      boxShadow: 2
+                    }}
+                  >
+                    <IconButton size="small" onClick={() => handleOpen(row)} color="primary">
+                      <EditOutlinedIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton size="small" onClick={() => remove(row._id)} color="error">
+                      <DeleteOutlineIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      )}
 
       {/* Floating Action Button for adding new category */}
       <Fab

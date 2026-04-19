@@ -53,6 +53,7 @@ const DAY_OPTIONS = [
 export default function RecurringTransactions() {
     const [recurringList, setRecurringList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [fetchError, setFetchError] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editItem, setEditItem] = useState(null);
     const [form, setForm] = useState({
@@ -77,15 +78,19 @@ export default function RecurringTransactions() {
     async function fetchRecurringTransactions() {
         const token = Cookies.get("token");
         try {
+            setFetchError(false);
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/recurring`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const result = await res.json();
             if (result.success) {
                 setRecurringList(result.data);
+            } else {
+                setFetchError(true);
             }
         } catch (error) {
             console.error("Failed to fetch recurring transactions:", error);
+            setFetchError(true);
         } finally {
             setIsLoading(false);
         }
@@ -223,6 +228,22 @@ export default function RecurringTransactions() {
                             <Skeleton variant="rounded" height={180} />
                         </Grid>
                     ))
+                ) : fetchError ? (
+                    <Grid item xs={12}>
+                        <Card sx={{ p: 4, textAlign: "center", border: "1px solid #f44336", bgcolor: 'error.light' }}>
+                            <Typography variant="h6" color="#d32f2f" gutterBottom>
+                                Failed to load recurring transactions
+                            </Typography>
+                            <Button 
+                                variant="outlined" 
+                                color="error" 
+                                onClick={fetchRecurringTransactions}
+                                sx={{ mt: 2 }}
+                            >
+                                Retry
+                            </Button>
+                        </Card>
+                    </Grid>
                 ) : recurringList.length === 0 ? (
                     <Grid item xs={12}>
                         <Card sx={{ p: 4, textAlign: "center" }}>
@@ -327,10 +348,30 @@ export default function RecurringTransactions() {
                             onChange={(e, val) => val && setForm({ ...form, type: val })}
                             fullWidth
                         >
-                            <ToggleButton value="expense" sx={{ color: form.type === "expense" ? "#f44336" : "inherit" }}>
+                            <ToggleButton 
+                                value="expense" 
+                                sx={{ 
+                                    color: "text.secondary",
+                                    "&.Mui-selected": {
+                                        backgroundColor: "#ffebee",
+                                        color: "#f44336",
+                                        "&:hover": { backgroundColor: "#ffcdd2" }
+                                    }
+                                }}
+                            >
                                 Expense
                             </ToggleButton>
-                            <ToggleButton value="income" sx={{ color: form.type === "income" ? "#4CAF50" : "inherit" }}>
+                            <ToggleButton 
+                                value="income" 
+                                sx={{ 
+                                    color: "text.secondary",
+                                    "&.Mui-selected": {
+                                        backgroundColor: "#e8f5e9",
+                                        color: "#4CAF50",
+                                        "&:hover": { backgroundColor: "#c8e6c9" }
+                                    }
+                                }}
+                            >
                                 Income
                             </ToggleButton>
                         </ToggleButtonGroup>

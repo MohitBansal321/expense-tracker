@@ -14,6 +14,7 @@ import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Confetti from "react-confetti";
+import { toast } from "react-toastify";
 
 // Initial form state for creating or editing transactions
 const InitialForm = {
@@ -25,7 +26,7 @@ const InitialForm = {
 };
 
 // TransactionForm component for adding or editing transactions
-export default function TransactionForm({ fetchTransactions, editTransaction = {} }) {
+export default function TransactionForm({ fetchTransactions, editTransaction = {}, inline = false }) {
   // Get user categories from Redux store with safe default
   const categories = useSelector((state) => state.auth.user?.categories || []);
 
@@ -87,15 +88,15 @@ export default function TransactionForm({ fetchTransactions, editTransaction = {
 
   function formValidation(form) {
     if (form.description === "" || form.category_id === "") {
-      alert(`Please fill all the fields`);
+      toast.warning(`Please fill all the fields`);
       return false;
     }
     if (form.amount <= 0) {
-      alert(`Please enter a valid amount`);
+      toast.warning(`Please enter a valid amount`);
       return false;
     }
     if ((!form.date || isNaN(new Date(form.date).getTime()))) {
-      alert(`Please enter a valid date`);
+      toast.warning(`Please enter a valid date`);
       return false;
     }
     return true;
@@ -141,64 +142,64 @@ export default function TransactionForm({ fetchTransactions, editTransaction = {
   // Determine card border color based on transaction type
   const cardBorderColor = form.type === "income" ? "#4CAF50" : "#f44336";
 
-  return (
-    <Card
-      sx={{
-        minWidth: 275,
-        marginTop: 10,
-        borderLeft: `4px solid ${cardBorderColor}`,
-        transition: "border-color 0.3s ease"
-      }}
-    >
+  // Shared form content
+  const formContent = (
+    <>
       {showConfetti && <Confetti numberOfPieces={200} recycle={false} />}
-      <CardContent>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+        {!inline && (
           <Typography variant="h6">
             Add New {form.type === "income" ? "Income" : "Expense"}
           </Typography>
+        )}
 
-          {/* Transaction Type Toggle */}
-          <ToggleButtonGroup
-            value={form.type}
-            exclusive
-            onChange={handleTypeChange}
-            aria-label="transaction type"
-            size="small"
+        {/* Transaction Type Toggle */}
+        <ToggleButtonGroup
+          value={form.type}
+          exclusive
+          onChange={handleTypeChange}
+          aria-label="transaction type"
+          size="small"
+          sx={inline ? { width: '100%', mb: 1 } : {}}
+        >
+          <ToggleButton
+            value="expense"
+            aria-label="expense"
+            sx={{
+              flex: inline ? 1 : 'unset',
+              color: "text.secondary",
+              "&.Mui-selected": {
+                backgroundColor: "#ffebee",
+                color: "#f44336",
+                "&:hover": {
+                  backgroundColor: "#ffcdd2",
+                }
+              }
+            }}
           >
-            <ToggleButton
-              value="expense"
-              aria-label="expense"
-              sx={{
-                "&.Mui-selected": {
-                  backgroundColor: "#ffebee",
-                  color: "#f44336",
-                  "&:hover": {
-                    backgroundColor: "#ffcdd2",
-                  }
+            Expense
+          </ToggleButton>
+          <ToggleButton
+            value="income"
+            aria-label="income"
+            sx={{
+              flex: inline ? 1 : 'unset',
+              color: "text.secondary",
+              "&.Mui-selected": {
+                backgroundColor: "#e8f5e9",
+                color: "#4CAF50",
+                "&:hover": {
+                  backgroundColor: "#c8e6c9",
                 }
-              }}
-            >
-              Expense
-            </ToggleButton>
-            <ToggleButton
-              value="income"
-              aria-label="income"
-              sx={{
-                "&.Mui-selected": {
-                  backgroundColor: "#e8f5e9",
-                  color: "#4CAF50",
-                  "&:hover": {
-                    backgroundColor: "#c8e6c9",
-                  }
-                }
-              }}
-            >
-              Income
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Box>
+              }
+            }}
+          >
+            Income
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+      <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
           {/* Input field for transaction amount */}
           <TextField
             id="outlined-basic"
@@ -262,9 +263,9 @@ export default function TransactionForm({ fetchTransactions, editTransaction = {
               type="submit"
               variant="contained"
               sx={{
-                backgroundColor: cardBorderColor,
+                backgroundColor: "#0EA5E9",
                 "&:hover": {
-                  backgroundColor: form.type === "income" ? "#388E3C" : "#d32f2f"
+                  backgroundColor: "#0284C7"
                 }
               }}
             >
@@ -277,9 +278,9 @@ export default function TransactionForm({ fetchTransactions, editTransaction = {
               type="submit"
               variant="contained"
               sx={{
-                backgroundColor: cardBorderColor,
+                backgroundColor: "#0EA5E9",
                 "&:hover": {
-                  backgroundColor: form.type === "income" ? "#388E3C" : "#d32f2f"
+                  backgroundColor: "#0284C7"
                 }
               }}
             >
@@ -287,6 +288,25 @@ export default function TransactionForm({ fetchTransactions, editTransaction = {
             </Button>
           )}
         </Box>
+    </>
+  );
+
+  // When inline (inside a Dialog), render without the Card wrapper
+  if (inline) {
+    return formContent;
+  }
+
+  return (
+    <Card
+      sx={{
+        minWidth: 275,
+        marginTop: 4,
+        borderLeft: `4px solid ${cardBorderColor}`,
+        transition: "border-color 0.3s ease"
+      }}
+    >
+      <CardContent>
+        {formContent}
       </CardContent>
     </Card>
   );

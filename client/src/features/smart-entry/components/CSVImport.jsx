@@ -184,10 +184,18 @@ export default function CSVImport({ onTransactionsImported }) {
         <>
             {/* Trigger Card */}
             <Card
+                elevation={1}
                 sx={{
+                    height: "100%",
                     cursor: "pointer",
-                    transition: "transform 0.2s",
-                    "&:hover": { transform: "scale(1.02)" }
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                    border: "1px solid",
+                    borderColor: "divider",
+                    "&:hover": { 
+                        transform: "translateY(-4px)", 
+                        boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
+                        borderColor: "success.main"
+                    }
                 }}
                 onClick={() => setDialogOpen(true)}
             >

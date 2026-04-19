@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import { Plus, Edit2, Trash2, AlertTriangle, AlertCircle } from "lucide-react";
+import { toast } from "react-toastify";
 
 // Shadcn UI Components
 import { Button } from "@/components/ui/button";
@@ -165,7 +166,7 @@ function BudgetDialog({ open, onClose, onSave, budget, categories }) {
 
     const handleSubmit = () => {
         if (!form.category_id || form.amount <= 0) {
-            alert("Please fill all required fields");
+            toast.warning("Please fill all required fields");
             return;
         }
         onSave(form, budget?._id);
@@ -272,6 +273,7 @@ function BudgetDialog({ open, onClose, onSave, budget, categories }) {
 export default function Budget() {
     const [budgetData, setBudgetData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [fetchError, setFetchError] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingBudget, setEditingBudget] = useState(null);
 
@@ -287,6 +289,7 @@ export default function Budget() {
         const token = Cookies.get("token");
 
         try {
+            setFetchError(false);
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/budget`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -294,9 +297,12 @@ export default function Budget() {
             if (res.ok) {
                 const result = await res.json();
                 setBudgetData(result.data);
+            } else {
+                setFetchError(true);
             }
         } catch (error) {
             console.error("Failed to fetch budgets:", error);
+            setFetchError(true);
         }
         setIsLoading(false);
     }
@@ -323,7 +329,7 @@ export default function Budget() {
                 setEditingBudget(null);
             } else {
                 const error = await res.json();
-                alert(error.message || "Failed to save budget");
+                toast.error(error.message || "Failed to save budget");
             }
         } catch (error) {
             console.error("Failed to save budget:", error);
@@ -422,6 +428,10 @@ export default function Budget() {
                             <Skeleton key={i} className="h-24" />
                         ))}
                     </>
+                ) : fetchError ? (
+                    <Card className="col-span-full p-4 border-destructive bg-destructive/10">
+                        <CardContent className="p-0 text-center text-destructive font-medium">Failed to load summary data.</CardContent>
+                    </Card>
                 ) : (
                     <>
                         <SummaryCard
@@ -469,6 +479,15 @@ export default function Budget() {
                         />
                     ))}
                 </div>
+            ) : fetchError ? (
+                <Card className="p-8 text-center flex flex-col items-center">
+                    <AlertCircle className="h-12 w-12 text-destructive mb-4" />
+                    <h3 className="text-xl font-semibold mb-2">Failed to load budgets</h3>
+                    <p className="text-muted-foreground mb-4">
+                        We couldn't load your budgets. Please try again.
+                    </p>
+                    <Button onClick={fetchBudgets} variant="outline">Retry</Button>
+                </Card>
             ) : (
                 <Card className="p-8 text-center">
                     <p className="text-muted-foreground mb-4">

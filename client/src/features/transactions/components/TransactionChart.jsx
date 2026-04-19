@@ -21,7 +21,7 @@ export default function TransactionChart({ data }) {
   const chartData = React.useMemo(() => {
     const monthlyData = {};
 
-    data.forEach((item) => {
+    (data || []).forEach((item) => {
       const key = `${item._id.month}-${item._id.year}`;
       const monthYear = `${dayjs().month(item._id.month - 1).format("MMM")} ${item._id.year}`;
 

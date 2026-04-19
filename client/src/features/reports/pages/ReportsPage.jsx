@@ -60,6 +60,7 @@ export default function Reports() {
     const [monthlyData, setMonthlyData] = useState(null);
     const [yearlyData, setYearlyData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [fetchError, setFetchError] = useState(false);
 
     // Drill Down State
     const [drillDownOpen, setDrillDownOpen] = useState(false);
@@ -131,6 +132,7 @@ export default function Reports() {
 
     async function fetchMonthlyReport() {
         setIsLoading(true);
+        setFetchError(false);
         const token = Cookies.get("token");
         try {
             const res = await fetch(
@@ -140,9 +142,12 @@ export default function Reports() {
             const result = await res.json();
             if (result.success) {
                 setMonthlyData(result.data);
+            } else {
+                setFetchError(true);
             }
         } catch (error) {
             console.error("Failed to fetch monthly report:", error);
+            setFetchError(true);
         } finally {
             setIsLoading(false);
         }
@@ -150,6 +155,7 @@ export default function Reports() {
 
     async function fetchYearlyReport() {
         setIsLoading(true);
+        setFetchError(false);
         const token = Cookies.get("token");
         try {
             const res = await fetch(
@@ -159,9 +165,12 @@ export default function Reports() {
             const result = await res.json();
             if (result.success) {
                 setYearlyData(result.data);
+            } else {
+                setFetchError(true);
             }
         } catch (error) {
             console.error("Failed to fetch yearly report:", error);
+            setFetchError(true);
         } finally {
             setIsLoading(false);
         }
@@ -276,6 +285,14 @@ export default function Reports() {
                                 <Skeleton key={i} className="h-32" />
                             ))}
                         </div>
+                    ) : fetchError ? (
+                        <Card className="p-8 text-center flex flex-col items-center">
+                            <h3 className="text-xl font-semibold mb-2 text-destructive">Failed to load monthly report</h3>
+                            <p className="text-muted-foreground mb-4">
+                                We couldn't load your report data. Please try again.
+                            </p>
+                            <Button onClick={fetchMonthlyReport} variant="outline">Retry</Button>
+                        </Card>
                     ) : monthlyData ? (
                         <>
                             {/* Summary Cards */}
@@ -438,6 +455,14 @@ export default function Reports() {
                                 <Skeleton key={i} className="h-32" />
                             ))}
                         </div>
+                    ) : fetchError ? (
+                        <Card className="p-8 text-center flex flex-col items-center">
+                            <h3 className="text-xl font-semibold mb-2 text-destructive">Failed to load yearly report</h3>
+                            <p className="text-muted-foreground mb-4">
+                                We couldn't load your report data. Please try again.
+                            </p>
+                            <Button onClick={fetchYearlyReport} variant="outline">Retry</Button>
+                        </Card>
                     ) : yearlyData ? (
                         <>
                             {/* Summary Cards */}

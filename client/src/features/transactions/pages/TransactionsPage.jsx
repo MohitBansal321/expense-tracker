@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { Search, X, Download, Plus, Calendar, Filter } from "lucide-react";
+import { toast } from "react-toastify";
 
 // Shadcn UI Components
 import { Button } from "@/components/ui/button";
@@ -69,7 +70,7 @@ export default function Home() {
       headers: { Authorization: `Bearer ${token}` },
     });
     const { data } = await res.json();
-    setTransactions(data);
+    setTransactions(data || []);
   }
 
   // Function to handle search
@@ -156,7 +157,7 @@ export default function Home() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Export failed:", error);
-      alert("Failed to export transactions");
+      toast.error("Failed to export transactions");
     }
   }
 
@@ -343,6 +344,7 @@ export default function Home() {
           <TransactionForm
             fetchTransactions={handleFormClose}
             editTransaction={editTransaction}
+            inline
           />
         </DialogContent>
       </Dialog>

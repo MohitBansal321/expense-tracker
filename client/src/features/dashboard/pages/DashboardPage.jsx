@@ -391,6 +391,7 @@ export default function Dashboard() {
                             fetchDashboardData();
                             setOpenForm(false);
                         }}
+                        inline
                     />
                 </DialogContent>
             </Dialog>

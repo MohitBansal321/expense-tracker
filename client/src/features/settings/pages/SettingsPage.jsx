@@ -24,6 +24,16 @@ export default function Settings() {
         confirmPassword: "",
     });
 
+    React.useEffect(() => {
+        if (user) {
+            setForm((prev) => ({
+                ...prev,
+                firstName: user.firstName || "",
+                lastName: user.lastName || "",
+            }));
+        }
+    }, [user]);
+
     async function handleSubmit(e) {
         e.preventDefault();
 

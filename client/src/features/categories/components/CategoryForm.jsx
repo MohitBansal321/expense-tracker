@@ -6,7 +6,8 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/store/auth.js";
 
@@ -52,12 +53,14 @@ export default function CategoryForm({ editCategory, onClose }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!form.label) return alert("Label is required");
+    if (!form.label) return toast.warning("Label is required");
 
-    // Check dupe only if label changed or new
-    if ((!editCategory?._id || editCategory.label !== form.label) &&
-      (user?.categories || []).some(c => c.label.toLowerCase() === form.label.toLowerCase())) {
-      return alert("Category already exists");
+    // Check if a category with the same label or icon already exists
+    const categoryExists = user.categories?.some(
+      (c) => (c.label === form.label || c.icon === form.icon) && c._id !== editCategory._id
+    );
+    if (categoryExists) {
+      return toast.warning("Category already exists");
     }
 
     editCategory?._id ? update() : create();

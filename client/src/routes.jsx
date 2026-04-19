@@ -21,7 +21,14 @@ const ReportsPage = lazy(() => import("./features/reports/pages/ReportsPage.jsx"
 const SmartEntryPage = lazy(() => import("./features/smart-entry/pages/SmartEntryPage.jsx"));
 const SettingsPage = lazy(() => import("./features/settings/pages/SettingsPage.jsx"));
 
-const Loading = () => <div className="p-4 text-center">Loading...</div>;
+const Loading = () => (
+  <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="flex flex-col items-center gap-3">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-primary" />
+      <p className="text-sm text-muted-foreground animate-pulse">Loading...</p>
+    </div>
+  </div>
+);
 
 // Create and export a BrowserRouter configuration
 export default createBrowserRouter([

@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 import Cookies from "js-cookie";
 import * as React from "react";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 // Define the TransactionsList component
 export default function TransactionsList({ data, fetchTransactions, setEditTransaction, setCategoryFilter }) {
@@ -49,7 +50,7 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
     const token = Cookies.get("token");
 
     // Display a confirmation dialog before deletion
-    if (!window.confirm("Are you sure")) return;
+    if (!window.confirm("Are you sure you want to delete this transaction?")) return;
 
     // Send a DELETE request to remove the transaction
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/transaction/${_id}`, {
@@ -62,7 +63,9 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
     if (res.ok) {
       // Fetch transactions again to update the list
       fetchTransactions();
-      window.alert("Deleted Successfully");
+      toast.success("Transaction deleted successfully");
+    } else {
+      toast.error("Failed to delete transaction");
     }
   }
 
@@ -131,7 +134,7 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
       {/* Responsive List Display */}
       {/* Mobile View (Cards) */}
       <Box sx={{ display: { xs: "block", md: "none" } }}>
-        {data.map((month) =>
+        {(data || []).map((month) =>
           month.transactions.map((row) => {
             const isIncome = row.type === "income";
             return (
@@ -191,7 +194,7 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           {/* Define the table header */}
           <TableHead>
-            <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
+            <TableRow sx={{ backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : '#f5f5f5' }}>
               <TableCell align="center" sx={{ fontWeight: 600 }}>Type</TableCell>
               <TableCell align="center" sx={{ fontWeight: 600 }}>Amount</TableCell>
               <TableCell align="center" sx={{ fontWeight: 600 }}>Description</TableCell>
@@ -203,7 +206,7 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
 
           {/* Populate the table with transaction data */}
           <TableBody>
-            {data.map((month) =>
+            {(data || []).map((month) =>
               month.transactions.map((row) => {
                 const isIncome = row.type === "income";
                 return (
@@ -211,7 +214,7 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
                     key={row._id}
                     sx={{
                       "&:last-child td, &:last-child th": { border: 0 },
-                      "&:hover": { backgroundColor: "#fafafa" },
+                      "&:hover": { backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.04)' : '#fafafa' },
                       borderLeft: `3px solid ${isIncome ? "#4CAF50" : "#f44336"}`
                     }}
                   >
