@@ -149,7 +149,7 @@ function CategoryBreakdown({ data, isLoading }) {
                                     <RechartsTooltip 
                                         contentStyle={{ 
                                             borderRadius: '16px', 
-                                            border: 'none', 
+                                            border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--card-foreground))',
                                             boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' 
                                         }} 
                                     />
@@ -220,24 +220,24 @@ function MonthlyTrendChart({ data, isLoading }) {
                     <div className="h-[280px] w-full mt-4">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                                 <XAxis 
                                     dataKey="month" 
                                     axisLine={false} 
                                     tickLine={false} 
-                                    tick={{ fill: '#94a3b8', fontSize: 12 }} 
+                                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} 
                                     dy={10} 
                                 />
                                 <YAxis 
                                     axisLine={false} 
                                     tickLine={false} 
-                                    tick={{ fill: '#94a3b8', fontSize: 12 }} 
+                                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} 
                                 />
                                 <RechartsTooltip 
-                                    cursor={{ fill: '#f8fafc' }}
+                                    cursor={{ fill: 'hsl(var(--muted))' }}
                                     contentStyle={{ 
                                         borderRadius: '16px', 
-                                        border: 'none', 
+                                        border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--card-foreground))',
                                         boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' 
                                     }} 
                                 />

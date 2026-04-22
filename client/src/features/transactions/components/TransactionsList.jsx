@@ -119,7 +119,7 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
             <select
                 value={selectedCategory}
                 onChange={(e) => handleFilterChange(e.target.value)}
-                className="w-full h-10 pl-9 pr-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 appearance-none cursor-pointer"
+                className="w-full h-10 pl-9 pr-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 appearance-none cursor-pointer"
             >
                 <option value="all">All Categories</option>
                 {user?.categories?.map((cat) => (
