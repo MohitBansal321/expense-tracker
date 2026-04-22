@@ -1,10 +1,19 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useSelector } from "react-redux";
 import Confetti from "react-confetti";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
-import { Calendar as CalendarIcon, ChevronDown, Plus, Save } from "lucide-react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  Calendar as CalendarIcon,
+  ChevronDown,
+  Plus,
+  Save,
+  Tag,
+  Wallet,
+} from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
@@ -15,29 +24,33 @@ import {
 } from "../../../components/ui/popover";
 import { Calendar } from "../../../components/ui/calendar";
 
-// Initial form state for creating or editing transactions
-const InitialForm = {
+const INITIAL_FORM = {
   amount: "",
   description: "",
   date: new Date(),
   category_id: "",
-  type: "expense", // Default to expense
+  type: "expense",
 };
 
-export default function TransactionForm({ fetchTransactions, editTransaction = {}, inline = false }) {
-  // Get user categories from Redux store with safe default
+export default function TransactionForm({
+  fetchTransactions,
+  editTransaction = {},
+  inline = false,
+}) {
   const categories = useSelector((state) => state.auth.user?.categories || []);
   const token = Cookies.get("token");
 
-  const [form, setForm] = useState(InitialForm);
+  const [form, setForm] = useState(INITIAL_FORM);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   useEffect(() => {
-    if (showConfetti) {
-      const timer = setTimeout(() => setShowConfetti(false), 4000);
-      return () => clearTimeout(timer);
+    if (!showConfetti) {
+      return undefined;
     }
+
+    const timer = setTimeout(() => setShowConfetti(false), 4000);
+    return () => clearTimeout(timer);
   }, [showConfetti]);
 
   useEffect(() => {
@@ -46,63 +59,79 @@ export default function TransactionForm({ fetchTransactions, editTransaction = {
         ...editTransaction,
         amount: editTransaction.amount?.toString() || "",
         type: editTransaction.type || "expense",
-        date: editTransaction.date ? new Date(editTransaction.date) : new Date()
+        date: editTransaction.date ? new Date(editTransaction.date) : new Date(),
       });
-    } else {
-      setForm(InitialForm);
+      return;
     }
+
+    setForm(INITIAL_FORM);
   }, [editTransaction]);
 
-  function handleChange(e) {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setForm((current) => ({ ...current, [name]: value }));
   }
 
   function handleTypeChange(type) {
-    setForm({ ...form, type });
+    setForm((current) => ({ ...current, type }));
   }
 
   function handleDateSelect(date) {
-    if (date) {
-      setForm({ ...form, date });
-      setIsCalendarOpen(false);
+    if (!date) {
+      return;
     }
+
+    setForm((current) => ({ ...current, date }));
+    setIsCalendarOpen(false);
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    const isEditing = editTransaction && editTransaction._id;
-    isEditing ? update() : create();
+  async function handleSubmit(event) {
+    event.preventDefault();
+    const isEditing = Boolean(editTransaction && editTransaction._id);
+    if (isEditing) {
+      await updateTransaction();
+      return;
+    }
+
+    await createTransaction();
   }
 
-  function reload(res) {
-    if (res.ok) {
-      setForm(InitialForm);
-      fetchTransactions();
+  function handleSuccess(response) {
+    if (!response.ok) {
+      return;
     }
+
+    setForm(INITIAL_FORM);
+    fetchTransactions();
   }
 
-  function formValidation(form) {
-    if (!form.description || !form.category_id) {
-        toast.warning("Please fill all the fields");
-        return false;
+  function validateForm(currentForm) {
+    if (!currentForm.description || !currentForm.category_id) {
+      toast.warning("Please fill all the fields");
+      return false;
     }
-    const amount = parseFloat(form.amount);
-    if (isNaN(amount) || amount <= 0) {
-        toast.warning("Please enter a valid amount");
-        return false;
+
+    const amount = Number.parseFloat(currentForm.amount);
+    if (Number.isNaN(amount) || amount <= 0) {
+      toast.warning("Please enter a valid amount");
+      return false;
     }
-    if (!form.date || isNaN(new Date(form.date).getTime())) {
-        toast.warning("Please enter a valid date");
-        return false;
+
+    if (!currentForm.date || Number.isNaN(new Date(currentForm.date).getTime())) {
+      toast.warning("Please enter a valid date");
+      return false;
     }
+
     return true;
   }
 
-  async function create() {
-    if (!formValidation(form)) return;
-    const body = { ...form, amount: parseFloat(form.amount) };
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/transaction`, {
+  async function createTransaction() {
+    if (!validateForm(form)) {
+      return;
+    }
+
+    const body = { ...form, amount: Number.parseFloat(form.amount) };
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/transaction`, {
       method: "POST",
       body: JSON.stringify(body),
       headers: {
@@ -110,17 +139,21 @@ export default function TransactionForm({ fetchTransactions, editTransaction = {
         Authorization: `Bearer ${token}`,
       },
     });
-    reload(res);
-    if (res.ok) {
-        setShowConfetti(true);
-        toast.success("Transaction added!");
+
+    handleSuccess(response);
+    if (response.ok) {
+      setShowConfetti(true);
+      toast.success("Transaction added!");
     }
   }
 
-  async function update() {
-    if (!formValidation(form)) return;
-    const body = { ...form, amount: parseFloat(form.amount) };
-    const res = await fetch(
+  async function updateTransaction() {
+    if (!validateForm(form)) {
+      return;
+    }
+
+    const body = { ...form, amount: Number.parseFloat(form.amount) };
+    const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/transaction/${editTransaction._id}`,
       {
         method: "PATCH",
@@ -131,182 +164,306 @@ export default function TransactionForm({ fetchTransactions, editTransaction = {
         },
       }
     );
-    reload(res);
-    if (res.ok) toast.success("Transaction updated!");
+
+    handleSuccess(response);
+    if (response.ok) {
+      toast.success("Transaction updated!");
+    }
   }
 
-  const isEditing = editTransaction && editTransaction._id;
+  const isEditing = Boolean(editTransaction && editTransaction._id);
+  const isIncome = form.type === "income";
+  const HeaderIcon = isIncome ? ArrowUpRight : ArrowDownRight;
+  const parsedAmount = Number.parseFloat(form.amount || "0");
+  const formattedAmount = Number.isFinite(parsedAmount)
+    ? parsedAmount.toLocaleString(undefined, {
+        minimumFractionDigits: parsedAmount % 1 === 0 ? 0 : 2,
+        maximumFractionDigits: 2,
+      })
+    : "0";
+  const selectedCategory = categories.find((category) => category._id === form.category_id);
+  const title = isEditing ? "Edit transaction" : "Add transaction";
+  const description = inline
+    ? "Update your history without leaving the transactions screen."
+    : "Track spending and income with a cleaner, faster entry flow.";
 
-  const formBody = (
-    <div className="space-y-6">
+  const formContent = (
+    <div className="space-y-6 sm:space-y-8">
       {showConfetti && <Confetti numberOfPieces={200} recycle={false} />}
-      
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        {!inline && (
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            {isEditing ? "Edit Transaction" : "New Transaction"}
-          </h2>
-        )}
-        
-        {/* Type Toggle */}
-        <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-full sm:w-auto">
-          <button
-            type="button"
-            onClick={() => handleTypeChange("expense")}
-            className={cn(
-              "flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-semibold transition-all",
-              form.type === "expense" 
-                ? "bg-white dark:bg-gray-700 text-red-600 shadow-sm" 
-                : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            )}
-          >
-            Expense
-          </button>
-          <button
-            type="button"
-            onClick={() => handleTypeChange("income")}
-            className={cn(
-              "flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-semibold transition-all",
-              form.type === "income" 
-                ? "bg-white dark:bg-gray-700 text-green-600 shadow-sm" 
-                : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            )}
-          >
-            Income
-          </button>
-        </div>
-      </div>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-        {/* Amount */}
-        <div className="space-y-2">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">Amount</label>
-          <div className="relative group">
-            <span className={cn(
-                "absolute left-4 top-1/2 -translate-y-1/2 font-bold transition-colors",
-                form.type === "income" ? "text-green-500" : "text-red-500"
-            )}>$</span>
-            <Input
-              type="number"
-              name="amount"
-              step="0.01"
-              value={form.amount}
-              onChange={handleChange}
-              className={cn(
-                  "pl-8 h-12 bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-offset-0 rounded-xl transition-all",
-                  form.type === "income" ? "focus:ring-green-500/20 focus:border-green-500" : "focus:ring-red-500/20 focus:border-red-500"
-              )}
-              placeholder="0.00"
-              required
-            />
-          </div>
-        </div>
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="space-y-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-gray-200/80 bg-white/85 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 shadow-sm dark:border-gray-800 dark:bg-gray-900/80 dark:text-gray-400">
+                <HeaderIcon className={cn("h-3.5 w-3.5", isIncome ? "text-emerald-500" : "text-rose-500")} />
+                {isIncome ? "Income flow" : "Expense flow"}
+              </div>
+              <div>
+                <h2 className="text-2xl font-black tracking-tight text-gray-950 dark:text-white sm:text-3xl">
+                  {title}
+                </h2>
+                <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">
+                  {description}
+                </p>
+              </div>
+            </div>
 
-        {/* Description */}
-        <div className="space-y-2">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">Description</label>
-          <Input
-            name="description"
-            value={form.description}
-            onChange={handleChange}
-            className="h-12 bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 rounded-xl transition-all"
-            placeholder="What was this for?"
-            required
-          />
-        </div>
-
-        {/* Date */}
-        <div className="space-y-2">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">Date</label>
-          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
+            <div className="flex w-full rounded-2xl bg-gray-100/90 p-1 sm:w-auto dark:bg-gray-900/90">
+              <button
+                type="button"
+                onClick={() => handleTypeChange("expense")}
                 className={cn(
-                  "w-full h-12 justify-start text-left font-normal bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800",
-                  !form.date && "text-muted-foreground"
+                  "flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all sm:min-w-[118px]",
+                  !isIncome
+                    ? "bg-white text-rose-600 shadow-sm dark:bg-gray-800"
+                    : "text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
                 )}
               >
-                <CalendarIcon className="mr-2 h-4 w-4 text-gray-400" />
-                {form.date ? dayjs(form.date).format("MMM DD, YYYY") : <span>Pick a date</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 rounded-2xl border-gray-200 dark:border-gray-800 shadow-2xl" align="start">
-              <Calendar
-                mode="single"
-                selected={form.date}
-                onSelect={handleDateSelect}
-                initialFocus
-                className="p-3"
+                Expense
+              </button>
+              <button
+                type="button"
+                onClick={() => handleTypeChange("income")}
+                className={cn(
+                  "flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all sm:min-w-[118px]",
+                  isIncome
+                    ? "bg-white text-emerald-600 shadow-sm dark:bg-gray-800"
+                    : "text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
+                )}
+              >
+                Income
+              </button>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                Amount
+              </label>
+              <div className="relative">
+                <span
+                  className={cn(
+                    "absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold",
+                    isIncome ? "text-emerald-500" : "text-rose-500"
+                  )}
+                >
+                  $
+                </span>
+                <Input
+                  type="number"
+                  name="amount"
+                  step="0.01"
+                  value={form.amount}
+                  onChange={handleChange}
+                  className={cn(
+                    "h-14 rounded-2xl border bg-white/90 pl-9 pr-16 text-base font-semibold shadow-sm dark:bg-gray-900/70",
+                    isIncome
+                      ? "border-emerald-200/80 focus:border-emerald-500 focus:ring-emerald-500/20 dark:border-emerald-900/60"
+                      : "border-rose-200/80 focus:border-rose-500 focus:ring-rose-500/20 dark:border-rose-900/60"
+                  )}
+                  placeholder="0.00"
+                  required
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-gray-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                  USD
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                Date
+              </label>
+              <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="h-14 w-full justify-start rounded-2xl border border-gray-200/80 bg-white/90 px-4 text-left text-sm font-medium shadow-sm hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900/70 dark:hover:bg-gray-900"
+                  >
+                    <CalendarIcon className="mr-3 h-4 w-4 text-gray-400" />
+                    {form.date ? dayjs(form.date).format("MMM DD, YYYY") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto rounded-2xl border-gray-200 p-0 shadow-2xl dark:border-gray-800" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={form.date}
+                    onSelect={handleDateSelect}
+                    initialFocus
+                    className="p-3"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="space-y-2 sm:col-span-2">
+              <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                Description
+              </label>
+              <Input
+                name="description"
+                value={form.description}
+                onChange={handleChange}
+                className="h-14 rounded-2xl border border-gray-200/80 bg-white/90 px-4 text-base shadow-sm transition-all focus:border-indigo-500 focus:ring-indigo-500/20 dark:border-gray-800 dark:bg-gray-900/70"
+                placeholder="What was this for?"
+                required
               />
-            </PopoverContent>
-          </Popover>
+            </div>
+
+            <div className="space-y-2 sm:col-span-2">
+              <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                Category
+              </label>
+              <div className="relative">
+                <select
+                  value={form.category_id}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, category_id: event.target.value }))
+                  }
+                  className="h-14 w-full appearance-none rounded-2xl border border-gray-200/80 bg-white/90 pl-4 pr-12 text-sm font-medium shadow-sm transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-800 dark:bg-gray-900/70"
+                  required
+                >
+                  <option value="" disabled>
+                    Select category
+                  </option>
+                  {categories.map((category) => (
+                    <option key={category._id} value={category._id}>
+                      {category.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 border-t border-gray-200/70 pt-4 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800/80">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {isEditing
+                  ? "Save changes to update this transaction immediately."
+                  : "Your transaction will appear in the list as soon as you save it."}
+              </p>
+              <Button
+                type="submit"
+                className={cn(
+                  "h-12 w-full rounded-2xl px-6 font-bold shadow-lg transition-all active:scale-[0.98] sm:w-auto",
+                  isEditing
+                    ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20"
+                    : isIncome
+                      ? "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20"
+                      : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/20"
+                )}
+              >
+                {isEditing ? (
+                  <>
+                    <Save className="mr-2 h-4 w-4" />
+                    Update transaction
+                  </>
+                ) : (
+                  <>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Save transaction
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
         </div>
 
-        {/* Category */}
-        <div className="space-y-2">
-          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">Category</label>
-          <div className="relative">
-            <select
-                value={form.category_id}
-                onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-                className="w-full h-12 pl-4 pr-10 appearance-none bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer"
-                required
+        <div className="rounded-[1.5rem] border border-gray-200/80 bg-gradient-to-br from-gray-50 via-white to-gray-100/70 p-5 shadow-sm dark:border-gray-800 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900/80">
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+              Live preview
+            </p>
+            <div
+              className={cn(
+                "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em]",
+                isIncome
+                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300"
+                  : "bg-rose-100 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300"
+              )}
             >
-                <option value="" disabled>Select Category</option>
-                {categories.map((cat) => (
-                    <option key={cat._id} value={cat._id}>
-                        {cat.label}
-                    </option>
-                ))}
-            </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <HeaderIcon className="h-3.5 w-3.5" />
+              {form.type}
+            </div>
+          </div>
+
+          <div className="mt-6 space-y-4">
+            <div className="rounded-[1.4rem] bg-gray-950 px-5 py-6 text-white shadow-xl dark:bg-black">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+                Amount
+              </p>
+              <p className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+                {isIncome ? "+" : "-"}${formattedAmount}
+              </p>
+              <p className="mt-2 text-sm text-white/60">
+                {form.description?.trim() || "Add a description to make this easier to find later."}
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-start gap-3 rounded-2xl border border-gray-200/80 bg-white/90 p-4 dark:border-gray-800 dark:bg-gray-900/80">
+                <CalendarIcon className="mt-0.5 h-4 w-4 text-gray-400" />
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                    Date
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+                    {form.date ? dayjs(form.date).format("dddd, MMM DD YYYY") : "Pick a date"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 rounded-2xl border border-gray-200/80 bg-white/90 p-4 dark:border-gray-800 dark:bg-gray-900/80">
+                <Tag className="mt-0.5 h-4 w-4 text-gray-400" />
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                    Category
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+                    {selectedCategory?.label || "Choose a category"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 rounded-2xl border border-gray-200/80 bg-white/90 p-4 dark:border-gray-800 dark:bg-gray-900/80">
+                <Wallet className="mt-0.5 h-4 w-4 text-gray-400" />
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                    Entry mode
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+                    {inline ? "Quick modal entry" : "Full editor"}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Submit */}
-        <div className="md:col-span-2 lg:col-span-4 flex justify-end mt-4">
-            <Button 
-                type="submit" 
-                className={cn(
-                    "h-12 px-8 rounded-xl font-bold shadow-lg transition-all active:scale-95 flex items-center gap-2",
-                    isEditing 
-                        ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20" 
-                        : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/20"
-                )}
-            >
-                {isEditing ? (
-                    <>
-                        <Save className="w-5 h-5" /> Update Transaction
-                    </>
-                ) : (
-                    <>
-                        <Plus className="w-5 h-5" /> Add Transaction
-                    </>
-                )}
-            </Button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 
-  if (inline) return formBody;
+  const wrapperClassName = cn(
+    "relative overflow-hidden border backdrop-blur-xl transition-all duration-500",
+    "bg-white/95 dark:bg-gray-950/95 border-gray-200/70 dark:border-gray-800/80",
+    inline ? "rounded-[1.75rem]" : "mt-8 rounded-[2.5rem] shadow-2xl",
+    isIncome ? "shadow-emerald-500/10" : "shadow-rose-500/10"
+  );
 
   return (
-    <div className={cn(
-        "bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200/50 dark:border-gray-800/50 rounded-[2.5rem] p-8 mt-8 shadow-2xl relative overflow-hidden transition-all duration-500",
-        form.type === "income" ? "border-l-[6px] border-l-green-500" : "border-l-[6px] border-l-red-500"
-    )}>
-      {/* Decorative background element */}
-      <div className={cn(
-          "absolute -right-20 -top-20 w-64 h-64 blur-3xl opacity-10 rounded-full",
-          form.type === "income" ? "bg-green-500" : "bg-red-500"
-      )} />
-      
-      <div className="relative z-10">
-        {formBody}
+    <div className={wrapperClassName}>
+      <div
+        className={cn(
+          "absolute -right-20 -top-20 h-64 w-64 rounded-full blur-3xl opacity-15",
+          isIncome ? "bg-emerald-500" : "bg-rose-500"
+        )}
+      />
+
+      <div className={cn("relative z-10", inline ? "p-4 sm:p-6 lg:p-7" : "p-8")}>
+        {formContent}
       </div>
     </div>
   );
 }
-

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import { Settings as SettingsIcon, Save, User } from "lucide-react";
 import { setUser } from "@/store/auth";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 // Shadcn UI Components
 import { Button } from "@/components/ui/button";
@@ -73,8 +73,6 @@ export default function Settings() {
 
     return (
         <div className="container max-w-4xl mx-auto py-6 px-4">
-            <ToastContainer position="top-center" />
-
             {/* Header */}
             <div className="flex items-center gap-4 mb-6">
                 <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
@@ -131,7 +129,7 @@ export default function Settings() {
                             {/* Email Field (Read-only) */}
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email</Label>
-                                <Input id="email" value={user?.email || ""} disabled />
+                                <Input id="email" value={user?.email || ""} autoComplete="username" disabled />
                                 <p className="text-xs text-muted-foreground">
                                     Email cannot be changed
                                 </p>
@@ -152,6 +150,7 @@ export default function Settings() {
                                         <Input
                                             id="password"
                                             type="password"
+                                            autoComplete="new-password"
                                             value={form.password}
                                             onChange={(e) =>
                                                 setForm({ ...form, password: e.target.value })
@@ -163,6 +162,7 @@ export default function Settings() {
                                         <Input
                                             id="confirmPassword"
                                             type="password"
+                                            autoComplete="new-password"
                                             value={form.confirmPassword}
                                             onChange={(e) =>
                                                 setForm({ ...form, confirmPassword: e.target.value })

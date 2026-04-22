@@ -9,6 +9,7 @@ import {
     TrendingDown,
     Wallet,
     PiggyBank,
+    History as HistoryIcon,
     ArrowUp,
     ArrowDown,
     Search,
@@ -284,7 +285,7 @@ function RecentTransactions({ transactions, isLoading }) {
         <Card className="h-full border shadow-sm rounded-3xl overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-xl font-bold flex items-center gap-2">
-                    <History className="w-5 h-5 text-indigo-500" /> Recent Activity
+                    <HistoryIcon className="w-5 h-5 text-indigo-500" /> Recent Activity
                 </CardTitle>
                 <Link to="/transactions">
                     <Button variant="ghost" size="sm" className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 font-bold group">

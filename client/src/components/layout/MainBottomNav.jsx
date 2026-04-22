@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { 
     LayoutDashboard, 
     History, 
     PlusCircle, 
     Wallet, 
-    User,
-    Sparkles
+    User
 } from "lucide-react";
-import { cn } from "../../lib/utils";
+import { cn } from "../../lib/utils.js";
 
 export default function MainBottomNav() {
     const navigate = useNavigate();
     const location = useLocation();
+    const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
     const [activeTab, setActiveTab] = useState(0);
 
     // Sync state with current location
@@ -33,6 +34,10 @@ export default function MainBottomNav() {
         { label: "Budget", icon: Wallet, path: "/budget" },
         { label: "Profile", icon: User, path: "/settings" },
     ];
+
+    if (!isAuthenticated) {
+        return null;
+    }
 
     return (
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-[1000] pb-[env(safe-area-inset-bottom)]">

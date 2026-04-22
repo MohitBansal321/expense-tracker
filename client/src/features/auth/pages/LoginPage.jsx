@@ -4,14 +4,14 @@ import { useDispatch } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import Cookie from "js-cookie";
 import { Lock } from "lucide-react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // Shadcn UI Components
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 // Store
 import { setUser } from "@/store/auth.js";
@@ -24,7 +24,6 @@ export default function Login() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = React.useState(false);
 
-  // Function to handle form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
@@ -50,7 +49,7 @@ export default function Login() {
         const token = responseData.data?.token || responseData.token;
         const user = responseData.data?.user || responseData.user;
         Cookie.set("token", token);
-        await dispatch(setUser({ user }));
+        dispatch(setUser({ user }));
         navigate("/dashboard");
       } else {
         toast.error(responseData.message || "Email or Password are Incorrect");
@@ -64,27 +63,19 @@ export default function Login() {
 
   return (
     <AuthLayout>
-      <div className="flex flex-col items-center w-full max-w-md mx-auto">
-        {/* Icon */}
-        <div className="mb-6 p-4 rounded-full bg-primary/10">
+      <div className="mx-auto flex w-full max-w-md flex-col items-center">
+        <div className="mb-6 rounded-full bg-primary/10 p-4">
           <Lock className="h-8 w-8 text-primary" />
         </div>
 
-        <ToastContainer position="top-center" theme="light" />
-
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2">Welcome Back</h1>
-          <p className="text-muted-foreground">
-            Sign in to continue to Financh
-          </p>
+        <div className="mb-8 text-center">
+          <h1 className="mb-2 text-4xl font-bold">Welcome Back</h1>
+          <p className="text-muted-foreground">Sign in to continue to Financh</p>
         </div>
 
-        {/* Login Card */}
         <Card className="w-full border shadow-lg">
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email Field */}
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
                 <Input
@@ -99,33 +90,30 @@ export default function Login() {
                 />
               </div>
 
-              {/* Password Field */}
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   name="password"
                   type="password"
-                  placeholder="••••••••"
+                  placeholder="Enter your password"
                   required
                   autoComplete="current-password"
                   disabled={isLoading}
                 />
               </div>
 
-              {/* Sign In Button */}
               <Button
                 type="submit"
-                className="w-full h-12 text-base font-semibold mt-6 bg-[hsl(199,89%,48%)] text-white hover:bg-[hsl(199,89%,40%)]"
+                className="mt-6 h-12 w-full bg-[hsl(199,89%,48%)] text-base font-semibold text-white hover:bg-[hsl(199,89%,40%)]"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
 
-              {/* Sign Up Link */}
-              <div className="text-center mt-4">
+              <div className="mt-4 text-center">
                 <p className="text-sm text-muted-foreground">
-                  Don't have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <RouterLink
                     to="/register"
                     className="font-medium text-primary hover:underline"

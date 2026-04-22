@@ -1,7 +1,7 @@
 // Home page (Transactions) with modern Shadcn UI design
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { Search, X, Download, Plus, Calendar, Filter } from "lucide-react";
+import { Search, X, Download, Plus, Filter } from "lucide-react";
 import { toast } from "react-toastify";
 
 // Shadcn UI Components
@@ -18,6 +18,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -212,7 +213,12 @@ export default function Home() {
                   placeholder="Search by description..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSearch();
+                    }
+                  }}
                   className="pl-9 pr-9"
                 />
                 {searchQuery && (
@@ -335,11 +341,14 @@ export default function Home() {
 
       {/* Helper Dialog for Transaction Form */}
       <Dialog open={openForm} onOpenChange={setOpenForm}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
+        <DialogContent className="w-[calc(100vw-1rem)] max-w-4xl gap-0 overflow-y-auto border-none bg-transparent p-0 shadow-none sm:w-full">
+          <DialogHeader className="sr-only">
             <DialogTitle>
-              {editTransaction._id ? "Edit Transaction" : "New Transaction"}
+              {editTransaction._id ? "Edit transaction" : "Add transaction"}
             </DialogTitle>
+            <DialogDescription>
+              Use this dialog to create a new transaction or update an existing one.
+            </DialogDescription>
           </DialogHeader>
           <TransactionForm
             fetchTransactions={handleFormClose}

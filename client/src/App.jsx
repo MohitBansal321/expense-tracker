@@ -8,17 +8,38 @@ import { useAuth } from "./hooks/useAuth.js";
 
 function App() {
     const location = useLocation();
+    const [authReady, setAuthReady] = useState(false);
     const { fetchUser, isLoading: authLoading } = useAuth();
 
-    // Use useEffect to fetch user information when the component mounts
     useEffect(() => {
-        fetchUser();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        let isMounted = true;
 
-    // If still loading, display a loading message
-    if (authLoading) {
-        return <p>Loading ...</p>;
+        async function initializeAuth() {
+            try {
+                await fetchUser();
+            } finally {
+                if (isMounted) {
+                    setAuthReady(true);
+                }
+            }
+        }
+
+        initializeAuth();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [fetchUser]);
+
+    if (!authReady || authLoading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-background px-4">
+                <div className="flex flex-col items-center gap-3 text-center">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-primary" />
+                    <p className="text-sm text-muted-foreground">Loading your workspace...</p>
+                </div>
+            </div>
+        );
     }
 
     // Render the AppBar and the Router Outlet for rendering nested routes
@@ -32,7 +53,7 @@ function App() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
                     transition={{ duration: 0.3 }}
-                    style={{ width: '100%' }}
+                    style={{ width: "100%" }}
                 >
                     <Outlet />
                 </motion.div>

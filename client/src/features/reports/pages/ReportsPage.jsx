@@ -154,6 +154,39 @@ export default function Reports() {
         window.print();
     }
 
+    function handleExport() {
+        const reportData = tabValue === "monthly" ? monthlyData : yearlyData;
+
+        if (!reportData) {
+            return;
+        }
+
+        const fileName = tabValue === "monthly"
+            ? `report-monthly-${selectedYear}-${String(selectedMonth).padStart(2, "0")}.json`
+            : `report-yearly-${selectedYear}.json`;
+
+        const payload = {
+            tab: tabValue,
+            year: selectedYear,
+            ...(tabValue === "monthly" ? { month: selectedMonth } : {}),
+            generatedAt: new Date().toISOString(),
+            data: reportData,
+        };
+
+        const blob = new Blob([JSON.stringify(payload, null, 2)], {
+            type: "application/json",
+        });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+    }
+
     function SummaryCard({ title, value, change, isPositive, icon: Icon }) {
         return (
             <Card className="border shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden">
@@ -237,7 +270,11 @@ export default function Reports() {
                     <Button variant="outline" onClick={handlePrint} className="rounded-xl border-gray-200 font-bold gap-2 print:hidden whitespace-nowrap">
                         <Printer className="h-4 w-4" /> Print
                     </Button>
-                    <Button className="rounded-xl font-bold gap-2 whitespace-nowrap">
+                    <Button
+                        className="rounded-xl font-bold gap-2 whitespace-nowrap"
+                        onClick={handleExport}
+                        disabled={isLoading || (tabValue === "monthly" ? !monthlyData : !yearlyData)}
+                    >
                         <Download className="h-4 w-4" /> Export
                     </Button>
                 </div>

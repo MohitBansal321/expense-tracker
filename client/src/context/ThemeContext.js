@@ -21,11 +21,11 @@ export function ThemeProvider({ children }) {
 
     useEffect(() => {
         const root = window.document.documentElement;
-        if (mode === "dark") {
-            root.classList.add("dark");
-        } else {
-            root.classList.remove("dark");
-        }
+        const isDark = mode === "dark";
+
+        root.classList.toggle("dark", isDark);
+        root.classList.toggle("light", !isDark);
+        root.style.colorScheme = isDark ? "dark" : "light";
         localStorage.setItem("themeMode", mode);
     }, [mode]);
 
