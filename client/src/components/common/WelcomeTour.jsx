@@ -1,30 +1,22 @@
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
-import Stepper from "@mui/material/Stepper";
-import Typography from "@mui/material/Typography";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Sparkles, Landmark, CheckCircle2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "../ui/dialog";
+import { Button } from "../ui/button";
 
 const steps = [
     {
         label: "Welcome to Expensor",
         description: "Let's get your finances on autopilot. We'll help you track expenses, set budgets, and reach your saving goals.",
-        icon: <AutoAwesomeIcon sx={{ fontSize: 60, color: "primary.main" }} />,
+        icon: <Sparkles className="w-16 h-16 text-blue-600" />,
     },
     {
         label: "Set a Monthly Budget",
         description: "A budget is the first step to financial freedom. Start by setting a realistic monthly limit.",
-        icon: <AccountBalanceIcon sx={{ fontSize: 60, color: "secondary.main" }} />,
+        icon: <Landmark className="w-16 h-16 text-purple-600" />,
         action: (
-            <Link to="/budget" style={{ textDecoration: "none" }}>
-                <Button variant="outlined" size="small">
+            <Link to="/budget" className="no-underline">
+                <Button variant="outline" size="sm">
                     Go to Budget Settings
                 </Button>
             </Link>
@@ -33,10 +25,10 @@ const steps = [
     {
         label: "You're Ready!",
         description: "Start by adding your first transaction. Use the Smart Entry features for quick logging.",
-        icon: <CheckCircleIcon sx={{ fontSize: 60, color: "success.main" }} />,
+        icon: <CheckCircle2 className="w-16 h-16 text-green-600" />,
         action: (
-            <Link to="/smart-entry" style={{ textDecoration: "none" }}>
-                <Button variant="contained" color="success">
+            <Link to="/smart-entry" className="no-underline">
+                <Button className="bg-green-600 hover:bg-green-700 text-white">
                     Try Smart Entry
                 </Button>
             </Link>
@@ -51,13 +43,12 @@ export default function WelcomeTour() {
     useEffect(() => {
         const hasSeenTour = localStorage.getItem("hasSeenTour");
         if (!hasSeenTour) {
-            // Short delay to allow page load
             setTimeout(() => setOpen(true), 1000);
         }
     }, []);
 
     const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        setActiveStep((prev) => prev + 1);
     };
 
     const handleClose = () => {
@@ -66,49 +57,53 @@ export default function WelcomeTour() {
     };
 
     return (
-        <Dialog
-            open={open}
-            onClose={activeStep === steps.length - 1 ? handleClose : undefined}
-            maxWidth="xs"
-            fullWidth
-            PaperProps={{
-                sx: { borderRadius: 4, p: 2 },
-            }}
-        >
-            <DialogContent sx={{ textAlign: "center", py: 4 }}>
-                <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
+        <Dialog open={open} onOpenChange={(isOpen) => {
+            if (!isOpen && activeStep === steps.length - 1) {
+                handleClose();
+            }
+        }}>
+            <DialogContent className="sm:max-w-md text-center flex flex-col items-center py-10 px-6">
+                <div className="mb-6 flex justify-center items-center">
                     {steps[activeStep].icon}
-                </Box>
-                <Typography variant="h5" fontWeight={700} gutterBottom>
-                    {steps[activeStep].label}
-                </Typography>
-                <Typography variant="body1" color="text.secondary" paragraph>
-                    {steps[activeStep].description}
-                </Typography>
+                </div>
+                
+                <DialogHeader>
+                    <DialogTitle className="text-xl font-bold text-center mb-2">
+                        {steps[activeStep].label}
+                    </DialogTitle>
+                    <DialogDescription className="text-center text-gray-500 mb-6">
+                        {steps[activeStep].description}
+                    </DialogDescription>
+                </DialogHeader>
 
                 {steps[activeStep].action && (
-                    <Box sx={{ mt: 2, mb: 1 }}>{steps[activeStep].action}</Box>
+                    <div className="mt-2 mb-4">
+                        {steps[activeStep].action}
+                    </div>
                 )}
 
-                <Stepper activeStep={activeStep} alternativeLabel sx={{ mt: 4 }}>
-                    {steps.map((step) => (
-                        <Step key={step.label}>
-                            <StepLabel />
-                        </Step>
+                <div className="flex items-center justify-center gap-2 mt-6 mb-8 w-full max-w-[200px] mx-auto">
+                    {steps.map((step, index) => (
+                        <React.Fragment key={step.label}>
+                            <div className={`w-3 h-3 rounded-full ${index === activeStep ? 'bg-blue-600' : index < activeStep ? 'bg-blue-300' : 'bg-gray-200'}`} />
+                            {index < steps.length - 1 && (
+                                <div className={`flex-1 h-0.5 ${index < activeStep ? 'bg-blue-300' : 'bg-gray-200'}`} />
+                            )}
+                        </React.Fragment>
                     ))}
-                </Stepper>
+                </div>
 
-                <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
+                <DialogFooter className="w-full sm:justify-center flex mt-2">
                     {activeStep === steps.length - 1 ? (
-                        <Button variant="contained" onClick={handleClose} fullWidth>
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={handleClose}>
                             Get Started
                         </Button>
                     ) : (
-                        <Button variant="contained" onClick={handleNext} fullWidth>
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" onClick={handleNext}>
                             Next
                         </Button>
                     )}
-                </Box>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

@@ -10,11 +10,11 @@ description: Use this skill when building or modifying React components, pages, 
 |-------|-----------|
 | Framework | React 18 + Vite 5 |
 | Styling | TailwindCSS v4 + CSS |
-| UI Primitives | Radix UI (Dialog, Select, Tabs, Slider, Popover, Dropdown, Label, Separator, Toast) |
-| Utility Components | `shadcn/ui`-style in `components/ui/` (button, card, input, dialog, select, etc.) |
+| UI Primitives | Radix UI (Dialog, Select, Tabs, Slider, Popover, Dropdown, Label, Separator, Toast, Calendar) |
+| Utility Components | `shadcn/ui`-style in `components/ui/` (button, card, input, dialog, select, date-picker, etc.) |
 | Animations | Framer Motion (`AnimatePresence`, `motion.div`) |
-| Icons | Lucide React (tree-shaken) |
-| Charts | DevExpress React Chart (via `@devexpress/dx-react-chart-material-ui`) |
+| Icons | Lucide React |
+| Charts | Recharts (Styled with Tailwind/shadcn patterns) |
 | PWA | `vite-plugin-pwa` |
 
 ## Directory Structure
@@ -113,15 +113,26 @@ features/transactions/
 ## Styling Rules
 
 - **TailwindCSS v4** — uses `@tailwindcss/postcss` and CSS-native config
-- **Icons**: Always tree-shaken: `import { Plus, Trash2 } from "lucide-react"` — NEVER `import * from "lucide-react"`
-- **MUI**: Only for DatePicker and chart components. **Never** for buttons, inputs, modals, cards
+- **Icons**: Use `lucide-react` exclusively.
+- **MUI**: **STRICTLY PROHIBITED**. We are actively migrating away from Material UI. Replace any MUI component with `shadcn/ui` + Tailwind CSS. Use `Recharts` for charts and `react-day-picker` for date pickers.
 - **Animations**: Framer Motion for page transitions and interactive states
 - **Responsive**: Mobile-first with bottom nav pattern
+
+## Material UI (MUI) to Shadcn/UI Migration
+
+We are shifting completely from Material UI to a modern `shadcn/ui` + TailwindCSS ecosystem for a premium, production-grade design. When handling legacy components:
+
+1. **Charts**: Replace `@devexpress` and MUI charts with **Recharts** (styled with Tailwind/shadcn patterns).
+2. **Date Pickers**: Replace `@mui/x-date-pickers` with `shadcn/ui` Calendar component (`react-day-picker` + `date-fns`).
+3. **Icons**: Replace `@mui/icons-material` with `lucide-react`.
+4. **Layouts**: Replace MUI `<Grid>`, `<Box>`, `<Container>`, or `<Stack>` with standard Tailwind CSS (`flex`, `grid`, `container`, `space-y-*`).
+5. **Typography**: Replace `<Typography>` with standard HTML elements and Tailwind text utilities (`text-lg font-semibold text-gray-900 dark:text-gray-100`).
+6. **Inputs / Forms**: Replace `<TextField>`, `<Select>` with `components/ui/input`, `components/ui/select`, etc.
 
 ## NEVER Do
 
 - Import entire icon libraries (`import * from "lucide-react"`)
-- Use MUI for basic UI (buttons, inputs, modals, cards)
+- Use ANY `@mui/*` packages or components. They must be removed and replaced.
 - Use `process.env.XXX` — always `import.meta.env.VITE_XXX` (Vite requirement)
 - Skip loading states — use skeleton loaders from `components/ui/skeleton.jsx`
 

@@ -1,43 +1,38 @@
-import Autocomplete from "@mui/material/Autocomplete";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import React, { useEffect, useState, useMemo } from "react";
 import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Confetti from "react-confetti";
 import { toast } from "react-toastify";
+import dayjs from "dayjs";
+import { Calendar as CalendarIcon, ChevronDown, Plus, Save } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../../components/ui/popover";
+import { Calendar } from "../../../components/ui/calendar";
 
 // Initial form state for creating or editing transactions
 const InitialForm = {
-  amount: 0,
+  amount: "",
   description: "",
   date: new Date(),
   category_id: "",
   type: "expense", // Default to expense
 };
 
-// TransactionForm component for adding or editing transactions
 export default function TransactionForm({ fetchTransactions, editTransaction = {}, inline = false }) {
   // Get user categories from Redux store with safe default
   const categories = useSelector((state) => state.auth.user?.categories || []);
-
-  // Get user token from cookies
   const token = Cookies.get("token");
 
-  // State to manage form data
   const [form, setForm] = useState(InitialForm);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
-  // Update form data when editing a transaction
   useEffect(() => {
     if (showConfetti) {
       const timer = setTimeout(() => setShowConfetti(false), 4000);
@@ -46,39 +41,40 @@ export default function TransactionForm({ fetchTransactions, editTransaction = {
   }, [showConfetti]);
 
   useEffect(() => {
-    if (editTransaction && editTransaction.amount !== undefined) {
+    if (editTransaction && editTransaction._id) {
       setForm({
         ...editTransaction,
-        type: editTransaction.type || "expense" // Default to expense if not set
+        amount: editTransaction.amount?.toString() || "",
+        type: editTransaction.type || "expense",
+        date: editTransaction.date ? new Date(editTransaction.date) : new Date()
       });
+    } else {
+      setForm(InitialForm);
     }
   }, [editTransaction]);
 
-  // Handle changes in form input fields
   function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
   }
 
-  // Handle transaction type change
-  function handleTypeChange(event, newType) {
-    if (newType !== null) {
-      setForm({ ...form, type: newType });
+  function handleTypeChange(type) {
+    setForm({ ...form, type });
+  }
+
+  function handleDateSelect(date) {
+    if (date) {
+      setForm({ ...form, date });
+      setIsCalendarOpen(false);
     }
   }
 
-  // Handle changes in the transaction date
-  function handleDate(newValue) {
-    setForm({ ...form, date: newValue });
-  }
-
-  // Handle form submission (create or update transaction)
   async function handleSubmit(e) {
     e.preventDefault();
     const isEditing = editTransaction && editTransaction._id;
     isEditing ? update() : create();
   }
 
-  // Helper function to reload data after creating or updating a transaction
   function reload(res) {
     if (res.ok) {
       setForm(InitialForm);
@@ -87,44 +83,48 @@ export default function TransactionForm({ fetchTransactions, editTransaction = {
   }
 
   function formValidation(form) {
-    if (form.description === "" || form.category_id === "") {
-      toast.warning(`Please fill all the fields`);
-      return false;
+    if (!form.description || !form.category_id) {
+        toast.warning("Please fill all the fields");
+        return false;
     }
-    if (form.amount <= 0) {
-      toast.warning(`Please enter a valid amount`);
-      return false;
+    const amount = parseFloat(form.amount);
+    if (isNaN(amount) || amount <= 0) {
+        toast.warning("Please enter a valid amount");
+        return false;
     }
-    if ((!form.date || isNaN(new Date(form.date).getTime()))) {
-      toast.warning(`Please enter a valid date`);
-      return false;
+    if (!form.date || isNaN(new Date(form.date).getTime())) {
+        toast.warning("Please enter a valid date");
+        return false;
     }
     return true;
   }
 
-  // Create a new transaction
   async function create() {
     if (!formValidation(form)) return;
+    const body = { ...form, amount: parseFloat(form.amount) };
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/transaction`, {
       method: "POST",
-      body: JSON.stringify(form),
+      body: JSON.stringify(body),
       headers: {
         "content-type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
     reload(res);
-    if (res.ok) setShowConfetti(true);
+    if (res.ok) {
+        setShowConfetti(true);
+        toast.success("Transaction added!");
+    }
   }
 
-  // Update an existing transaction
   async function update() {
     if (!formValidation(form)) return;
+    const body = { ...form, amount: parseFloat(form.amount) };
     const res = await fetch(
       `${import.meta.env.VITE_BASE_URL}/transaction/${editTransaction._id}`,
       {
         method: "PATCH",
-        body: JSON.stringify(form),
+        body: JSON.stringify(body),
         headers: {
           "content-type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -132,183 +132,181 @@ export default function TransactionForm({ fetchTransactions, editTransaction = {
       }
     );
     reload(res);
+    if (res.ok) toast.success("Transaction updated!");
   }
 
-  // Helper function to get the category name by its ID
-  function getCategoryNameById() {
-    return categories?.find((category) => category._id === form.category_id) ?? null;
-  }
+  const isEditing = editTransaction && editTransaction._id;
 
-  // Determine card border color based on transaction type
-  const cardBorderColor = form.type === "income" ? "#4CAF50" : "#f44336";
-
-  // Shared form content
-  const formContent = (
-    <>
+  const formBody = (
+    <div className="space-y-6">
       {showConfetti && <Confetti numberOfPieces={200} recycle={false} />}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+      
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         {!inline && (
-          <Typography variant="h6">
-            Add New {form.type === "income" ? "Income" : "Expense"}
-          </Typography>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            {isEditing ? "Edit Transaction" : "New Transaction"}
+          </h2>
         )}
-
-        {/* Transaction Type Toggle */}
-        <ToggleButtonGroup
-          value={form.type}
-          exclusive
-          onChange={handleTypeChange}
-          aria-label="transaction type"
-          size="small"
-          sx={inline ? { width: '100%', mb: 1 } : {}}
-        >
-          <ToggleButton
-            value="expense"
-            aria-label="expense"
-            sx={{
-              flex: inline ? 1 : 'unset',
-              color: "text.secondary",
-              "&.Mui-selected": {
-                backgroundColor: "#ffebee",
-                color: "#f44336",
-                "&:hover": {
-                  backgroundColor: "#ffcdd2",
-                }
-              }
-            }}
+        
+        {/* Type Toggle */}
+        <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-full sm:w-auto">
+          <button
+            type="button"
+            onClick={() => handleTypeChange("expense")}
+            className={cn(
+              "flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-semibold transition-all",
+              form.type === "expense" 
+                ? "bg-white dark:bg-gray-700 text-red-600 shadow-sm" 
+                : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            )}
           >
             Expense
-          </ToggleButton>
-          <ToggleButton
-            value="income"
-            aria-label="income"
-            sx={{
-              flex: inline ? 1 : 'unset',
-              color: "text.secondary",
-              "&.Mui-selected": {
-                backgroundColor: "#e8f5e9",
-                color: "#4CAF50",
-                "&:hover": {
-                  backgroundColor: "#c8e6c9",
-                }
-              }
-            }}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleTypeChange("income")}
+            className={cn(
+              "flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-semibold transition-all",
+              form.type === "income" 
+                ? "bg-white dark:bg-gray-700 text-green-600 shadow-sm" 
+                : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            )}
           >
             Income
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Box>
+          </button>
+        </div>
+      </div>
 
-      <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
-          {/* Input field for transaction amount */}
-          <TextField
-            id="outlined-basic"
-            label="Amount"
-            type="number"
-            size="small"
-            name="amount"
-            variant="outlined"
-            value={form.amount}
-            onChange={handleChange}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                "&.Mui-focused fieldset": {
-                  borderColor: cardBorderColor,
-                }
-              }
-            }}
-          />
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+        {/* Amount */}
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">Amount</label>
+          <div className="relative group">
+            <span className={cn(
+                "absolute left-4 top-1/2 -translate-y-1/2 font-bold transition-colors",
+                form.type === "income" ? "text-green-500" : "text-red-500"
+            )}>$</span>
+            <Input
+              type="number"
+              name="amount"
+              step="0.01"
+              value={form.amount}
+              onChange={handleChange}
+              className={cn(
+                  "pl-8 h-12 bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-offset-0 rounded-xl transition-all",
+                  form.type === "income" ? "focus:ring-green-500/20 focus:border-green-500" : "focus:ring-red-500/20 focus:border-red-500"
+              )}
+              placeholder="0.00"
+              required
+            />
+          </div>
+        </div>
 
-          {/* Input field for transaction description */}
-          <TextField
-            id="outlined-basic"
-            label="Description"
-            size="small"
+        {/* Description */}
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">Description</label>
+          <Input
             name="description"
-            variant="outlined"
             value={form.description}
             onChange={handleChange}
+            className="h-12 bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 rounded-xl transition-all"
+            placeholder="What was this for?"
+            required
           />
+        </div>
 
-          {/* Date picker for transaction date */}
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DesktopDatePicker
-              label="Transaction Date"
-              inputFormat="MM/DD/YYYY"
-              value={form.date}
-              onChange={handleDate}
-              renderInput={(params) => (
-                <TextField size="small" {...params} />
-              )}
-            />
-          </LocalizationProvider>
+        {/* Date */}
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">Date</label>
+          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full h-12 justify-start text-left font-normal bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800",
+                  !form.date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4 text-gray-400" />
+                {form.date ? dayjs(form.date).format("MMM DD, YYYY") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 rounded-2xl border-gray-200 dark:border-gray-800 shadow-2xl" align="start">
+              <Calendar
+                mode="single"
+                selected={form.date}
+                onSelect={handleDateSelect}
+                initialFocus
+                className="p-3"
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
 
-          {/* Autocomplete for selecting transaction category */}
-          <Autocomplete
-            isOptionEqualToValue={(option, value) => option._id === value._id}
-            value={getCategoryNameById()}
-            onChange={(event, newValue) => {
-              setForm({ ...form, category_id: newValue?._id || "" });
-            }}
-            id="controllable-states-demo"
-            options={categories}
-            getOptionLabel={(option) => option?.label || ""}
-            sx={{ width: 200 }}
-            renderInput={(params) => <TextField {...params} size="small" label="Category" />}
-          />
-
-          {/* Submit button (Update or Submit) */}
-          {editTransaction && editTransaction._id && (
-            <Button
-              type="submit"
-              variant="contained"
-              sx={{
-                backgroundColor: "#0EA5E9",
-                "&:hover": {
-                  backgroundColor: "#0284C7"
-                }
-              }}
+        {/* Category */}
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-1">Category</label>
+          <div className="relative">
+            <select
+                value={form.category_id}
+                onChange={(e) => setForm({ ...form, category_id: e.target.value })}
+                className="w-full h-12 pl-4 pr-10 appearance-none bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all cursor-pointer"
+                required
             >
-              Update
-            </Button>
-          )}
+                <option value="" disabled>Select Category</option>
+                {categories.map((cat) => (
+                    <option key={cat._id} value={cat._id}>
+                        {cat.label}
+                    </option>
+                ))}
+            </select>
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
 
-          {(!editTransaction || !editTransaction._id) && (
-            <Button
-              type="submit"
-              variant="contained"
-              sx={{
-                backgroundColor: "#0EA5E9",
-                "&:hover": {
-                  backgroundColor: "#0284C7"
-                }
-              }}
+        {/* Submit */}
+        <div className="md:col-span-2 lg:col-span-4 flex justify-end mt-4">
+            <Button 
+                type="submit" 
+                className={cn(
+                    "h-12 px-8 rounded-xl font-bold shadow-lg transition-all active:scale-95 flex items-center gap-2",
+                    isEditing 
+                        ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20" 
+                        : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/20"
+                )}
             >
-              Submit
+                {isEditing ? (
+                    <>
+                        <Save className="w-5 h-5" /> Update Transaction
+                    </>
+                ) : (
+                    <>
+                        <Plus className="w-5 h-5" /> Add Transaction
+                    </>
+                )}
             </Button>
-          )}
-        </Box>
-    </>
+        </div>
+      </form>
+    </div>
   );
 
-  // When inline (inside a Dialog), render without the Card wrapper
-  if (inline) {
-    return formContent;
-  }
+  if (inline) return formBody;
 
   return (
-    <Card
-      sx={{
-        minWidth: 275,
-        marginTop: 4,
-        borderLeft: `4px solid ${cardBorderColor}`,
-        transition: "border-color 0.3s ease"
-      }}
-    >
-      <CardContent>
-        {formContent}
-      </CardContent>
-    </Card>
+    <div className={cn(
+        "bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200/50 dark:border-gray-800/50 rounded-[2.5rem] p-8 mt-8 shadow-2xl relative overflow-hidden transition-all duration-500",
+        form.type === "income" ? "border-l-[6px] border-l-green-500" : "border-l-[6px] border-l-red-500"
+    )}>
+      {/* Decorative background element */}
+      <div className={cn(
+          "absolute -right-20 -top-20 w-64 h-64 blur-3xl opacity-10 rounded-full",
+          form.type === "income" ? "bg-green-500" : "bg-red-500"
+      )} />
+      
+      <div className="relative z-10">
+        {formBody}
+      </div>
+    </div>
   );
 }
 

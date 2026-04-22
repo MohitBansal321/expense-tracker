@@ -1,15 +1,11 @@
-// Import necessary modules and components from Material-UI and React
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
+// Import necessary modules and components from React
 import Cookies from "js-cookie";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/store/auth.js";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 // Initial form state
 const InitialForm = {
@@ -56,8 +52,8 @@ export default function CategoryForm({ editCategory, onClose }) {
     if (!form.label) return toast.warning("Label is required");
 
     // Check if a category with the same label or icon already exists
-    const categoryExists = user.categories?.some(
-      (c) => (c.label === form.label || c.icon === form.icon) && c._id !== editCategory._id
+    const categoryExists = user?.categories?.some(
+      (c) => (c.label === form.label || c.icon === form.icon) && c._id !== editCategory?._id
     );
     if (categoryExists) {
       return toast.warning("Category already exists");
@@ -100,59 +96,54 @@ export default function CategoryForm({ editCategory, onClose }) {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ p: 2 }}>
-      <Typography variant="subtitle1" gutterBottom fontWeight={600}>
-        Category Name
-      </Typography>
-      <TextField
-        fullWidth
-        label="e.g. Groceries"
-        size="small"
-        name="label"
-        value={form.label}
-        onChange={handleChange}
-        sx={{ mb: 4 }}
-      />
+    <form onSubmit={handleSubmit} className="p-4 space-y-6">
+      <div>
+        <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          Category Name
+        </label>
+        <Input
+          placeholder="e.g. Groceries"
+          name="label"
+          value={form.label}
+          onChange={handleChange}
+          className="w-full"
+        />
+      </div>
 
-      <Typography variant="subtitle1" gutterBottom fontWeight={600}>
-        Select Icon
-      </Typography>
-      <Paper elevation={0} sx={{ border: "1px solid", borderColor: "divider", p: 2, borderRadius: 2, mb: 4, maxHeight: 200, overflowY: "auto" }}>
-        <Grid container spacing={1}>
-          {icons.map((icon) => (
-            <Grid item key={icon}>
-              <Box
+      <div>
+        <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          Select Icon
+        </label>
+        <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-4 max-h-[200px] overflow-y-auto bg-gray-50 dark:bg-gray-900/50">
+          <div className="flex flex-wrap gap-2">
+            {icons.map((icon) => (
+              <button
+                key={icon}
+                type="button"
                 onClick={() => handleIconClick(icon)}
-                sx={{
-                  width: 40,
-                  height: 40,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "1.5rem",
-                  cursor: "pointer",
-                  borderRadius: "50%",
-                  bgcolor: form.icon === icon ? "primary.light" : "transparent",
-                  "&:hover": { bgcolor: "action.hover" },
-                }}
+                className={`w-10 h-10 flex items-center justify-center text-2xl cursor-pointer rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500
+                  ${form.icon === icon 
+                    ? "bg-blue-100 dark:bg-blue-900/40 text-blue-600 shadow-sm" 
+                    : "bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800"
+                  }`}
               >
                 {icon}
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-      </Paper>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+      <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
         {onClose && (
-          <Button onClick={onClose} color="inherit">
+          <Button type="button" variant="ghost" onClick={onClose}>
             Cancel
           </Button>
         )}
-        <Button type="submit" variant="contained">
+        <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white">
           {editCategory?._id ? "Update Category" : "Add Category"}
         </Button>
-      </Box>
-    </Box>
+      </div>
+    </form>
   );
 }

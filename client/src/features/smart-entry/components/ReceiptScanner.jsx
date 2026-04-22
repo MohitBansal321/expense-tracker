@@ -1,29 +1,11 @@
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import ReceiptIcon from "@mui/icons-material/Receipt";
-import Alert from "@mui/material/Alert";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CircularProgress from "@mui/material/CircularProgress";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import FormControl from "@mui/material/FormControl";
-import IconButton from "@mui/material/IconButton";
-import InputLabel from "@mui/material/InputLabel";
-import LinearProgress from "@mui/material/LinearProgress";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Cookies from "js-cookie";
 import React, { useRef, useState } from "react";
+import Cookies from "js-cookie";
 import { useSelector } from "react-redux";
 import { createWorker } from "tesseract.js";
+import { Camera, CheckCircle, UploadCloud, Receipt, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../../components/ui/dialog";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
 
 export default function ReceiptScanner({ onTransactionCreated }) {
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -220,182 +202,186 @@ export default function ReceiptScanner({ onTransactionCreated }) {
 
     return (
         <>
-            {/* Trigger Button */}
-            <Card
-                elevation={1}
-                sx={{
-                    height: "100%",
-                    cursor: "pointer",
-                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                    border: "1px solid",
-                    borderColor: "divider",
-                    "&:hover": { 
-                        transform: "translateY(-4px)", 
-                        boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
-                        borderColor: "primary.main"
-                    }
-                }}
+            {/* Trigger Card */}
+            <div
+                className="h-full cursor-pointer transition-all duration-300 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 group hover:-translate-y-1 hover:shadow-xl hover:border-purple-500"
                 onClick={() => setDialogOpen(true)}
             >
-                <CardContent sx={{ textAlign: "center", py: 3 }}>
-                    <ReceiptIcon sx={{ fontSize: 48, color: "primary.main", mb: 1 }} />
-                    <Typography variant="h6">Scan Receipt</Typography>
-                    <Typography variant="body2" color="text.secondary">
+                <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+                    <Receipt className="w-12 h-12 text-purple-600 mb-3 group-hover:scale-110 transition-transform" />
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Scan Receipt</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Upload a receipt image to auto-fill
-                    </Typography>
-                </CardContent>
-            </Card>
+                    </p>
+                </div>
+            </div>
 
             {/* Scanner Dialog */}
-            <Dialog open={dialogOpen} onClose={handleClose} maxWidth="sm" fullWidth>
-                <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <ReceiptIcon /> Scan Receipt
-                </DialogTitle>
-                <DialogContent>
-                    {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-                    {success && <Alert severity="success" sx={{ mb: 2 }} icon={<CheckCircleIcon />}>Transaction saved successfully!</Alert>}
+            <Dialog open={dialogOpen} onOpenChange={handleClose}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Receipt className="w-5 h-5 text-gray-500" /> Scan Receipt
+                        </DialogTitle>
+                    </DialogHeader>
 
-                    {/* Upload Area */}
-                    {!imagePreview && (
-                        <Box
-                            sx={{
-                                border: "2px dashed",
-                                borderColor: "primary.main",
-                                borderRadius: 2,
-                                p: 4,
-                                textAlign: "center",
-                                cursor: "pointer",
-                                "&:hover": { bgcolor: "action.hover" }
-                            }}
-                            onClick={() => fileInputRef.current?.click()}
-                        >
-                            <CloudUploadIcon sx={{ fontSize: 64, color: "primary.main", mb: 2 }} />
-                            <Typography variant="h6">Drop receipt image here</Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                or click to browse
-                            </Typography>
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                hidden
-                                onChange={handleFileSelect}
-                            />
-                        </Box>
-                    )}
+                    <div className="mt-4 max-h-[70vh] overflow-y-auto px-1 py-1">
+                        {error && (
+                            <div className="bg-red-50 text-red-700 p-3 rounded-md mb-4 text-sm border border-red-200">
+                                {error}
+                            </div>
+                        )}
+                        {success && (
+                            <div className="bg-green-50 text-green-700 p-3 rounded-md mb-4 text-sm border border-green-200 flex items-center gap-2">
+                                <CheckCircle className="w-5 h-5 flex-shrink-0" />
+                                <span>Transaction saved successfully!</span>
+                            </div>
+                        )}
 
-                    {/* Image Preview */}
-                    {imagePreview && (
-                        <Box sx={{ mb: 2 }}>
-                            <Box sx={{ position: "relative", display: "inline-block", width: "100%" }}>
+                        {/* Upload Area */}
+                        {!imagePreview && (
+                            <div
+                                className="border-2 border-dashed border-purple-400 rounded-xl p-10 text-center cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-colors"
+                                onClick={() => fileInputRef.current?.click()}
+                            >
+                                <UploadCloud className="w-16 h-16 text-purple-500 mx-auto mb-4" />
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Drop receipt image here</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    or click to browse
+                                </p>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={handleFileSelect}
+                                />
+                            </div>
+                        )}
+
+                        {/* Image Preview */}
+                        {imagePreview && (
+                            <div className="mb-6 relative w-full group">
+                                <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="bg-white/90 dark:bg-gray-800/90 p-2 rounded-full shadow-md text-gray-700 dark:text-gray-200 hover:text-blue-600 focus:outline-none"
+                                        title="Change Image"
+                                    >
+                                        <Camera className="w-4 h-4" />
+                                    </button>
+                                </div>
                                 <img
                                     src={imagePreview}
                                     alt="Receipt"
-                                    style={{
-                                        width: "100%",
-                                        maxHeight: 200,
-                                        objectFit: "contain",
-                                        borderRadius: 8
-                                    }}
+                                    className="w-full max-h-48 object-contain rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-black/20"
                                 />
-                                <IconButton
-                                    sx={{ position: "absolute", top: 8, right: 8, bgcolor: "background.paper" }}
-                                    onClick={() => fileInputRef.current?.click()}
-                                    size="small"
-                                >
-                                    <CameraAltIcon />
-                                </IconButton>
-                            </Box>
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                hidden
-                                onChange={handleFileSelect}
-                            />
-                        </Box>
-                    )}
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={handleFileSelect}
+                                />
+                            </div>
+                        )}
 
-                    {/* Processing Progress */}
-                    {isProcessing && (
-                        <Box sx={{ mb: 2 }}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
-                                <CircularProgress size={24} />
-                                <Typography>Processing receipt... {progress}%</Typography>
-                            </Box>
-                            <LinearProgress variant="determinate" value={progress} />
-                        </Box>
-                    )}
+                        {/* Processing Progress */}
+                        {isProcessing && (
+                            <div className="mb-6">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <Loader2 className="w-5 h-5 text-purple-600 animate-spin" />
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Processing receipt... {progress}%</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700 overflow-hidden">
+                                    <div className="bg-purple-600 h-2 rounded-full transition-all duration-300 ease-out" style={{ width: `${progress}%` }}></div>
+                                </div>
+                            </div>
+                        )}
 
-                    {/* Form Fields */}
-                    {imagePreview && !isProcessing && (
-                        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
-                            {extractedData && (
-                                <Alert severity="info" sx={{ fontSize: "0.85rem" }}>
-                                    Extracted: {extractedData.merchant || "Unknown merchant"}
-                                    {extractedData.amount && ` - $${extractedData.amount}`}
-                                </Alert>
-                            )}
+                        {/* Form Fields */}
+                        {imagePreview && !isProcessing && (
+                            <div className="space-y-4">
+                                {extractedData && (
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 text-sm p-3 rounded-lg border border-blue-200 dark:border-blue-800/30">
+                                        <strong>Extracted:</strong> {extractedData.merchant || "Unknown merchant"}
+                                        {extractedData.amount && ` - $${extractedData.amount}`}
+                                    </div>
+                                )}
 
-                            <TextField
-                                label="Amount"
-                                type="number"
-                                value={form.amount}
-                                onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                                InputProps={{ startAdornment: "$" }}
-                                required
-                            />
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount</label>
+                                    <div className="relative">
+                                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+                                        <Input
+                                            type="number"
+                                            step="0.01"
+                                            value={form.amount}
+                                            onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                                            required
+                                            className="pl-8"
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+                                </div>
 
-                            <TextField
-                                label="Description"
-                                value={form.description}
-                                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                                multiline
-                                rows={2}
-                            />
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                                    <Input
+                                        value={form.description}
+                                        onChange={(e) => setForm({ ...form, description: e.target.value })}
+                                        placeholder="What was this for?"
+                                    />
+                                </div>
 
-                            <TextField
-                                label="Date"
-                                type="date"
-                                value={form.date}
-                                onChange={(e) => setForm({ ...form, date: e.target.value })}
-                                InputLabelProps={{ shrink: true }}
-                            />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                                        <Input
+                                            type="date"
+                                            value={form.date}
+                                            onChange={(e) => setForm({ ...form, date: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
+                                        <select
+                                            value={form.category_id}
+                                            onChange={(e) => setForm({ ...form, category_id: e.target.value })}
+                                            className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300"
+                                            required
+                                        >
+                                            <option value="" disabled>Select...</option>
+                                            {categories.map((cat) => (
+                                                <option key={cat._id} value={cat._id}>
+                                                    {cat.icon} {cat.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
-                            <FormControl required>
-                                <InputLabel>Category</InputLabel>
-                                <Select
-                                    value={form.category_id}
-                                    label="Category"
-                                    onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-                                >
-                                    {categories.map((cat) => (
-                                        <MenuItem key={cat._id} value={cat._id}>
-                                            {cat.icon} {cat.label}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Box>
-                    )}
+                    <DialogFooter className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                        <Button variant="ghost" onClick={handleClose}>Cancel</Button>
+                        {imagePreview && !extractedData && !isProcessing && (
+                            <Button onClick={processReceipt} className="bg-purple-600 hover:bg-purple-700 text-white">
+                                Extract Text
+                            </Button>
+                        )}
+                        {extractedData && (
+                            <Button
+                                onClick={handleSave}
+                                disabled={!form.amount || !form.category_id}
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                            >
+                                Save Transaction
+                            </Button>
+                        )}
+                    </DialogFooter>
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    {imagePreview && !extractedData && !isProcessing && (
-                        <Button variant="contained" onClick={processReceipt}>
-                            Extract Text
-                        </Button>
-                    )}
-                    {extractedData && (
-                        <Button
-                            variant="contained"
-                            onClick={handleSave}
-                            disabled={!form.amount || !form.category_id}
-                        >
-                            Save Transaction
-                        </Button>
-                    )}
-                </DialogActions>
             </Dialog>
         </>
     );

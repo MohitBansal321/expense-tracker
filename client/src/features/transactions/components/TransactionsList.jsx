@@ -1,58 +1,39 @@
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import DeleteSharpIcon from "@mui/icons-material/DeleteSharp";
-import EditSharpIcon from "@mui/icons-material/EditSharp";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import IconButton from "@mui/material/IconButton";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Typography from "@mui/material/Typography";
-import Chip from "@mui/material/Chip";
-import Box from "@mui/material/Box";
-import dayjs from "dayjs";
+import React, { useMemo, useState } from "react";
 import Cookies from "js-cookie";
-import * as React from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import dayjs from "dayjs";
+import { 
+  Trash2, 
+  Pencil, 
+  ArrowUp, 
+  ArrowDown, 
+  Search,
+  ArrowRightLeft,
+  Filter
+} from "lucide-react";
+import { cn } from "../../../lib/utils";
+import { Button } from "../../../components/ui/button";
+import { Badge } from "../../../components/ui/badge";
 
-// Define the TransactionsList component
 export default function TransactionsList({ data, fetchTransactions, setEditTransaction, setCategoryFilter }) {
-  // Get the user data from the Redux store
   const user = useSelector((state) => state.auth.user);
-  const [selectedCategory, setSelectedCategory] = React.useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
-  const handleChange = (event, value) => {
-    if (value) {
-      console.log("Selected value: " + value._id);
-      setSelectedCategory(value); // Update local state with selected category
-      setCategoryFilter(value._id); // Update filter
-    } else {
-      console.log("Cleared input");
-      setSelectedCategory(null); // Reset local state when cleared
-      setCategoryFilter(''); // Reset filter
-    }
+  const handleFilterChange = (value) => {
+    setSelectedCategory(value);
+    setCategoryFilter(value === "all" ? "" : value);
   };
 
-  // Function to retrieve category name by its ID
   function categoryName(id) {
-    const category = user?.categories?.find((category) => category._id === id);
-    return category ? category.label : null;
+    const category = user?.categories?.find((c) => c._id === id);
+    return category ? category.label : "Uncategorized";
   }
 
-  // Function to remove a transaction
   async function remove(_id) {
     const token = Cookies.get("token");
-
-    // Display a confirmation dialog before deletion
     if (!window.confirm("Are you sure you want to delete this transaction?")) return;
 
-    // Send a DELETE request to remove the transaction
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/transaction/${_id}`, {
       method: "DELETE",
       headers: {
@@ -61,7 +42,6 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
     });
 
     if (res.ok) {
-      // Fetch transactions again to update the list
       fetchTransactions();
       toast.success("Transaction deleted successfully");
     } else {
@@ -69,13 +49,11 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
     }
   }
 
-  // Function to format the date in a specific format
   function formatDate(date) {
     return dayjs(date).format("DD MMM, YYYY");
   }
 
-  // Calculate totals for the summary
-  const totals = React.useMemo(() => {
+  const totals = useMemo(() => {
     let income = 0;
     let expense = 0;
     data?.forEach(month => {
@@ -90,185 +68,208 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
     return { income, expense, net: income - expense };
   }, [data]);
 
+  const transactions = useMemo(() => {
+    const all = [];
+    data?.forEach(month => {
+        month.transactions?.forEach(tx => {
+            all.push(tx);
+        });
+    });
+    // Sort all transactions by date descending
+    return all.sort((a, b) => new Date(b.date) - new Date(a.date));
+  }, [data]);
+
   return (
-    <>
+    <div className="space-y-8">
       {/* Summary Section */}
-      <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 3, mt: { xs: 4, md: 10 }, mb: 4 }}>
-        <Paper sx={{ p: 2, flex: 1, borderLeft: "4px solid #4CAF50" }}>
-          <Typography variant="body2" color="text.secondary">Total Income</Typography>
-          <Typography variant="h6" sx={{ color: "#4CAF50", fontWeight: 600 }}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 mb-10">
+        <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm border border-gray-100 dark:border-gray-800 p-6 rounded-3xl border-l-[6px] border-l-green-500 shadow-sm transition-all hover:shadow-md">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Total Income</p>
+          <p className="text-2xl font-bold text-green-600 dark:text-green-500">
             ${totals.income.toLocaleString()}
-          </Typography>
-        </Paper>
-        <Paper sx={{ p: 2, flex: 1, borderLeft: "4px solid #f44336" }}>
-          <Typography variant="body2" color="text.secondary">Total Expenses</Typography>
-          <Typography variant="h6" sx={{ color: "#f44336", fontWeight: 600 }}>
+          </p>
+        </div>
+        <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm border border-gray-100 dark:border-gray-800 p-6 rounded-3xl border-l-[6px] border-l-red-500 shadow-sm transition-all hover:shadow-md">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Total Expenses</p>
+          <p className="text-2xl font-bold text-red-600 dark:text-red-500">
             ${totals.expense.toLocaleString()}
-          </Typography>
-        </Paper>
-        <Paper sx={{ p: 2, flex: 1, borderLeft: `4px solid ${totals.net >= 0 ? "#2196F3" : "#ff9800"}` }}>
-          <Typography variant="body2" color="text.secondary">Net Balance</Typography>
-          <Typography variant="h6" sx={{ color: totals.net >= 0 ? "#2196F3" : "#ff9800", fontWeight: 600 }}>
+          </p>
+        </div>
+        <div className={cn(
+            "bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm border border-gray-100 dark:border-gray-800 p-6 rounded-3xl border-l-[6px] shadow-sm transition-all hover:shadow-md",
+            totals.net >= 0 ? "border-l-indigo-500" : "border-l-orange-500"
+        )}>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Net Balance</p>
+          <p className={cn(
+              "text-2xl font-bold",
+              totals.net >= 0 ? "text-indigo-600 dark:text-indigo-400" : "text-orange-600 dark:text-orange-400"
+          )}>
             ${totals.net.toLocaleString()}
-          </Typography>
-        </Paper>
-      </Box>
+          </p>
+        </div>
+      </div>
 
-      {/* Display a title for the list of transactions */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <Typography variant="h6">
-          List of Transactions
-        </Typography>
-        <Autocomplete
-          isOptionEqualToValue={(option, value) => option._id === value._id}
-          value={selectedCategory}
-          onChange={handleChange}
-          id="controllable-states-demo"
-          options={user?.categories || []}
-          getOptionLabel={(option) => option?.label || ""}
-          sx={{ width: 200 }}
-          renderInput={(params) => <TextField {...params} size="small" label="Filter by Category" />}
-        />
-      </Box>
+      {/* Header & Filter */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <ArrowRightLeft className="w-5 h-5 text-indigo-500" /> Transactions
+        </h3>
+        <div className="relative w-full sm:w-64">
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <select
+                value={selectedCategory}
+                onChange={(e) => handleFilterChange(e.target.value)}
+                className="w-full h-10 pl-9 pr-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 appearance-none cursor-pointer"
+            >
+                <option value="all">All Categories</option>
+                {user?.categories?.map((cat) => (
+                    <option key={cat._id} value={cat._id}>
+                        {cat.label}
+                    </option>
+                ))}
+            </select>
+        </div>
+      </div>
 
-      {/* Responsive List Display */}
       {/* Mobile View (Cards) */}
-      <Box sx={{ display: { xs: "block", md: "none" } }}>
-        {(data || []).map((month) =>
-          month.transactions.map((row) => {
+      <div className="space-y-4 md:hidden">
+        {transactions.length > 0 ? (
+          transactions.map((row) => {
             const isIncome = row.type === "income";
             return (
-              <Paper
+              <div
                 key={row._id}
-                sx={{
-                  p: 2,
-                  mb: 2,
-                  borderLeft: `4px solid ${isIncome ? "#4CAF50" : "#f44336"}`,
-                  borderRadius: 2
-                }}
+                className={cn(
+                    "p-5 rounded-3xl border shadow-sm bg-white dark:bg-gray-900 transition-all active:scale-[0.98]",
+                    isIncome ? "border-l-4 border-l-green-500 border-gray-100 dark:border-gray-800" : "border-l-4 border-l-red-500 border-gray-100 dark:border-gray-800"
+                )}
               >
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 1 }}>
-                  <Box>
-                    <Typography variant="subtitle1" fontWeight={600}>{row.description}</Typography>
-                    <Typography variant="caption" color="text.secondary">{formatDate(row.date)}</Typography>
-                  </Box>
-                  <Typography
-                    variant="h6"
-                    fontWeight={600}
-                    sx={{ color: isIncome ? "#4CAF50" : "#f44336" }}
-                  >
-                    {isIncome ? "+" : "-"}${row.amount}
-                  </Typography>
-                </Box>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <Chip
-                    label={categoryName(row.category_id)}
-                    size="small"
-                    variant="outlined"
-                  />
-                  <Box>
-                    <IconButton
-                      color="primary"
-                      size="small"
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h4 className="font-bold text-gray-900 dark:text-white leading-tight">{row.description}</h4>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{formatDate(row.date)}</span>
+                  </div>
+                  <div className={cn(
+                      "text-lg font-bold",
+                      isIncome ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"
+                  )}>
+                    {isIncome ? "+" : "-"}${row.amount.toLocaleString()}
+                  </div>
+                </div>
+                <div className="flex justify-between items-center pt-3 border-t border-gray-50 dark:border-gray-800">
+                  <Badge variant="outline" className="rounded-lg bg-gray-50/50 dark:bg-gray-800/50 font-medium">
+                    {categoryName(row.category_id)}
+                  </Badge>
+                  <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/30"
                       onClick={() => setEditTransaction(row)}
                     >
-                      <EditSharpIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      color="warning"
-                      size="small"
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
                       onClick={() => remove(row._id)}
                     >
-                      <DeleteSharpIcon fontSize="small" />
-                    </IconButton>
-                  </Box>
-                </Box>
-              </Paper>
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
             );
           })
+        ) : (
+          <div className="text-center py-10 opacity-60">No transactions found</div>
         )}
-      </Box>
+      </div>
 
       {/* Desktop View (Table) */}
-      <TableContainer component={Paper} sx={{ display: { xs: "none", md: "block" } }}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          {/* Define the table header */}
-          <TableHead>
-            <TableRow sx={{ backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : '#f5f5f5' }}>
-              <TableCell align="center" sx={{ fontWeight: 600 }}>Type</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 600 }}>Amount</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 600 }}>Description</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 600 }}>Category</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 600 }}>Date</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 600 }}>Action</TableCell>
-            </TableRow>
-          </TableHead>
-
-          {/* Populate the table with transaction data */}
-          <TableBody>
-            {(data || []).map((month) =>
-              month.transactions.map((row) => {
-                const isIncome = row.type === "income";
-                return (
-                  <TableRow
-                    key={row._id}
-                    sx={{
-                      "&:last-child td, &:last-child th": { border: 0 },
-                      "&:hover": { backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.04)' : '#fafafa' },
-                      borderLeft: `3px solid ${isIncome ? "#4CAF50" : "#f44336"}`
-                    }}
-                  >
-                    <TableCell align="center">
-                      <Chip
-                        icon={isIncome ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
-                        label={isIncome ? "Income" : "Expense"}
-                        size="small"
-                        sx={{
-                          backgroundColor: isIncome ? "#e8f5e9" : "#ffebee",
-                          color: isIncome ? "#4CAF50" : "#f44336",
-                          fontWeight: 500,
-                          "& .MuiChip-icon": {
-                            color: isIncome ? "#4CAF50" : "#f44336"
-                          }
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      component="th"
-                      scope="row"
-                      sx={{
-                        fontWeight: 600,
-                        color: isIncome ? "#4CAF50" : "#f44336"
-                      }}
-                    >
-                      {isIncome ? "+" : "-"}${row.amount}
-                    </TableCell>
-                    <TableCell align="center">{row.description}</TableCell>
-                    <TableCell align="center">{categoryName(row.category_id)}</TableCell>
-                    <TableCell align="center">{formatDate(row.date)}</TableCell>
-                    <TableCell align="center">
-                      {/* Edit and Delete buttons for each transaction */}
-                      <IconButton
-                        color="primary"
-                        component="label"
+      <div className="hidden md:block overflow-hidden rounded-[2rem] border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xl">
+        <table className="w-full text-sm text-left">
+          <thead className="text-xs text-gray-500 uppercase tracking-widest bg-gray-50/50 dark:bg-gray-800/50">
+            <tr>
+              <th className="px-6 py-5 font-semibold text-center">Type</th>
+              <th className="px-6 py-5 font-semibold text-center">Amount</th>
+              <th className="px-6 py-5 font-semibold">Description</th>
+              <th className="px-6 py-5 font-semibold">Category</th>
+              <th className="px-6 py-5 font-semibold">Date</th>
+              <th className="px-6 py-5 font-semibold text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+            {transactions.map((row) => {
+              const isIncome = row.type === "income";
+              return (
+                <tr
+                  key={row._id}
+                  className="group hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors"
+                >
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex justify-center">
+                        <div className={cn(
+                            "w-10 h-10 rounded-full flex items-center justify-center transition-transform group-hover:scale-110",
+                            isIncome ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
+                        )}>
+                            {isIncome ? <ArrowUp className="w-5 h-5" /> : <ArrowDown className="w-5 h-5" />}
+                        </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <span className={cn(
+                        "text-base font-bold",
+                        isIncome ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"
+                    )}>
+                      {isIncome ? "+" : "-"}${row.amount.toLocaleString()}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">
+                    {row.description}
+                  </td>
+                  <td className="px-6 py-4">
+                    <Badge variant="outline" className="rounded-full bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 font-medium">
+                      {categoryName(row.category_id)}
+                    </Badge>
+                  </td>
+                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400 italic">
+                    {formatDate(row.date)}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-full"
                         onClick={() => setEditTransaction(row)}
                       >
-                        <EditSharpIcon />
-                      </IconButton>
-
-                      <IconButton color="warning" component="label" onClick={() => remove(row._id)}>
-                        <DeleteSharpIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
+                        <Pencil className="w-4.5 h-4.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full"
+                        onClick={() => remove(row._id)}
+                      >
+                        <Trash2 className="w-4.5 h-4.5" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        {transactions.length === 0 && (
+            <div className="py-20 text-center text-gray-500 dark:text-gray-400 flex flex-col items-center">
+                <Search className="w-12 h-12 mb-4 opacity-20" />
+                <p className="text-lg">No transactions found matching your criteria</p>
+            </div>
+        )}
+      </div>
+    </div>
   );
 }
 

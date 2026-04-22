@@ -1,19 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import CircularProgress from "@mui/material/CircularProgress";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
+import { PlusCircle, Receipt, Wallet } from "lucide-react";
+import { Button } from "../../../components/ui/button";
 
 export default function DashboardActions({ onAddTransaction }) {
-    const navigate = useNavigate();
     const [healthScore, setHealthScore] = useState(100);
     const [loading, setLoading] = useState(true);
 
@@ -48,114 +39,104 @@ export default function DashboardActions({ onAddTransaction }) {
         }
     }
 
-    const getScoreColor = (score) => {
-        if (score >= 80) return "#4CAF50"; // Green
-        if (score >= 50) return "#FF9800"; // Orange
-        return "#f44336"; // Red
+    const getScoreColorClass = (score) => {
+        if (score >= 80) return "text-green-500"; // Green
+        if (score >= 50) return "text-orange-500"; // Orange
+        return "text-red-500"; // Red
     };
 
+    // Calculate SVG circle properties
+    const strokeWidth = 8;
+    const radius = 50 - strokeWidth / 2;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (healthScore / 100) * circumference;
+
     return (
-        <Grid container spacing={3} sx={{ mb: 4 }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {/* Quick Actions */}
-            <Grid item xs={12} md={8}>
-                <Card sx={{ height: '100%', borderRadius: 3 }}>
-                    <CardContent>
-                        <Typography variant="h6" fontWeight={700} gutterBottom>
-                            Quick Actions
-                        </Typography>
-                        <Grid container spacing={2}>
-                            <Grid item xs={4}>
-                                <Button
-                                    variant="outlined"
-                                    fullWidth
-                                    sx={{ py: 2, display: 'flex', flexDirection: 'column', gap: 1, borderRadius: 2 }}
-                                    onClick={onAddTransaction}
-                                >
-                                    <AddCircleIcon fontSize="large" color="primary" />
-                                    <Typography variant="caption" fontWeight={600}>Add Expense</Typography>
-                                </Button>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Link to="/smart-entry" style={{ textDecoration: 'none' }}>
-                                    <Button
-                                        variant="outlined"
-                                        fullWidth
-                                        sx={{ py: 2, display: 'flex', flexDirection: 'column', gap: 1, borderRadius: 2 }}
-                                    >
-                                        <ReceiptLongIcon fontSize="large" color="secondary" />
-                                        <Typography variant="caption" fontWeight={600}>Scan Receipt</Typography>
-                                    </Button>
-                                </Link>
-                            </Grid>
-                            <Grid item xs={4}>
-                                <Link to="/budget" style={{ textDecoration: 'none' }}>
-                                    <Button
-                                        variant="outlined"
-                                        fullWidth
-                                        sx={{ py: 2, display: 'flex', flexDirection: 'column', gap: 1, borderRadius: 2 }}
-                                    >
-                                        <AccountBalanceWalletIcon fontSize="large" color="success" />
-                                        <Typography variant="caption" fontWeight={600}>New Budget</Typography>
-                                    </Button>
-                                </Link>
-                            </Grid>
-                        </Grid>
-                    </CardContent>
-                </Card>
-            </Grid>
+            <div className="md:col-span-2">
+                <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 h-full">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                        Quick Actions
+                    </h2>
+                    <div className="grid grid-cols-3 gap-4">
+                        <Button
+                            variant="outline"
+                            onClick={onAddTransaction}
+                            className="h-auto py-6 flex flex-col items-center gap-3 rounded-2xl hover:bg-blue-50 hover:border-blue-200 dark:hover:bg-blue-900/20 dark:hover:border-blue-800"
+                        >
+                            <PlusCircle className="w-8 h-8 text-blue-600 dark:text-blue-500" />
+                            <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Add Expense</span>
+                        </Button>
+                        
+                        <Link to="/smart-entry" className="block outline-none">
+                            <Button
+                                variant="outline"
+                                className="w-full h-auto py-6 flex flex-col items-center gap-3 rounded-2xl hover:bg-purple-50 hover:border-purple-200 dark:hover:bg-purple-900/20 dark:hover:border-purple-800"
+                            >
+                                <Receipt className="w-8 h-8 text-purple-600 dark:text-purple-500" />
+                                <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Scan Receipt</span>
+                            </Button>
+                        </Link>
+                        
+                        <Link to="/budget" className="block outline-none">
+                            <Button
+                                variant="outline"
+                                className="w-full h-auto py-6 flex flex-col items-center gap-3 rounded-2xl hover:bg-emerald-50 hover:border-emerald-200 dark:hover:bg-emerald-900/20 dark:hover:border-emerald-800"
+                            >
+                                <Wallet className="w-8 h-8 text-emerald-600 dark:text-emerald-500" />
+                                <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">New Budget</span>
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+            </div>
 
             {/* Financial Health Score */}
-            <Grid item xs={12} md={4}>
-                <Card sx={{ height: '100%', borderRadius: 3, position: 'relative', overflow: 'visible' }}>
-                    <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                        <Typography variant="h6" fontWeight={700} gutterBottom>
-                            Financial Health
-                        </Typography>
+            <div className="md:col-span-1">
+                <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 h-full flex flex-col items-center justify-center">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 self-start w-full text-center">
+                        Financial Health
+                    </h2>
 
-                        <Box sx={{ position: 'relative', display: 'inline-flex', my: 1 }}>
-                            <CircularProgress
-                                variant="determinate"
-                                value={100}
-                                size={100}
-                                thickness={4}
-                                sx={{ color: '#e0e0e0' }}
+                    <div className="relative inline-flex items-center justify-center mb-4">
+                        <svg className="w-32 h-32 transform -rotate-90">
+                            {/* Background circle */}
+                            <circle
+                                className="text-gray-100 dark:text-gray-800"
+                                strokeWidth={strokeWidth}
+                                stroke="currentColor"
+                                fill="transparent"
+                                r={radius}
+                                cx="64"
+                                cy="64"
                             />
-                            <CircularProgress
-                                variant="determinate"
-                                value={loading ? 0 : healthScore}
-                                size={100}
-                                thickness={4}
-                                sx={{
-                                    color: getScoreColor(healthScore),
-                                    position: 'absolute',
-                                    left: 0,
-                                    transition: 'all 1s ease'
-                                }}
+                            {/* Progress circle */}
+                            <circle
+                                className={`transition-all duration-1000 ease-out ${getScoreColorClass(healthScore)}`}
+                                strokeWidth={strokeWidth}
+                                strokeDasharray={circumference}
+                                strokeDashoffset={loading ? circumference : strokeDashoffset}
+                                strokeLinecap="round"
+                                stroke="currentColor"
+                                fill="transparent"
+                                r={radius}
+                                cx="64"
+                                cy="64"
                             />
-                            <Box
-                                sx={{
-                                    top: 0,
-                                    left: 0,
-                                    bottom: 0,
-                                    right: 0,
-                                    position: 'absolute',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <Typography variant="h5" component="div" fontWeight={700} color="text.secondary">
-                                    {healthScore}
-                                </Typography>
-                            </Box>
-                        </Box>
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="text-3xl font-extrabold text-gray-500 dark:text-gray-400">
+                                {loading ? "..." : healthScore}
+                            </span>
+                        </div>
+                    </div>
 
-                        <Typography variant="caption" color="text.secondary" textAlign="center">
-                            Based on budget adherence
-                        </Typography>
-                    </CardContent>
-                </Card>
-            </Grid>
-        </Grid>
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400 text-center">
+                        Based on budget adherence
+                    </p>
+                </div>
+            </div>
+        </div>
     );
 }

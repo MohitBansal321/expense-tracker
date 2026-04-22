@@ -1,287 +1,200 @@
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import InsightsIcon from "@mui/icons-material/Insights";
-import MicIcon from "@mui/icons-material/Mic";
-import ReceiptIcon from "@mui/icons-material/Receipt";
-import SecurityIcon from "@mui/icons-material/Security";
-import SpeedIcon from "@mui/icons-material/Speed";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { Sparkles, CheckCircle2, CloudUpload, Mic, Receipt, LineChart, Shield, TrendingUp } from "lucide-react";
+import { Button } from "../../../components/ui/button";
 
 export default function Landing() {
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
     return (
-        <Box sx={{ overflowX: "hidden" }}>
+        <div className="overflow-x-hidden min-h-screen bg-white dark:bg-gray-950">
             {/* Hero Section */}
-            <Box
-                sx={{
-                    bgcolor: "background.default",
-                    pt: { xs: 6, md: 12 }, // Reduced padding on mobile
-                    pb: { xs: 8, md: 12 },
-                    position: "relative",
-                    "&::before": {
-                        content: '""',
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        background: "radial-gradient(circle at 50% 30%, rgba(25, 118, 210, 0.1) 0%, transparent 60%)",
-                        zIndex: 0,
-                    },
-                }}
-            >
-                <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1, textAlign: "center" }}>
-                    <Typography
-                        component="h1"
-                        variant="h2"
-                        sx={{
-                            fontWeight: 800,
-                            mb: 3,
-                            fontSize: { xs: "2.5rem", md: "3.75rem" }, // Responsive font size
-                            background: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
-                            WebkitBackgroundClip: "text",
-                            WebkitTextFillColor: "transparent",
-                        }}
-                    >
+            <section className="relative pt-24 pb-32 md:pt-36 md:pb-40 px-4 overflow-hidden">
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(37,99,235,0.1)_0%,transparent_60%)] dark:bg-[radial-gradient(circle_at_50%_30%,rgba(59,130,246,0.15)_0%,transparent_60%)]" />
+                </div>
+                
+                <div className="container relative z-10 mx-auto text-center max-w-5xl">
+                    <h1 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight bg-gradient-to-r from-blue-600 to-cyan-400 bg-clip-text text-transparent drop-shadow-sm">
                         Master Your Money with Automation
-                    </Typography>
-                    <Typography variant="h5" color="text.secondary" sx={{ mb: 6, maxWidth: 800, mx: "auto", fontSize: { xs: "1.1rem", md: "1.5rem" } }}>
+                    </h1>
+                    <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
                         Stop manual data entry. Use AI-powered voice input, receipt scanning, and recurring transactions to track expenses effortlessly.
-                    </Typography>
-                    <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
+                    </p>
+                    
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                         {isAuthenticated ? (
-                            <Link to="/dashboard" style={{ textDecoration: "none" }}>
-                                <Button variant="contained" size="large" sx={{ px: 5, py: 1.5, borderRadius: 50 }}>
+                            <Link to="/dashboard">
+                                <Button size="lg" className="rounded-full px-8 py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xl hover:shadow-blue-500/25 transition-all">
                                     Go to Dashboard
                                 </Button>
                             </Link>
                         ) : (
                             <>
-                                <Link to="/register" style={{ textDecoration: "none" }}>
-                                    <Button variant="contained" size="large" sx={{ px: 5, py: 1.5, borderRadius: 50 }}>
+                                <Link to="/register">
+                                    <Button size="lg" className="rounded-full px-8 py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xl hover:shadow-blue-500/25 transition-all">
                                         Get Started Free
                                     </Button>
                                 </Link>
-                                <Link to="/login" style={{ textDecoration: "none" }}>
-                                    <Button variant="outlined" size="large" sx={{ px: 5, py: 1.5, borderRadius: 50 }}>
+                                <Link to="/login">
+                                    <Button size="lg" variant="outline" className="rounded-full px-8 py-6 text-lg font-semibold border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all">
                                         Login
                                     </Button>
                                 </Link>
                             </>
                         )}
-                    </Box>
-                </Container>
-            </Box>
+                    </div>
+                </div>
+            </section>
 
             {/* Problem vs Solution */}
-            <Container maxWidth="lg" sx={{ py: { xs: 6, md: 10 } }}>
-                <Grid container spacing={4} alignItems="center">
-                    <Grid item xs={12} md={5}>
-                        <Typography variant="h4" fontWeight={700} gutterBottom sx={{ fontSize: { xs: "1.75rem", md: "2.125rem" } }}>
-                            Tired of the chaos?
-                        </Typography>
-                        <Typography variant="body1" color="text.secondary" paragraph>
-                            Manual spreadsheets, lost receipts, and forgetting to log expenses lead to inaccurate financial data and stress.
-                        </Typography>
-                        {[
-                            "Manual data entry errors",
-                            "Lost paper receipts",
-                            "Forgotten subscriptions",
-                            "Unclear spending habits",
-                        ].map((text) => (
-                            <Box key={text} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                                <Box
-                                    sx={{
-                                        width: 24,
-                                        height: 24,
-                                        borderRadius: "50%",
-                                        bgcolor: "error.light",
-                                        color: "error.main",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        fontSize: 14,
-                                        fontWeight: "bold",
-                                    }}
-                                >
-                                    X
-                                </Box>
-                                <Typography>{text}</Typography>
-                            </Box>
-                        ))}
-                    </Grid>
-                    <Grid item xs={12} md={2} sx={{ textAlign: "center", display: { xs: "none", md: "block" } }}>
-                        <AutoAwesomeIcon sx={{ fontSize: 48, color: "text.disabled" }} />
-                    </Grid>
-                    <Grid item xs={12} md={5}>
-                        <Card
-                            sx={{
-                                background: "linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(33, 203, 243, 0.1) 100%)",
-                                border: "1px solid rgba(33, 150, 243, 0.2)",
-                            }}
-                        >
-                            <CardContent sx={{ p: 4 }}>
-                                <Typography variant="h5" fontWeight={700} gutterBottom color="primary">
-                                    The Automated Way
-                                </Typography>
-                                <Typography variant="body1" paragraph>
-                                    Experience financial clarity with automated tools that do the heavy lifting for you.
-                                </Typography>
+            <section className="py-20 md:py-32 px-4 bg-gray-50 dark:bg-gray-900/50">
+                <div className="container mx-auto max-w-6xl">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+                        <div className="md:col-span-5">
+                            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
+                                Tired of the chaos?
+                            </h2>
+                            <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+                                Manual spreadsheets, lost receipts, and forgetting to log expenses lead to inaccurate financial data and stress.
+                            </p>
+                            
+                            <ul className="space-y-4">
                                 {[
-                                    "Receipt scanning with OCR",
-                                    "One-click voice entry",
-                                    "Auto-recurring expenses",
-                                    "AI-powered duplicate check",
+                                    "Manual data entry errors",
+                                    "Lost paper receipts",
+                                    "Forgotten subscriptions",
+                                    "Unclear spending habits",
                                 ].map((text) => (
-                                    <Box key={text} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
-                                        <CheckCircleIcon color="success" />
-                                        <Typography fontWeight={500}>{text}</Typography>
-                                    </Box>
+                                    <li key={text} className="flex items-center gap-3 text-gray-700 dark:text-gray-300 font-medium">
+                                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 text-xs font-bold leading-none">
+                                            ✕
+                                        </span>
+                                        {text}
+                                    </li>
                                 ))}
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                </Grid>
-            </Container>
+                            </ul>
+                        </div>
+                        
+                        <div className="hidden md:flex md:col-span-2 justify-center items-center text-gray-300 dark:text-gray-700">
+                            <Sparkles className="w-16 h-16" />
+                        </div>
+                        
+                        <div className="md:col-span-5">
+                            <div className="rounded-2xl p-8 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-100 dark:border-blue-800/50 shadow-lg relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-32 bg-blue-500/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+                                <h3 className="text-2xl font-bold mb-4 text-blue-700 dark:text-blue-400 relative z-10">
+                                    The Automated Way
+                                </h3>
+                                <p className="text-gray-700 dark:text-gray-300 mb-8 relative z-10 leading-relaxed">
+                                    Experience financial clarity with automated tools that do the heavy lifting for you.
+                                </p>
+                                
+                                <ul className="space-y-4 relative z-10">
+                                    {[
+                                        "Receipt scanning with OCR",
+                                        "One-click voice entry",
+                                        "Auto-recurring expenses",
+                                        "AI-powered duplicate check",
+                                    ].map((text) => (
+                                        <li key={text} className="flex items-center gap-3 text-gray-900 dark:text-gray-100 font-medium">
+                                            <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                                            {text}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             {/* Feature Showcase */}
-            <Box sx={{ bgcolor: "background.paper", py: { xs: 6, md: 10 } }}>
-                <Container maxWidth="lg">
-                    <Typography variant="h3" fontWeight={700} textAlign="center" gutterBottom sx={{ fontSize: { xs: "2rem", md: "3rem" } }}>
-                        Smart Entry Features
-                    </Typography>
-                    <Typography variant="h6" color="text.secondary" textAlign="center" sx={{ mb: 8 }}>
-                        Three ways to add transactions without typing
-                    </Typography>
+            <section className="py-20 md:py-32 px-4">
+                <div className="container mx-auto max-w-6xl">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">Smart Entry Features</h2>
+                        <p className="text-xl text-gray-600 dark:text-gray-400">Three ways to add transactions without typing</p>
+                    </div>
 
-                    <Grid container spacing={4}>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             {
-                                icon: <ReceiptIcon sx={{ fontSize: 40 }} />,
+                                icon: <Receipt className="w-10 h-10" />,
                                 title: "Receipt Scanner",
                                 desc: "Upload a photo of your receipt. We extract the date, merchant, and amount automatically.",
                             },
                             {
-                                icon: <MicIcon sx={{ fontSize: 40 }} />,
+                                icon: <Mic className="w-10 h-10" />,
                                 title: "Voice Input",
                                 desc: 'Just say "Spent 25 dollars on lunch" and we turn speech into structured data.',
                             },
                             {
-                                icon: <CloudUploadIcon sx={{ fontSize: 40 }} />,
+                                icon: <CloudUpload className="w-10 h-10" />,
                                 title: "CSV Import",
                                 desc: "Drag and drop your bank statements to import hundreds of transactions at once.",
                             },
                         ].map((feature, i) => (
-                            <Grid item xs={12} md={4} key={i}>
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        p: 4,
-                                        height: "100%",
-                                        border: "1px solid",
-                                        borderColor: "divider",
-                                        borderRadius: 4,
-                                        transition: "transform 0.2s",
-                                        "&:hover": { transform: "translateY(-5px)" },
-                                    }}
-                                >
-                                    <Box
-                                        sx={{
-                                            width: 60,
-                                            height: 60,
-                                            borderRadius: 3,
-                                            bgcolor: "rgba(25, 118, 210, 0.12)",
-                                            color: "primary.main",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            mb: 3,
-                                        }}
-                                    >
-                                        {feature.icon}
-                                    </Box>
-                                    <Typography variant="h5" fontWeight={700} gutterBottom>
-                                        {feature.title}
-                                    </Typography>
-                                    <Typography color="text.secondary">{feature.desc}</Typography>
-                                </Paper>
-                            </Grid>
+                            <div key={i} className="bg-white dark:bg-gray-900 p-8 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                                <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    {feature.icon}
+                                </div>
+                                <h3 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">{feature.title}</h3>
+                                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{feature.desc}</p>
+                            </div>
                         ))}
-                    </Grid>
-                </Container>
-            </Box>
+                    </div>
+                </div>
+            </section>
 
             {/* Analytics Preview */}
-            <Container maxWidth="lg" sx={{ py: 10 }}>
-                <Grid container spacing={6} alignItems="center">
-                    <Grid item xs={12} md={6}>
-                        <Typography variant="overline" color="primary" fontWeight={700}>
-                            Powerful Insights
-                        </Typography>
-                        <Typography variant="h3" fontWeight={700} gutterBottom>
-                            See where your money goes
-                        </Typography>
-                        <Typography variant="body1" color="text.secondary" paragraph>
-                            Visual reports help you identify spending patterns and find opportunities to save.
-                        </Typography>
-                        <Grid container spacing={2} sx={{ mt: 2 }}>
-                            {[
-                                { icon: <InsightsIcon />, text: "Monthly Trends" },
-                                { icon: <SpeedIcon />, text: "Budget Tracking" },
-                                { icon: <SecurityIcon />, text: "Secure Data" },
-                            ].map((item, i) => (
-                                <Grid item xs={12} sm={6} key={i}>
-                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                        <Box sx={{ color: "primary.main" }}>{item.icon}</Box>
-                                        <Typography fontWeight={600}>{item.text}</Typography>
-                                    </Box>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <Box
-                            sx={{
-                                position: "relative",
-                                width: "100%",
-                                paddingTop: "60%", // Aspect ratio
-                                bgcolor: "background.paper",
-                                borderRadius: 4,
-                                boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
-                                border: "1px solid",
-                                borderColor: "divider",
-                                overflow: "hidden",
-                            }}
-                        >
-                            {/* Mock Dashboard UI */}
-                            <Box sx={{ position: "absolute", inset: 0, p: 3, display: "flex", flexDirection: "column", gap: 2 }}>
-                                <Box sx={{ display: "flex", gap: 2 }}>
-                                    <Box sx={{ flex: 1, height: 100, bgcolor: "action.hover", borderRadius: 2 }} />
-                                    <Box sx={{ flex: 1, height: 100, bgcolor: "action.hover", borderRadius: 2 }} />
-                                    <Box sx={{ flex: 1, height: 100, bgcolor: "action.hover", borderRadius: 2 }} />
-                                </Box>
-                                <Box sx={{ flex: 1, bgcolor: "action.hover", borderRadius: 2, display: "flex", alignItems: "end", justifyContent: "space-around", pb: 2, px: 2 }}>
-                                    {[40, 60, 45, 70, 50, 80, 65].map((h, i) => (
-                                        <Box key={i} sx={{ width: "8%", height: `${h}%`, bgcolor: "primary.main", opacity: 0.7, borderRadius: 1 }} />
+            <section className="py-20 md:py-32 px-4 bg-gray-50 dark:bg-gray-900/50">
+                <div className="container mx-auto max-w-6xl">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                        <div>
+                            <p className="text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider mb-2 text-sm">
+                                Powerful Insights
+                            </p>
+                            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white leading-tight">
+                                See where your money goes
+                            </h2>
+                            <p className="text-lg text-gray-600 dark:text-gray-400 mb-10 leading-relaxed max-w-xl">
+                                Visual reports help you identify spending patterns, understand your habits, and find incredible opportunities to save.
+                            </p>
+                            
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                {[
+                                    { icon: <TrendingUp className="w-6 h-6" />, text: "Monthly Trends" },
+                                    { icon: <LineChart className="w-6 h-6" />, text: "Budget Tracking" },
+                                    { icon: <Shield className="w-6 h-6" />, text: "Secure Data" },
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-center gap-3">
+                                        <div className="text-blue-600 dark:text-blue-400">{item.icon}</div>
+                                        <span className="font-semibold text-gray-900 dark:text-gray-200">{item.text}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-cyan-400/20 rounded-[2rem] blur-3xl transform -rotate-6"></div>
+                            <div className="relative aspect-auto sm:aspect-square md:aspect-[4/3] bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-2xl p-6 flex flex-col gap-4 overflow-hidden">
+                                <div className="flex gap-4">
+                                    <div className="flex-1 h-24 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse delay-75"></div>
+                                    <div className="flex-1 h-24 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse delay-150"></div>
+                                    <div className="flex-1 h-24 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse delay-300"></div>
+                                </div>
+                                <div className="flex-1 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800 p-4 flex items-end justify-between gap-2">
+                                    {[40, 60, 45, 75, 50, 85, 65, 90, 55, 70].map((h, i) => (
+                                        <div key={i} className="w-full bg-blue-500/80 hover:bg-blue-500 rounded-t-sm transition-all duration-500 cursor-pointer" style={{ height: `${h}%` }}></div>
                                     ))}
-                                </Box>
-                            </Box>
-                        </Box>
-                    </Grid>
-                </Grid>
-            </Container>
-        </Box>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     );
 }

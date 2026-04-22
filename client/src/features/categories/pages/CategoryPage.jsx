@@ -1,38 +1,20 @@
-// Import necessary modules and libraries from React and Material-UI
-import AddIcon from "@mui/icons-material/Add";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import Box from "@mui/material/Box";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Container from "@mui/material/Container";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import Fab from "@mui/material/Fab";
-import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
+import React, { useState } from "react";
 import Cookies from "js-cookie";
-import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Plus, Trash2, Edit2, FolderOpen } from "lucide-react";
 import CategoryForm from "../components/CategoryForm.jsx";
 import { setUser } from "@/store/auth.js";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog";
+import { Button } from "../../../components/ui/button";
 
-// A React component for managing and displaying user categories
 export default function Category() {
-  // Retrieve the JWT token from cookies
   const token = Cookies.get("token");
-
-  // Retrieve user data and dispatch function from Redux store
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
 
-  // State to manage the category being edited and modal visibility
-  const [editCategory, setEditCategory] = React.useState({});
-  const [open, setOpen] = React.useState(false);
+  const [editCategory, setEditCategory] = useState({});
+  const [open, setOpen] = useState(false);
 
-  // Function to open modal for new or existing category
   function handleOpen(category = {}) {
     setEditCategory(category);
     setOpen(true);
@@ -43,7 +25,6 @@ export default function Category() {
     setEditCategory({});
   }
 
-  // Function to remove a category
   async function remove(id) {
     if (!window.confirm("Are you sure you want to delete this category?")) return;
 
@@ -55,7 +36,6 @@ export default function Category() {
     });
 
     if (res.ok) {
-      // Update user data in Redux by removing the deleted category
       const _user = {
         ...user,
         categories: (user?.categories || []).filter((cat) => cat._id !== id),
@@ -64,125 +44,86 @@ export default function Category() {
     }
   }
 
-  // Render the Category page with category list and form
   return (
-    <Container maxWidth="md" sx={{ py: 4, position: 'relative', minHeight: '80vh' }}>
-
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
+    <div className="container mx-auto max-w-4xl py-8 px-4 relative min-h-[80vh]">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
           Manage Categories
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400">
           Customize your expense categories with icons.
-        </Typography>
-      </Box>
+        </p>
+      </div>
 
       {(user?.categories || []).length === 0 ? (
-        <Card sx={{ p: 6, textAlign: 'center', borderRadius: 4, border: '1px dashed', borderColor: 'divider' }}>
-          <Box sx={{ fontSize: '4rem', mb: 2, opacity: 0.6 }}>📁</Box>
-          <Typography variant="h6" fontWeight={600} gutterBottom>
+        <div className="bg-white dark:bg-gray-900 p-12 text-center rounded-2xl border border-dashed border-gray-300 dark:border-gray-700">
+          <div className="flex justify-center mb-4 text-gray-400 dark:text-gray-600">
+            <FolderOpen className="w-20 h-20" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
             No categories yet
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 360, mx: 'auto' }}>
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-sm mx-auto">
             Categories help you organize and track your spending. Create your first one to get started!
-          </Typography>
-          <Fab
-            variant="extended"
-            color="primary"
-            onClick={() => handleOpen()}
-            sx={{ textTransform: 'none', px: 4 }}
-          >
-            <AddIcon sx={{ mr: 1 }} />
+          </p>
+          <Button onClick={() => handleOpen()} className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-6 h-auto text-base">
+            <Plus className="mr-2 w-5 h-5" />
             Add Your First Category
-          </Fab>
-        </Card>
+          </Button>
+        </div>
       ) : (
-        <Grid container spacing={3}>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 pb-24">
           {(user?.categories || []).map((row) => (
-            <Grid item xs={6} sm={4} md={3} key={row._id}>
-              <Card
-                elevation={0}
-                sx={{
-                  height: '100%',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 4,
-                  transition: 'all 0.2s',
-                  position: 'relative',
-                  '&:hover': {
-                    borderColor: 'primary.main',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                    '& .actions': { opacity: 1 }
-                  }
-                }}
-              >
-                <CardContent sx={{ textAlign: 'center', p: 3 }}>
-                  <Box sx={{ fontSize: '3rem', mb: 1 }}>
-                    {row.icon}
-                  </Box>
-                  <Typography variant="subtitle1" fontWeight={600} noWrap>
-                    {row.label}
-                  </Typography>
+            <div
+              key={row._id}
+              className="group relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-center transition-all duration-300 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-xl hover:-translate-y-1"
+            >
+              <div className="text-5xl mb-3">{row.icon}</div>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
+                {row.label}
+              </h3>
 
-                  <Box
-                    className="actions"
-                    sx={{
-                      position: 'absolute',
-                      top: 8,
-                      right: 8,
-                      opacity: 0,
-                      transition: 'opacity 0.2s',
-                      bgcolor: 'background.paper',
-                      borderRadius: 2,
-                      boxShadow: 2
-                    }}
-                  >
-                    <IconButton size="small" onClick={() => handleOpen(row)} color="primary">
-                      <EditOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton size="small" onClick={() => remove(row._id)} color="error">
-                      <DeleteOutlineIcon fontSize="small" />
-                    </IconButton>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
+              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm p-1 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800">
+                <button
+                  onClick={() => handleOpen(row)}
+                  className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md transition-colors"
+                  title="Edit Category"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => remove(row._id)}
+                  className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md transition-colors"
+                  title="Delete Category"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
           ))}
-        </Grid>
+        </div>
       )}
 
-      {/* Floating Action Button for adding new category */}
-      <Fab
-        color="primary"
-        aria-label="add"
+      {/* Floating Action Button */}
+      <button
         onClick={() => handleOpen()}
-        sx={{
-          position: 'fixed',
-          bottom: 32,
-          right: 32,
-          boxShadow: '0 4px 20px rgba(33, 150, 243, 0.4)'
-        }}
+        className="fixed bottom-20 md:bottom-8 right-6 md:right-8 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg hover:shadow-blue-500/30 transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500/20 z-40"
+        aria-label="Add new category"
       >
-        <AddIcon />
-      </Fab>
+        <Plus className="w-6 h-6" />
+      </button>
 
       {/* Modal Dialog for Category Form */}
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        fullWidth
-        maxWidth="xs"
-        PaperProps={{ sx: { borderRadius: 4 } }}
-      >
-        <DialogTitle sx={{ pb: 0, fontWeight: 700 }}>
-          {editCategory._id ? "Edit Category" : "New Category"}
-        </DialogTitle>
-        <DialogContent>
-          <CategoryForm editCategory={editCategory} onClose={handleClose} />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{editCategory._id ? "Edit Category" : "New Category"}</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[80vh] overflow-y-auto">
+            <CategoryForm editCategory={editCategory} onClose={handleClose} />
+          </div>
         </DialogContent>
       </Dialog>
-
-    </Container>
+    </div>
   );
 }
