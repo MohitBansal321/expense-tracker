@@ -24,13 +24,13 @@ export default function SmartEntry() {
 
             {/* Smart Entry Options */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-center mb-16">
-                <div className="h-48">
+                <div className="h-48 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm shadow-xl border border-gray-100 dark:border-gray-800 rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
                     <ReceiptScanner onTransactionCreated={handleTransactionCreated} />
                 </div>
-                <div className="h-48">
+                <div className="h-48 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm shadow-xl border border-gray-100 dark:border-gray-800 rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
                     <CSVImport onTransactionsImported={handleTransactionCreated} />
                 </div>
-                <div className="h-48">
+                <div className="h-48 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm shadow-xl border border-gray-100 dark:border-gray-800 rounded-3xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
                     <VoiceInput onTransactionCreated={handleTransactionCreated} />
                 </div>
             </div>

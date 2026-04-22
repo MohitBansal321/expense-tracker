@@ -183,7 +183,13 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
             );
           })
         ) : (
-          <div className="text-center py-10 opacity-60">No transactions found</div>
+          <div className="py-16 text-center flex flex-col items-center justify-center border border-dashed border-gray-200 dark:border-gray-800 rounded-[2rem] bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm mt-4">
+             <div className="w-16 h-16 bg-gray-50 dark:bg-gray-800/50 rounded-full flex items-center justify-center mb-4 ring-4 ring-gray-50/50 dark:ring-gray-800/20">
+                 <Search className="w-6 h-6 text-gray-400 dark:text-gray-500 animate-[pulse_3s_ease-in-out_infinite]" />
+             </div>
+             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">No Transactions</h3>
+             <p className="text-sm text-gray-500 dark:text-gray-400 px-4">Try adjusting your filters or add a new transaction.</p>
+          </div>
         )}
       </div>
 
@@ -263,9 +269,12 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
           </tbody>
         </table>
         {transactions.length === 0 && (
-            <div className="py-20 text-center text-gray-500 dark:text-gray-400 flex flex-col items-center">
-                <Search className="w-12 h-12 mb-4 opacity-20" />
-                <p className="text-lg">No transactions found matching your criteria</p>
+            <div className="py-24 text-center flex flex-col items-center justify-center min-h-[300px] border-t border-dashed border-gray-100 dark:border-gray-800/50">
+                <div className="w-20 h-20 bg-gray-50 dark:bg-gray-800/50 rounded-full flex items-center justify-center mb-6 ring-8 ring-gray-50/50 dark:ring-gray-800/20 transition-all hover:scale-110 duration-300">
+                    <Search className="w-8 h-8 text-gray-400 dark:text-gray-500 animate-[pulse_3s_ease-in-out_infinite]" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No Transactions Found</h3>
+                <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto text-base">We couldn't find any transactions matching your current filters. Try adjusting your search criteria or add new entry.</p>
             </div>
         )}
       </div>

@@ -33,10 +33,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 // Summary Card Component
 function SummaryCard({ title, value, color, prefix = "$" }) {
     return (
-        <Card className="border-l-4" style={{ borderLeftColor: color }}>
-            <CardContent className="p-4">
-                <p className="text-sm text-muted-foreground mb-1">{title}</p>
-                <p className="text-2xl font-semibold" style={{ color }}>
+        <Card className="border-l-[4px] bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-3xl transition-all hover:shadow-lg shadow-sm" style={{ borderLeftColor: color }}>
+            <CardContent className="p-5">
+                <p className="text-sm font-medium text-muted-foreground mb-1">{title}</p>
+                <p className="text-3xl font-bold tracking-tight" style={{ color }}>
                     {prefix}
                     {typeof value === "number" ? value.toLocaleString() : value}
                 </p>
@@ -55,7 +55,7 @@ function BudgetCard({ budget, onEdit, onDelete }) {
 
     return (
         <Card
-            className="border-l-4 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
+            className="border-l-[4px] bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-3xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 shadow-sm"
             style={{ borderLeftColor: progressColor }}
         >
             <CardContent className="p-5">
@@ -425,7 +425,7 @@ export default function Budget() {
                 {isLoading ? (
                     <>
                         {[1, 2, 3, 4].map((i) => (
-                            <Skeleton key={i} className="h-24" />
+                            <Skeleton key={i} className="h-28 rounded-3xl" />
                         ))}
                     </>
                 ) : fetchError ? (
@@ -463,13 +463,13 @@ export default function Budget() {
             <h2 className="text-xl font-semibold mb-4">Your Budgets</h2>
 
             {isLoading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3].map((i) => (
-                        <Skeleton key={i} className="h-48 rounded-lg" />
+                        <Skeleton key={i} className="h-52 rounded-3xl" />
                     ))}
                 </div>
             ) : budgets.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {budgets.map((budget) => (
                         <BudgetCard
                             key={budget._id}
@@ -480,25 +480,28 @@ export default function Budget() {
                     ))}
                 </div>
             ) : fetchError ? (
-                <Card className="p-8 text-center flex flex-col items-center">
+                <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-3xl shadow-sm border border-destructive/20 p-8 text-center flex flex-col items-center">
                     <AlertCircle className="h-12 w-12 text-destructive mb-4" />
                     <h3 className="text-xl font-semibold mb-2">Failed to load budgets</h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground mb-6">
                         We couldn't load your budgets. Please try again.
                     </p>
-                    <Button onClick={fetchBudgets} variant="outline">Retry</Button>
-                </Card>
+                    <Button onClick={fetchBudgets} variant="outline" className="rounded-xl">Retry</Button>
+                </div>
             ) : (
-                <Card className="p-8 text-center">
-                    <p className="text-muted-foreground mb-4">
-                        No budgets set yet. Create your first budget to start tracking your
-                        spending!
+                <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-3xl shadow-sm border-2 border-dashed border-gray-200 dark:border-gray-800 p-12 text-center flex flex-col items-center justify-center hover:border-indigo-500/50 transition-colors group">
+                    <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/20 rounded-full flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                       <Plus className="h-8 w-8 text-indigo-500" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No Budgets Found</h3>
+                    <p className="text-muted-foreground mb-8 max-w-sm">
+                        No budgets set yet. Track your spending limits and achieve your financial goals by creating your first budget!
                     </p>
-                    <Button variant="outline" onClick={handleAdd} className="gap-2">
-                        <Plus className="h-4 w-4" />
+                    <Button onClick={handleAdd} className="rounded-xl shadow-lg shadow-indigo-500/20 px-8 h-12 gap-2 bg-indigo-600 hover:bg-indigo-700 text-white transition-all hover:scale-105 active:scale-95">
+                        <Plus className="h-5 w-5" />
                         Create Your First Budget
                     </Button>
-                </Card>
+                </div>
             )}
 
             {/* Budget Form Dialog */}
