@@ -5,6 +5,13 @@ import { Plus, Trash2, Edit2, Pause, Play, Repeat, AlertCircle } from "lucide-re
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../../components/ui/dialog";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "../../../components/ui/select";
 
 const FREQUENCY_OPTIONS = [
     { value: "daily", label: "Daily" },
@@ -374,50 +381,61 @@ export default function RecurringTransactions() {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
-                            <select
+                            <Select
                                 value={form.category_id}
-                                onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-                                className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300"
+                                onValueChange={(value) => setForm({ ...form, category_id: value })}
                                 required
                             >
-                                <option value="" disabled>Select category</option>
-                                {categories.map((cat) => (
-                                    <option key={cat._id} value={cat._id}>
-                                        {cat.icon} {cat.label}
-                                    </option>
-                                ))}
-                            </select>
+                                <SelectTrigger className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300">
+                                    <SelectValue placeholder="Select category" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-md">
+                                    {categories.map((cat) => (
+                                        <SelectItem key={cat._id} value={cat._id} className="text-sm">
+                                            {cat.icon} {cat.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Frequency</label>
-                            <select
+                            <Select
                                 value={form.frequency}
-                                onChange={(e) => setForm({ ...form, frequency: e.target.value })}
-                                className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300"
+                                onValueChange={(value) => setForm({ ...form, frequency: value })}
                             >
-                                {FREQUENCY_OPTIONS.map((opt) => (
-                                    <option key={opt.value} value={opt.value}>
-                                        {opt.label}
-                                    </option>
-                                ))}
-                            </select>
+                                <SelectTrigger className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-md">
+                                    {FREQUENCY_OPTIONS.map((opt) => (
+                                        <SelectItem key={opt.value} value={opt.value} className="text-sm">
+                                            {opt.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         {form.frequency === "weekly" && (
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Day of Week</label>
-                                <select
-                                    value={form.dayOfWeek}
-                                    onChange={(e) => setForm({ ...form, dayOfWeek: parseInt(e.target.value) })}
-                                    className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300"
+                                <Select
+                                    value={form.dayOfWeek.toString()}
+                                    onValueChange={(value) => setForm({ ...form, dayOfWeek: parseInt(value) })}
                                 >
-                                    {DAY_OPTIONS.map((opt) => (
-                                        <option key={opt.value} value={opt.value}>
-                                            {opt.label}
-                                        </option>
-                                    ))}
-                                </select>
+                                    <SelectTrigger className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-md">
+                                        {DAY_OPTIONS.map((opt) => (
+                                            <SelectItem key={opt.value} value={opt.value.toString()} className="text-sm">
+                                                {opt.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
                         )}
 

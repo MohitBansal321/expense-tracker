@@ -4,6 +4,13 @@ import { useSelector } from "react-redux";
 import { CheckCircle, UploadCloud, FileUp, Table as TableIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../../components/ui/dialog";
 import { Button } from "../../../components/ui/button";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "../../../components/ui/select";
 
 export default function CSVImport({ onTransactionsImported }) {
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -226,54 +233,67 @@ export default function CSVImport({ onTransactionsImported }) {
                                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                         <div>
                                             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Amount Column *</label>
-                                            <select
+                                            <Select
                                                 value={mapping.amount}
-                                                onChange={(e) => setMapping({ ...mapping, amount: e.target.value })}
-                                                className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                                                onValueChange={(value) => setMapping({ ...mapping, amount: value })}
                                             >
-                                                <option value="" disabled>Select...</option>
-                                                {headers.map((h) => <option key={h} value={h}>{h}</option>)}
-                                            </select>
+                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                                                    <SelectValue placeholder="Select..." />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-md">
+                                                    {headers.map((h) => <SelectItem key={h} value={h} className="text-sm">{h}</SelectItem>)}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
 
                                         <div>
                                             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Description Column *</label>
-                                            <select
+                                            <Select
                                                 value={mapping.description}
-                                                onChange={(e) => setMapping({ ...mapping, description: e.target.value })}
-                                                className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                                                onValueChange={(value) => setMapping({ ...mapping, description: value })}
                                             >
-                                                <option value="" disabled>Select...</option>
-                                                {headers.map((h) => <option key={h} value={h}>{h}</option>)}
-                                            </select>
+                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                                                    <SelectValue placeholder="Select..." />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-md">
+                                                    {headers.map((h) => <SelectItem key={h} value={h} className="text-sm">{h}</SelectItem>)}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
 
                                         <div>
                                             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Date Column</label>
-                                            <select
+                                            <Select
                                                 value={mapping.date}
-                                                onChange={(e) => setMapping({ ...mapping, date: e.target.value })}
-                                                className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                                                onValueChange={(value) => setMapping({ ...mapping, date: value })}
                                             >
-                                                <option value="">Use today's date</option>
-                                                {headers.map((h) => <option key={h} value={h}>{h}</option>)}
-                                            </select>
+                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                                                    <SelectValue placeholder="Use today's date" />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-md">
+                                                    <SelectItem value="" className="text-sm">Use today's date</SelectItem>
+                                                    {headers.map((h) => <SelectItem key={h} value={h} className="text-sm">{h}</SelectItem>)}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
 
                                         <div>
                                             <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Default Category *</label>
-                                            <select
+                                            <Select
                                                 value={defaultCategory}
-                                                onChange={(e) => setDefaultCategory(e.target.value)}
-                                                className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                                                onValueChange={(value) => setDefaultCategory(value)}
                                             >
-                                                <option value="" disabled>Select...</option>
-                                                {categories.map((cat) => (
-                                                    <option key={cat._id} value={cat._id}>
-                                                        {cat.icon} {cat.label}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                                                    <SelectValue placeholder="Select..." />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-md">
+                                                    {categories.map((cat) => (
+                                                        <SelectItem key={cat._id} value={cat._id} className="text-sm">
+                                                            {cat.icon} {cat.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
                                     </div>
                                 </div>

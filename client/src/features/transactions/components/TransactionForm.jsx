@@ -22,6 +22,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "../../../components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../components/ui/select";
 import { Calendar } from "../../../components/ui/calendar";
 
 const INITIAL_FORM = {
@@ -316,26 +323,24 @@ export default function TransactionForm({
               <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
                 Category
               </label>
-              <div className="relative">
-                <select
-                  value={form.category_id}
-                  onChange={(event) =>
-                    setForm((current) => ({ ...current, category_id: event.target.value }))
-                  }
-                  className="h-14 w-full appearance-none rounded-2xl border border-gray-200/80 bg-white/90 pl-4 pr-12 text-sm font-medium shadow-sm transition-all focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-800 dark:bg-gray-900/70"
-                  required
-                >
-                  <option value="" disabled>
-                    Select category
-                  </option>
+              <Select
+                value={form.category_id}
+                onValueChange={(value) =>
+                  setForm((current) => ({ ...current, category_id: value }))
+                }
+                required
+              >
+                <SelectTrigger className="h-14 rounded-2xl border border-gray-200/80 bg-white/90 text-sm font-medium shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-800 dark:bg-gray-900/70">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
                   {categories.map((category) => (
-                    <option key={category._id} value={category._id}>
+                    <SelectItem key={category._id} value={category._id} className="text-sm">
                       {category.label}
-                    </option>
+                    </SelectItem>
                   ))}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              </div>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex flex-col gap-3 border-t border-gray-200/70 pt-4 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800/80">
