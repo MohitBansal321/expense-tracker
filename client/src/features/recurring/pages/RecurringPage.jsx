@@ -6,6 +6,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import {
+    fetchRecurringTransactions as fetchRecurringService,
+    createRecurringTransaction,
+    updateRecurringTransaction,
+    deleteRecurringTransaction,
+    toggleRecurringTransaction,
+} from "../../../services/recurring.service";
+import {
     Select,
     SelectContent,
     SelectItem,
@@ -57,13 +64,9 @@ export default function RecurringTransactions() {
     }, []);
 
     async function fetchRecurringTransactions() {
-        const token = Cookies.get("token");
         try {
             setFetchError(false);
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/recurring`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            const result = await res.json();
+            const result = await fetchRecurringService();
             if (result.success) {
                 setRecurringList(result.data);
             } else {
@@ -115,30 +118,20 @@ export default function RecurringTransactions() {
 
     async function handleSubmit(e) {
         if (e) e.preventDefault();
-        const token = Cookies.get("token");
-        const method = editItem ? "PATCH" : "POST";
-        const url = editItem
-            ? `${import.meta.env.VITE_BASE_URL}/recurring/${editItem._id}`
-            : `${import.meta.env.VITE_BASE_URL}/recurring`;
-
         try {
-            const res = await fetch(url, {
-                method,
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    ...form,
-                    amount: parseFloat(form.amount),
-                    endDate: form.endDate || null,
-                }),
-            });
+            const body = {
+                ...form,
+                amount: parseFloat(form.amount),
+                endDate: form.endDate || null,
+            };
 
-            if (res.ok) {
-                closeDialog();
-                fetchRecurringTransactions();
+            if (editItem) {
+                await updateRecurringTransaction(editItem._id, body);
+            } else {
+                await createRecurringTransaction(body);
             }
+            closeDialog();
+            fetchRecurringTransactions();
         } catch (error) {
             console.error("Failed to save recurring transaction:", error);
         }
@@ -146,12 +139,8 @@ export default function RecurringTransactions() {
 
     async function handleDelete(id) {
         if (!window.confirm("Delete this recurring transaction?")) return;
-        const token = Cookies.get("token");
         try {
-            await fetch(`${import.meta.env.VITE_BASE_URL}/recurring/${id}`, {
-                method: "DELETE",
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            await deleteRecurringTransaction(id);
             fetchRecurringTransactions();
         } catch (error) {
             console.error("Failed to delete:", error);
@@ -159,12 +148,8 @@ export default function RecurringTransactions() {
     }
 
     async function handleToggle(id) {
-        const token = Cookies.get("token");
         try {
-            await fetch(`${import.meta.env.VITE_BASE_URL}/recurring/${id}/toggle`, {
-                method: "POST",
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            await toggleRecurringTransaction(id);
             fetchRecurringTransactions();
         } catch (error) {
             console.error("Failed to toggle:", error);
@@ -189,16 +174,16 @@ export default function RecurringTransactions() {
                 </h1>
                 <Button
                     onClick={() => openDialog()}
-                    className="hidden md:flex bg-blue-600 hover:bg-blue-700 text-white"
+                    className="hidden md:flex bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                     <Plus className="mr-2 w-4 h-4" /> Add Recurring
                 </Button>
             </div>
 
             {/* Info Alert */}
-            <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 rounded-md mb-8 flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-                <p className="text-blue-700 dark:text-blue-300 text-sm">
+            <div className="bg-primary/10 dark:bg-primary/20 border-l-4 border-primary p-4 rounded-md mb-8 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                <p className="text-primary/80 dark:text-primary/90 text-sm">
                     Recurring transactions are automatically created based on your schedule. Active transactions will be processed daily.
                 </p>
             </div>
@@ -232,7 +217,7 @@ export default function RecurringTransactions() {
                             <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
                                 Set up automatic transactions for bills, subscriptions, or regular income
                             </p>
-                            <Button onClick={() => openDialog()} className="bg-blue-600 hover:bg-blue-700 text-white">
+                            <Button onClick={() => openDialog()} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                                 Create First Recurring Transaction
                             </Button>
                         </div>
@@ -267,7 +252,7 @@ export default function RecurringTransactions() {
                                         {item.frequency.charAt(0).toUpperCase() + item.frequency.slice(1)}
                                     </span>
                                     {item.categoryName && (
-                                        <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/30">
+                                        <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/20">
                                             {item.categoryName}
                                         </span>
                                     )}
@@ -284,14 +269,14 @@ export default function RecurringTransactions() {
                                     <div className="flex gap-1">
                                         <button
                                             onClick={() => handleToggle(item._id)}
-                                            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                                            className="p-2 text-gray-500 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
                                             title={item.isActive ? "Pause" : "Resume"}
                                         >
                                             {item.isActive ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
                                         </button>
                                         <button
                                             onClick={() => openDialog(item)}
-                                            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                                            className="p-2 text-gray-500 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
                                             title="Edit"
                                         >
                                             <Edit2 className="w-5 h-5" />
@@ -314,7 +299,7 @@ export default function RecurringTransactions() {
             {/* FAB for mobile */}
             <button
                 onClick={() => openDialog()}
-                className="md:hidden fixed bottom-20 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg hover:shadow-blue-500/30 transition-all hover:scale-105 z-40"
+                className="md:hidden fixed bottom-20 right-6 bg-primary hover:bg-primary/90 text-primary-foreground p-4 rounded-full shadow-lg hover:shadow-primary/30 transition-all hover:scale-105 z-40"
                 aria-label="Add new recurring transaction"
             >
                 <Plus className="w-6 h-6" />
@@ -478,7 +463,7 @@ export default function RecurringTransactions() {
                         <Button
                             onClick={handleSubmit}
                             disabled={!form.amount || !form.description || !form.category_id}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground"
                         >
                             {editItem ? "Update" : "Create"}
                         </Button>

@@ -16,7 +16,7 @@ export default function Landing() {
                 </div>
                 
                 <div className="container relative z-10 mx-auto text-center max-w-5xl">
-                    <h1 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight bg-gradient-to-r from-blue-600 to-cyan-400 bg-clip-text text-transparent drop-shadow-sm">
+                    <h1 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent drop-shadow-sm">
                         Master Your Money with Automation
                     </h1>
                     <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
@@ -26,14 +26,14 @@ export default function Landing() {
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                         {isAuthenticated ? (
                             <Link to="/dashboard">
-                                <Button size="lg" className="rounded-full px-8 py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xl hover:shadow-blue-500/25 transition-all">
+                                <Button size="lg" className="rounded-full px-8 py-6 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl hover:shadow-primary/25 transition-all">
                                     Go to Dashboard
                                 </Button>
                             </Link>
                         ) : (
                             <>
                                 <Link to="/register">
-                                    <Button size="lg" className="rounded-full px-8 py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-xl hover:shadow-blue-500/25 transition-all">
+                                    <Button size="lg" className="rounded-full px-8 py-6 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl hover:shadow-primary/25 transition-all">
                                         Get Started Free
                                     </Button>
                                 </Link>
@@ -82,9 +82,9 @@ export default function Landing() {
                         </div>
                         
                         <div className="md:col-span-5">
-                            <div className="rounded-2xl p-8 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-100 dark:border-blue-800/50 shadow-lg relative overflow-hidden">
-                                <div className="absolute top-0 right-0 p-32 bg-blue-500/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
-                                <h3 className="text-2xl font-bold mb-4 text-blue-700 dark:text-blue-400 relative z-10">
+                            <div className="rounded-2xl p-8 bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 border border-primary/10 dark:border-primary/20 shadow-lg relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-32 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+                                <h3 className="text-2xl font-bold mb-4 text-primary relative z-10">
                                     The Automated Way
                                 </h3>
                                 <p className="text-gray-700 dark:text-gray-300 mb-8 relative z-10 leading-relaxed">
@@ -137,7 +137,7 @@ export default function Landing() {
                             },
                         ].map((feature, i) => (
                             <div key={i} className="bg-white dark:bg-gray-900 p-8 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
-                                <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <div className="w-16 h-16 rounded-2xl bg-primary/5 dark:bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                                     {feature.icon}
                                 </div>
                                 <h3 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">{feature.title}</h3>
@@ -153,7 +153,7 @@ export default function Landing() {
                 <div className="container mx-auto max-w-6xl">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
                         <div>
-                            <p className="text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider mb-2 text-sm">
+                            <p className="text-primary font-bold uppercase tracking-wider mb-2 text-sm">
                                 Powerful Insights
                             </p>
                             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white leading-tight">
@@ -170,7 +170,7 @@ export default function Landing() {
                                     { icon: <Shield className="w-6 h-6" />, text: "Secure Data" },
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-center gap-3">
-                                        <div className="text-blue-600 dark:text-blue-400">{item.icon}</div>
+                                        <div className="text-primary">{item.icon}</div>
                                         <span className="font-semibold text-gray-900 dark:text-gray-200">{item.text}</span>
                                     </div>
                                 ))}
@@ -187,7 +187,7 @@ export default function Landing() {
                                 </div>
                                 <div className="flex-1 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800 p-4 flex items-end justify-between gap-2">
                                     {[40, 60, 45, 75, 50, 85, 65, 90, 55, 70].map((h, i) => (
-                                        <div key={i} className="w-full bg-blue-500/80 hover:bg-blue-500 rounded-t-sm transition-all duration-500 cursor-pointer" style={{ height: `${h}%` }}></div>
+                                        <div key={i} className="w-full bg-primary/80 hover:bg-primary rounded-t-sm transition-all duration-500 cursor-pointer" style={{ height: `${h}%` }}></div>
                                     ))}
                                 </div>
                             </div>

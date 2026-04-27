@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "../../../components/ui/select";
 import { cn } from "../../../lib/utils";
+import { createBulkTransactions } from "../../../services/transaction.service";
 
 const INITIAL_ROW = {
   amount: "",
@@ -81,25 +82,16 @@ export default function BulkTransactionForm({ fetchTransactions, onClose }) {
         type,
       }));
 
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/transaction/bulk`, {
-        method: "POST",
-        body: JSON.stringify({ transactions: payload }),
-        headers: {
-          "content-type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const result = await createBulkTransactions(payload);
 
-      if (response.ok) {
+      if (result.success) {
         toast.success(`Successfully added ${rows.length} transactions!`);
         fetchTransactions();
         if (onClose) onClose();
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.message || "Failed to add transactions");
       }
     } catch (error) {
-      toast.error("An error occurred while saving transactions.");
+      console.error("Bulk add failed:", error);
+      toast.error(error.message || "An error occurred while saving transactions.");
     } finally {
       setIsSubmitting(false);
     }
@@ -225,7 +217,7 @@ export default function BulkTransactionForm({ fetchTransactions, onClose }) {
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="gap-2 bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/20"
+            className="gap-2 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20"
           >
             <Save className="h-4 w-4" />
             {isSubmitting ? "Saving..." : "Save All"}

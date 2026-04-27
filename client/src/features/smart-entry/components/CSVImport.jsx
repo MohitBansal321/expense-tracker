@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { CheckCircle, UploadCloud, FileUp, Table as TableIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../../components/ui/dialog";
 import { Button } from "../../../components/ui/button";
+import { createBulkTransactions } from "../../../services/transaction.service";
 import {
     Select,
     SelectContent,
@@ -83,72 +84,54 @@ export default function CSVImport({ onTransactionsImported }) {
         }
 
         setIsImporting(true);
-        setProgress(0);
         setError(null);
-
-        const token = Cookies.get("token");
-        let successCount = 0;
-        let failCount = 0;
+        const transactionsToImport = [];
 
         for (let i = 0; i < csvData.length; i++) {
             const row = csvData[i];
-            try {
-                const amount = parseFloat(row[mapping.amount]?.replace(/[^0-9.-]/g, ""));
-                if (isNaN(amount) || amount === 0) {
-                    failCount++;
-                    continue;
+            const amount = parseFloat(row[mapping.amount]?.replace(/[^0-9.-]/g, ""));
+            if (isNaN(amount) || amount === 0) continue;
+
+            // Determine type based on amount sign or column
+            let type = "expense";
+            if (mapping.type && row[mapping.type]) {
+                const typeVal = row[mapping.type].toLowerCase();
+                if (typeVal.includes("income") || typeVal.includes("credit") || typeVal.includes("deposit")) {
+                    type = "income";
                 }
-
-                // Determine type based on amount sign or column
-                let type = "expense";
-                if (mapping.type && row[mapping.type]) {
-                    const typeVal = row[mapping.type].toLowerCase();
-                    if (typeVal.includes("income") || typeVal.includes("credit") || typeVal.includes("deposit")) {
-                        type = "income";
-                    }
-                } else if (amount > 0) {
-                    // Some CSV exports use positive for income, negative for expense
-                    // We'll default to expense but can be adjusted
-                }
-
-                // Parse date
-                let date = new Date().toISOString().split("T")[0];
-                if (mapping.date && row[mapping.date]) {
-                    const parsed = new Date(row[mapping.date]);
-                    if (!isNaN(parsed)) {
-                        date = parsed.toISOString().split("T")[0];
-                    }
-                }
-
-                await fetch(`${import.meta.env.VITE_BASE_URL}/transaction`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({
-                        amount: Math.abs(amount),
-                        description: row[mapping.description] || "Imported transaction",
-                        date,
-                        type,
-                        category_id: defaultCategory,
-                    }),
-                });
-
-                successCount++;
-            } catch (err) {
-                failCount++;
             }
 
-            setProgress(Math.round(((i + 1) / csvData.length) * 100));
+            // Parse date
+            let date = new Date().toISOString().split("T")[0];
+            if (mapping.date && row[mapping.date]) {
+                const parsed = new Date(row[mapping.date]);
+                if (!isNaN(parsed)) {
+                    date = parsed.toISOString().split("T")[0];
+                }
+            }
+
+            transactionsToImport.push({
+                amount: Math.abs(amount),
+                description: row[mapping.description] || "Imported transaction",
+                date,
+                type,
+                category_id: defaultCategory,
+            });
         }
 
-        setIsImporting(false);
-        setSuccess(true);
-        setImportResult({ success: successCount, failed: failCount });
-
-        if (onTransactionsImported) {
-            onTransactionsImported();
+        try {
+            const result = await createBulkTransactions(transactionsToImport);
+            if (result.success) {
+                setImportResult({ success: transactionsToImport.length, failed: 0 });
+                setSuccess(true);
+                if (onTransactionsImported) {
+                    onTransactionsImported();
+                }
+            }
+        } catch (err) {
+            setError(err.message || "Bulk import failed");
+        } finally {
+            setIsImporting(false);
         }
     }
 
@@ -167,11 +150,11 @@ export default function CSVImport({ onTransactionsImported }) {
         <>
             {/* Trigger Card */}
             <div
-                className="h-full cursor-pointer transition-all duration-300 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 group hover:-translate-y-1 hover:shadow-xl hover:border-green-500"
+                className="h-full cursor-pointer transition-all duration-300 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 group hover:-translate-y-1 hover:shadow-xl hover:border-primary"
                 onClick={() => setDialogOpen(true)}
             >
                 <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-                    <FileUp className="w-12 h-12 text-green-500 mb-3 group-hover:scale-110 transition-transform" />
+                    <FileUp className="w-12 h-12 text-primary mb-3 group-hover:scale-110 transition-transform" />
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">Import CSV</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Bulk import from bank exports
@@ -207,10 +190,10 @@ export default function CSVImport({ onTransactionsImported }) {
                         {/* Upload Area */}
                         {csvData.length === 0 && (
                             <div
-                                className="border-2 border-dashed border-green-400 rounded-xl p-12 text-center cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/10 transition-colors"
+                                className="border-2 border-dashed border-primary/50 rounded-xl p-12 text-center cursor-pointer hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
                                 onClick={() => fileInputRef.current?.click()}
                             >
-                                <UploadCloud className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                                <UploadCloud className="w-16 h-16 text-primary mx-auto mb-4" />
                                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">Drop CSV file here</h3>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                                     Bank statements, exports, or any CSV with transaction data
@@ -237,7 +220,7 @@ export default function CSVImport({ onTransactionsImported }) {
                                                 value={mapping.amount}
                                                 onValueChange={(value) => setMapping({ ...mapping, amount: value })}
                                             >
-                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                                                     <SelectValue placeholder="Select..." />
                                                 </SelectTrigger>
                                                 <SelectContent className="rounded-md">
@@ -252,7 +235,7 @@ export default function CSVImport({ onTransactionsImported }) {
                                                 value={mapping.description}
                                                 onValueChange={(value) => setMapping({ ...mapping, description: value })}
                                             >
-                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                                                     <SelectValue placeholder="Select..." />
                                                 </SelectTrigger>
                                                 <SelectContent className="rounded-md">
@@ -267,7 +250,7 @@ export default function CSVImport({ onTransactionsImported }) {
                                                 value={mapping.date}
                                                 onValueChange={(value) => setMapping({ ...mapping, date: value })}
                                             >
-                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                                                     <SelectValue placeholder="Use today's date" />
                                                 </SelectTrigger>
                                                 <SelectContent className="rounded-md">
@@ -283,7 +266,7 @@ export default function CSVImport({ onTransactionsImported }) {
                                                 value={defaultCategory}
                                                 onValueChange={(value) => setDefaultCategory(value)}
                                             >
-                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                                                     <SelectValue placeholder="Select..." />
                                                 </SelectTrigger>
                                                 <SelectContent className="rounded-md">
@@ -336,7 +319,7 @@ export default function CSVImport({ onTransactionsImported }) {
                                             <span>{progress}%</span>
                                         </div>
                                         <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 overflow-hidden">
-                                            <div className="bg-green-600 h-2.5 rounded-full transition-all duration-300 ease-out" style={{ width: `${progress}%` }}></div>
+                                            <div className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-out" style={{ width: `${progress}%` }}></div>
                                         </div>
                                     </div>
                                 )}
@@ -352,7 +335,7 @@ export default function CSVImport({ onTransactionsImported }) {
                             <Button
                                 onClick={handleImport}
                                 disabled={isImporting || !mapping.amount || !mapping.description || !defaultCategory}
-                                className="bg-green-600 hover:bg-green-700 text-white"
+                                className="bg-primary hover:bg-primary/90 text-primary-foreground"
                             >
                                 Import {csvData.length} Transactions
                             </Button>

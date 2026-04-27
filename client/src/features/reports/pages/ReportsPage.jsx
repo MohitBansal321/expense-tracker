@@ -14,6 +14,11 @@ import {
     CheckCircle2
 } from "lucide-react";
 import {
+    getMonthlyReport,
+    getYearlyReport,
+} from "../../../services/reports.service";
+import { searchTransactions } from "../../../services/transaction.service";
+import {
     ResponsiveContainer,
     BarChart,
     Bar,
@@ -75,18 +80,13 @@ export default function Reports() {
         setIsDrillLoading(true);
         setDrillDownData([]);
 
-        const token = Cookies.get("token");
         const title = `Transactions on ${new Date(selectedYear, selectedMonth - 1, day).toLocaleDateString()}`;
         const startDate = new Date(selectedYear, selectedMonth - 1, day).toISOString();
         const endDate = new Date(selectedYear, selectedMonth - 1, day, 23, 59, 59).toISOString();
-        const queryParams = `startDate=${startDate}&endDate=${endDate}`;
+        const queryParams = { startDate, endDate };
 
         try {
-            const res = await fetch(
-                `${import.meta.env.VITE_BASE_URL}/transaction/search?${queryParams}`,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            const result = await res.json();
+            const result = await searchTransactions(queryParams);
             if (result.success) {
                 setDrillDownData(result.data);
                 setDrillDownTitle(title);
@@ -115,13 +115,8 @@ export default function Reports() {
     async function fetchMonthlyReport() {
         setIsLoading(true);
         setFetchError(false);
-        const token = Cookies.get("token");
         try {
-            const res = await fetch(
-                `${import.meta.env.VITE_BASE_URL}/reports/monthly?month=${selectedMonth}&year=${selectedYear}`,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            const result = await res.json();
+            const result = await getMonthlyReport(selectedMonth, selectedYear);
             if (result.success) setMonthlyData(result.data);
             else setFetchError(true);
         } catch (error) {
@@ -134,13 +129,8 @@ export default function Reports() {
     async function fetchYearlyReport() {
         setIsLoading(true);
         setFetchError(false);
-        const token = Cookies.get("token");
         try {
-            const res = await fetch(
-                `${import.meta.env.VITE_BASE_URL}/reports/yearly?year=${selectedYear}`,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            const result = await res.json();
+            const result = await getYearlyReport(selectedYear);
             if (result.success) setYearlyData(result.data);
             else setFetchError(true);
         } catch (error) {
@@ -209,7 +199,7 @@ export default function Reports() {
                                 </Badge>
                             )}
                         </div>
-                        <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl text-indigo-500">
+                        <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl text-primary">
                             {Icon}
                         </div>
                     </div>
@@ -223,7 +213,7 @@ export default function Reports() {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-200 text-white">
+                    <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 text-primary-foreground">
                         <BarChart3 className="h-7 w-7" />
                     </div>
                     <div>
@@ -283,10 +273,10 @@ export default function Reports() {
             {/* Tabs */}
             <Tabs value={tabValue} onValueChange={setTabValue} className="mb-8">
                 <TabsList className="inline-flex h-12 items-center justify-center rounded-2xl bg-gray-100 p-1 text-gray-500 dark:bg-gray-800 w-full md:w-auto">
-                    <TabsTrigger value="monthly" className="rounded-xl px-8 py-2 font-bold data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm">
+                    <TabsTrigger value="monthly" className="rounded-xl px-8 py-2 font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">
                         Monthly
                     </TabsTrigger>
-                    <TabsTrigger value="yearly" className="rounded-xl px-8 py-2 font-bold data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-sm">
+                    <TabsTrigger value="yearly" className="rounded-xl px-8 py-2 font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">
                         Yearly
                     </TabsTrigger>
                 </TabsList>
@@ -415,7 +405,7 @@ export default function Reports() {
                                                     </div>
                                                     <div className="h-2.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                                                         <div
-                                                            className="h-full bg-indigo-500 rounded-full transition-all duration-1000 ease-out"
+                                                            className="h-full bg-primary rounded-full transition-all duration-1000 ease-out"
                                                             style={{
                                                                 width: `${(cat.amount / (monthlyData.summary.totalExpenses || 1)) * 100}%`,
                                                             }}
@@ -554,7 +544,7 @@ export default function Reports() {
                                         </div>
 
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0">
+                                            <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
                                                 <Filter className="w-6 h-6" />
                                             </div>
                                             <div>
@@ -562,7 +552,7 @@ export default function Reports() {
                                                 <p className="text-lg font-black text-gray-900 dark:text-white">
                                                     {yearlyData.insights.topCategory || "None"}
                                                 </p>
-                                                <p className="text-sm font-bold text-indigo-600">${yearlyData.insights.topCategoryAmount.toLocaleString()}</p>
+                                                <p className="text-sm font-bold text-primary">${yearlyData.insights.topCategoryAmount.toLocaleString()}</p>
                                             </div>
                                         </div>
                                     </CardContent>
@@ -586,7 +576,7 @@ export default function Reports() {
                                                     </div>
                                                     <div className="h-2 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                                                         <div
-                                                            className="h-full bg-indigo-500 rounded-full opacity-70 group-hover:opacity-100 transition-opacity duration-500"
+                                                            className="h-full bg-primary rounded-full opacity-70 group-hover:opacity-100 transition-opacity duration-500"
                                                             style={{
                                                                 width: `${(cat.amount / (yearlyData.summary.totalExpenses || 1)) * 100}%`,
                                                             }}
@@ -632,7 +622,7 @@ function DrillDownDialog({ open, onClose, title, transactions, isLoading }) {
                             {transactions.map((tx) => (
                                 <div
                                     key={tx._id}
-                                    className="flex justify-between items-center p-4 rounded-2xl bg-white dark:bg-gray-800 border hover:border-indigo-200 transition-colors shadow-sm group"
+                                    className="flex justify-between items-center p-4 rounded-2xl bg-white dark:bg-gray-800 border hover:border-primary/20 transition-colors shadow-sm group"
                                 >
                                     <div className="flex items-center gap-4">
                                         <div className={cn(
@@ -642,7 +632,7 @@ function DrillDownDialog({ open, onClose, title, transactions, isLoading }) {
                                             {tx.type === "income" ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
                                         </div>
                                         <div>
-                                            <p className="font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors">{tx.description || "Untitled"}</p>
+                                            <p className="font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">{tx.description || "Untitled"}</p>
                                             <p className="text-xs text-gray-400 font-medium">
                                                 {new Date(tx.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </p>

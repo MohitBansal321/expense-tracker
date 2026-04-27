@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import { PlusCircle, Receipt, Wallet } from "lucide-react";
 import { Button } from "../../../components/ui/button";
+import { getBudgetAlerts } from "../../../services/budget.service";
 
 export default function DashboardActions({ onAddTransaction }) {
     const [healthScore, setHealthScore] = useState(100);
@@ -13,20 +14,15 @@ export default function DashboardActions({ onAddTransaction }) {
     }, []);
 
     async function calculateHealthScore() {
-        const token = Cookies.get("token");
         try {
-            // Get alerts to check for budget violations
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/budget/alerts`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            const data = await res.json();
+            const result = await getBudgetAlerts();
 
-            if (data.success) {
+            if (result.success) {
                 // Determine score deduction based on alerts
                 let deduction = 0;
-                data.data.forEach(alert => {
-                    if (alert.isOverBudget) deduction += 20; // Heavy penalty
-                    else deduction += 5; // Warning penalty
+                result.data.forEach(alert => {
+                    if (alert.severity === 'error') deduction += 20; // Heavy penalty (over budget)
+                    else deduction += 5; // Warning penalty (near limit)
                 });
 
                 // Cap the lowest score at 0
@@ -63,18 +59,18 @@ export default function DashboardActions({ onAddTransaction }) {
                         <Button
                             variant="outline"
                             onClick={onAddTransaction}
-                            className="h-auto py-6 flex flex-col items-center gap-3 rounded-2xl hover:bg-blue-50 hover:border-blue-200 dark:hover:bg-blue-900/20 dark:hover:border-blue-800"
+                            className="h-auto py-6 flex flex-col items-center gap-3 rounded-2xl hover:bg-primary/5 hover:border-primary/20 dark:hover:bg-primary/10 dark:hover:border-primary/30"
                         >
-                            <PlusCircle className="w-8 h-8 text-blue-600 dark:text-blue-500" />
+                            <PlusCircle className="w-8 h-8 text-primary" />
                             <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Add Expense</span>
                         </Button>
                         
                         <Link to="/smart-entry" className="block outline-none">
                             <Button
                                 variant="outline"
-                                className="w-full h-auto py-6 flex flex-col items-center gap-3 rounded-2xl hover:bg-purple-50 hover:border-purple-200 dark:hover:bg-purple-900/20 dark:hover:border-purple-800"
+                                className="w-full h-auto py-6 flex flex-col items-center gap-3 rounded-2xl hover:bg-primary/5 hover:border-primary/20 dark:hover:bg-primary/10 dark:hover:border-primary/30"
                             >
-                                <Receipt className="w-8 h-8 text-purple-600 dark:text-purple-500" />
+                                <Receipt className="w-8 h-8 text-primary" />
                                 <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Scan Receipt</span>
                             </Button>
                         </Link>
@@ -82,9 +78,9 @@ export default function DashboardActions({ onAddTransaction }) {
                         <Link to="/budget" className="block outline-none">
                             <Button
                                 variant="outline"
-                                className="w-full h-auto py-6 flex flex-col items-center gap-3 rounded-2xl hover:bg-emerald-50 hover:border-emerald-200 dark:hover:bg-emerald-900/20 dark:hover:border-emerald-800"
+                                className="w-full h-auto py-6 flex flex-col items-center gap-3 rounded-2xl hover:bg-primary/5 hover:border-primary/20 dark:hover:bg-primary/10 dark:hover:border-primary/30"
                             >
-                                <Wallet className="w-8 h-8 text-emerald-600 dark:text-emerald-500" />
+                                <Wallet className="w-8 h-8 text-primary" />
                                 <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">New Budget</span>
                             </Button>
                         </Link>

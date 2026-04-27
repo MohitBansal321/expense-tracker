@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { cn } from "../../../lib/utils";
+import { createTransaction } from "../../../services/transaction.service";
 
 export default function VoiceInput({ onTransactionCreated }) {
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -144,31 +145,19 @@ export default function VoiceInput({ onTransactionCreated }) {
             return;
         }
 
-        const token = Cookies.get("token");
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/transaction`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    ...form,
-                    amount: parseFloat(form.amount),
-                }),
+            await createTransaction({
+                ...form,
+                amount: parseFloat(form.amount),
             });
 
-            if (res.ok) {
-                setSuccess(true);
-                if (onTransactionCreated) {
-                    onTransactionCreated();
-                }
-                setTimeout(() => handleClose(), 1500);
-            } else {
-                setError("Failed to save transaction");
+            setSuccess(true);
+            if (onTransactionCreated) {
+                onTransactionCreated();
             }
+            setTimeout(() => handleClose(), 1500);
         } catch (err) {
-            setError("Error saving transaction");
+            setError(err.message || "Error saving transaction");
         }
     }
 
@@ -205,11 +194,11 @@ export default function VoiceInput({ onTransactionCreated }) {
         <>
             {/* Trigger Card */}
             <div
-                className="h-full cursor-pointer transition-all duration-300 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 group hover:-translate-y-1 hover:shadow-xl hover:border-pink-500"
+                className="h-full cursor-pointer transition-all duration-300 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 group hover:-translate-y-1 hover:shadow-xl hover:border-primary"
                 onClick={() => setDialogOpen(true)}
             >
                 <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-                    <Mic className="w-12 h-12 text-pink-500 mb-3 group-hover:scale-110 transition-transform" />
+                    <Mic className="w-12 h-12 text-primary mb-3 group-hover:scale-110 transition-transform" />
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">Voice Input</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Speak to add transactions
@@ -246,8 +235,8 @@ export default function VoiceInput({ onTransactionCreated }) {
                                 className={cn(
                                     "w-24 h-24 rounded-full flex items-center justify-center shadow-lg transition-all text-white outline-none focus:outline-none",
                                     isListening 
-                                        ? "bg-red-500 hover:bg-red-600 animate-[pulse_1.5s_cubic-bezier(0.4,0,0.6,1)_infinite]" 
-                                        : "bg-pink-500 hover:bg-pink-600 hover:scale-105"
+                                        ? "bg-destructive hover:bg-destructive/90 animate-[pulse_1.5s_cubic-bezier(0.4,0,0.6,1)_infinite]" 
+                                        : "bg-primary hover:bg-primary/90 hover:scale-105"
                                 )}
                                 style={{
                                     boxShadow: isListening ? '0 0 0 0 rgba(239, 68, 68, 0.7)' : '',
@@ -341,7 +330,7 @@ export default function VoiceInput({ onTransactionCreated }) {
                             <Button
                                 onClick={handleSave}
                                 disabled={!form.amount || !form.category_id}
-                                className="bg-pink-600 hover:bg-pink-700 text-white shadow-md shadow-pink-500/20"
+                                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/20"
                             >
                                 Save Transaction
                             </Button>

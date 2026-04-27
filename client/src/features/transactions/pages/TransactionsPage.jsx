@@ -24,6 +24,11 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  fetchTransactions as fetchTransactionsService,
+  searchTransactions,
+  exportTransactions,
+} from "../../../services/transaction.service";
 
 // Components
 import TransactionChart from "../components/TransactionChart";
@@ -63,40 +68,25 @@ export default function Home() {
 
   // Function to fetch transactions from the server
   async function fetchTransactions(categoryFilter = "") {
-    const token = Cookies.get("token");
-    let url = `${import.meta.env.VITE_BASE_URL}/transaction`;
-    if (categoryFilter !== "") {
-      url += `/${categoryFilter}`;
+    try {
+      const result = await fetchTransactionsService(categoryFilter);
+      setTransactions(result.data || []);
+    } catch (error) {
+      console.error("Failed to fetch transactions:", error);
     }
-
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const { data } = await res.json();
-    setTransactions(data || []);
   }
 
   // Function to handle search
   async function handleSearch() {
-    const token = Cookies.get("token");
-    const params = new URLSearchParams();
-
-    if (searchQuery) params.append("query", searchQuery);
-    if (startDate) params.append("startDate", startDate);
-    if (endDate) params.append("endDate", endDate);
-    if (typeFilter && typeFilter !== "all") params.append("type", typeFilter);
-
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/transaction/search?${params.toString()}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const result = await res.json();
+      const result = await searchTransactions({
+        query: searchQuery,
+        startDate,
+        endDate,
+        type: typeFilter,
+      });
 
       if (result.success) {
-        // Convert flat list to grouped format for compatibility with existing components
         const grouped = {};
         result.data.forEach((tx) => {
           const date = new Date(tx.date);
@@ -135,21 +125,8 @@ export default function Home() {
 
   // Function to export transactions as CSV
   async function handleExport() {
-    const token = Cookies.get("token");
-    const params = new URLSearchParams();
-
-    if (startDate) params.append("startDate", startDate);
-    if (endDate) params.append("endDate", endDate);
-
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/transaction/export?${params.toString()}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      const blob = await res.blob();
+      const blob = await exportTransactions({ startDate, endDate });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;

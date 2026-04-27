@@ -113,3 +113,11 @@ export const bulkDeleteTransactions = async (ids) => {
 export const getTransactionsByDateRange = async (startDate, endDate) => {
     return apiClient.get(`/transaction/range?startDate=${startDate}&endDate=${endDate}`);
 };
+/**
+ * Create multiple transactions at once
+ * @param {Array<Object>} transactions - Array of transaction objects
+ * @returns {Promise<Object>} Result of bulk creation
+ */
+export const createBulkTransactions = async (transactions) => {
+    return apiClient.post("/transaction/bulk", { transactions });
+};

@@ -56,14 +56,14 @@ export default function MainBottomNav() {
                                 <div className={cn(
                                     "w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ring-4 ring-white dark:ring-gray-900 group-active:scale-95",
                                     isActive 
-                                        ? "bg-indigo-600 shadow-indigo-500/40" 
-                                        : "bg-indigo-500 shadow-indigo-500/20 group-hover:bg-indigo-600"
+                                        ? "bg-primary shadow-primary/40" 
+                                        : "bg-primary/80 shadow-primary/20 group-hover:bg-primary"
                                 )}>
-                                    <Icon className="w-8 h-8 text-white" />
+                                    <Icon className="w-8 h-8 text-primary-foreground" />
                                 </div>
                                 <span className={cn(
                                     "text-[10px] font-bold mt-1 transition-colors",
-                                    isActive ? "text-indigo-600 dark:text-indigo-400" : "text-gray-400"
+                                    isActive ? "text-primary" : "text-gray-400"
                                 )}>
                                     {item.label}
                                 </span>
@@ -79,18 +79,18 @@ export default function MainBottomNav() {
                         >
                             <div className={cn(
                                 "p-1.5 rounded-xl transition-colors",
-                                isActive ? "text-indigo-600 dark:text-indigo-400" : "text-gray-400 group-hover:text-gray-600"
+                                isActive ? "text-primary" : "text-gray-400 group-hover:text-gray-600"
                             )}>
                                 <Icon className={cn("w-6 h-6", isActive && "fill-current/10")} />
                             </div>
                             <span className={cn(
                                 "text-[10px] font-medium mt-0.5 transition-colors",
-                                isActive ? "text-indigo-600 dark:text-indigo-400 font-bold" : "text-gray-400"
+                                isActive ? "text-primary font-bold" : "text-gray-400"
                             )}>
                                 {item.label}
                             </span>
                             {isActive && (
-                                <div className="w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400 mt-1" />
+                                <div className="w-1 h-1 rounded-full bg-primary mt-1" />
                             )}
                         </button>
                     );

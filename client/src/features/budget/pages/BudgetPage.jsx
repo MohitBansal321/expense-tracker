@@ -4,6 +4,12 @@ import { useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import { Plus, Edit2, Trash2, AlertTriangle, AlertCircle } from "lucide-react";
 import { toast } from "react-toastify";
+import {
+    fetchBudgets as fetchBudgetsService,
+    createBudget,
+    updateBudget,
+    deleteBudget,
+} from "../../../services/budget.service";
 
 // Shadcn UI Components
 import { Button } from "@/components/ui/button";
@@ -286,16 +292,10 @@ export default function Budget() {
 
     async function fetchBudgets() {
         setIsLoading(true);
-        const token = Cookies.get("token");
-
         try {
             setFetchError(false);
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/budget`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (res.ok) {
-                const result = await res.json();
+            const result = await fetchBudgetsService();
+            if (result && result.data) {
                 setBudgetData(result.data);
             } else {
                 setFetchError(true);
@@ -308,31 +308,18 @@ export default function Budget() {
     }
 
     async function handleSave(form, budgetId) {
-        const token = Cookies.get("token");
-        const url = budgetId
-            ? `${import.meta.env.VITE_BASE_URL}/budget/${budgetId}`
-            : `${import.meta.env.VITE_BASE_URL}/budget`;
-
         try {
-            const res = await fetch(url, {
-                method: budgetId ? "PATCH" : "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(form),
-            });
-
-            if (res.ok) {
-                fetchBudgets();
-                setDialogOpen(false);
-                setEditingBudget(null);
+            if (budgetId) {
+                await updateBudget(budgetId, form);
             } else {
-                const error = await res.json();
-                toast.error(error.message || "Failed to save budget");
+                await createBudget(form);
             }
+            fetchBudgets();
+            setDialogOpen(false);
+            setEditingBudget(null);
         } catch (error) {
             console.error("Failed to save budget:", error);
+            toast.error(error.message || "Failed to save budget");
         }
     }
 
@@ -340,22 +327,12 @@ export default function Budget() {
         if (!window.confirm("Are you sure you want to delete this budget?"))
             return;
 
-        const token = Cookies.get("token");
-
         try {
-            const res = await fetch(
-                `${import.meta.env.VITE_BASE_URL}/budget/${budgetId}`,
-                {
-                    method: "DELETE",
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            );
-
-            if (res.ok) {
-                fetchBudgets();
-            }
+            await deleteBudget(budgetId);
+            fetchBudgets();
         } catch (error) {
             console.error("Failed to delete budget:", error);
+            toast.error(error.message || "Failed to delete budget");
         }
     }
 
@@ -489,15 +466,15 @@ export default function Budget() {
                     <Button onClick={fetchBudgets} variant="outline" className="rounded-xl">Retry</Button>
                 </div>
             ) : (
-                <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-3xl shadow-sm border-2 border-dashed border-gray-200 dark:border-gray-800 p-12 text-center flex flex-col items-center justify-center hover:border-indigo-500/50 transition-colors group">
-                    <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/20 rounded-full flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
-                       <Plus className="h-8 w-8 text-indigo-500" />
+                <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-3xl shadow-sm border-2 border-dashed border-gray-200 dark:border-gray-800 p-12 text-center flex flex-col items-center justify-center hover:border-primary/50 transition-colors group">
+                    <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                       <Plus className="h-8 w-8 text-primary" />
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No Budgets Found</h3>
                     <p className="text-muted-foreground mb-8 max-w-sm">
                         No budgets set yet. Track your spending limits and achieve your financial goals by creating your first budget!
                     </p>
-                    <Button onClick={handleAdd} className="rounded-xl shadow-lg shadow-indigo-500/20 px-8 h-12 gap-2 bg-indigo-600 hover:bg-indigo-700 text-white transition-all hover:scale-105 active:scale-95">
+                    <Button onClick={handleAdd} className="rounded-xl shadow-lg shadow-primary/20 px-8 h-12 gap-2 bg-primary hover:bg-primary/90 text-white transition-all hover:scale-105 active:scale-95">
                         <Plus className="h-5 w-5" />
                         Create Your First Budget
                     </Button>

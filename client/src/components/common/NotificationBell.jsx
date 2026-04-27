@@ -3,6 +3,7 @@ import { Bell, AlertTriangle, AlertCircle } from "lucide-react";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { getBudgetAlerts } from "../../services/budget.service";
 
 export default function NotificationBell() {
     const [alerts, setAlerts] = useState([]);
@@ -24,16 +25,10 @@ export default function NotificationBell() {
     }, []);
 
     async function fetchAlerts() {
-        const token = Cookies.get("token");
-        if (!token) return;
-
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/budget/alerts`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            const data = await res.json();
-            if (data.success) {
-                setAlerts(data.data);
+            const result = await getBudgetAlerts();
+            if (result.success) {
+                setAlerts(result.data);
             }
         } catch (error) {
             console.error("Failed to fetch alerts", error);

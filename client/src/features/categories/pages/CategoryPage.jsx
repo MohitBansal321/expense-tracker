@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Plus, Trash2, Edit2, FolderOpen } from "lucide-react";
 import CategoryForm from "../components/CategoryForm.jsx";
 import { setUser } from "@/store/auth.js";
+import { deleteCategory } from "../../../services/category.service";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog";
 import { Button } from "../../../components/ui/button";
 
@@ -28,19 +29,15 @@ export default function Category() {
   async function remove(id) {
     if (!window.confirm("Are you sure you want to delete this category?")) return;
 
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/category/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (res.ok) {
+    try {
+      await deleteCategory(id);
       const _user = {
         ...user,
         categories: (user?.categories || []).filter((cat) => cat._id !== id),
       };
       dispatch(setUser({ user: _user }));
+    } catch (error) {
+      console.error("Failed to delete category:", error);
     }
   }
 
@@ -66,7 +63,7 @@ export default function Category() {
           <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-sm mx-auto">
             Categories help you organize and track your spending. Create your first one to get started!
           </p>
-          <Button onClick={() => handleOpen()} className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 py-6 h-auto text-base">
+          <Button onClick={() => handleOpen()} className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6 py-6 h-auto text-base">
             <Plus className="mr-2 w-5 h-5" />
             Add Your First Category
           </Button>
@@ -76,7 +73,7 @@ export default function Category() {
           {(user?.categories || []).map((row) => (
             <div
               key={row._id}
-              className="group relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-center transition-all duration-300 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-xl hover:-translate-y-1"
+              className="group relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-center transition-all duration-300 hover:border-primary dark:hover:border-primary hover:shadow-xl hover:-translate-y-1"
             >
               <div className="text-5xl mb-3">{row.icon}</div>
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
@@ -86,7 +83,7 @@ export default function Category() {
               <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm p-1 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800">
                 <button
                   onClick={() => handleOpen(row)}
-                  className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md transition-colors"
+                  className="p-1.5 text-primary hover:bg-primary/10 rounded-md transition-colors"
                   title="Edit Category"
                 >
                   <Edit2 className="w-4 h-4" />
@@ -107,7 +104,7 @@ export default function Category() {
       {/* Floating Action Button */}
       <button
         onClick={() => handleOpen()}
-        className="fixed bottom-20 md:bottom-8 right-6 md:right-8 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg hover:shadow-blue-500/30 transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500/20 z-40"
+        className="fixed bottom-20 md:bottom-8 right-6 md:right-8 bg-primary hover:bg-primary/90 text-primary-foreground p-4 rounded-full shadow-lg hover:shadow-primary/30 transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary/20 z-40"
         aria-label="Add new category"
       >
         <Plus className="w-6 h-6" />

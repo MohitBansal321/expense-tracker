@@ -15,7 +15,7 @@ export default function SmartEntry() {
             {/* Header */}
             <div className="text-center mb-10">
                 <h1 className="text-3xl md:text-4xl font-bold flex items-center justify-center gap-3 text-gray-900 dark:text-white mb-2">
-                    <Wand2 className="w-8 h-8 text-indigo-500" /> Smart Entry
+                    <Wand2 className="w-8 h-8 text-primary" /> Smart Entry
                 </h1>
                 <p className="text-gray-500 dark:text-gray-400">
                     Add transactions quickly without manual data entry

@@ -50,7 +50,7 @@ export const getCurrentUser = async () => {
  * @returns {Promise<Object>} Updated user data
  */
 export const updateProfile = async (data) => {
-    return apiClient.put("/user/profile", data);
+    return apiClient.patch("/user", data);
 };
 
 /**

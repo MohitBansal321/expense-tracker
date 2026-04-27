@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/store/auth.js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { createCategory, updateCategory } from "../../../services/category.service";
 
 // Initial form state
 const InitialForm = {
@@ -71,28 +72,25 @@ export default function CategoryForm({ editCategory, onClose }) {
   }
 
   async function create() {
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/category`, {
-      method: "POST",
-      body: JSON.stringify(form),
-      headers: { "content-type": "application/json", Authorization: `Bearer ${token}` },
-    });
-    if (res.ok) {
-      const data = await res.json();
-      reload(res, { ...user, categories: [...(user?.categories || []), data.category] });
+    try {
+      const data = await createCategory(form);
+      reload({ ok: true }, { ...user, categories: [...(user?.categories || []), data.category] });
+    } catch (error) {
+      console.error("Failed to create category:", error);
     }
   }
 
   async function update() {
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/category/${editCategory._id}`, {
-      method: "PATCH",
-      body: JSON.stringify(form),
-      headers: { "content-type": "application/json", Authorization: `Bearer ${token}` },
-    });
-    const _user = {
-      ...user,
-      categories: (user?.categories || []).map((cat) => cat._id === editCategory._id ? form : cat),
-    };
-    reload(res, _user);
+    try {
+      await updateCategory(editCategory._id, form);
+      const _user = {
+        ...user,
+        categories: (user?.categories || []).map((cat) => cat._id === editCategory._id ? form : cat),
+      };
+      reload({ ok: true }, _user);
+    } catch (error) {
+      console.error("Failed to update category:", error);
+    }
   }
 
   return (
@@ -121,9 +119,9 @@ export default function CategoryForm({ editCategory, onClose }) {
                 key={icon}
                 type="button"
                 onClick={() => handleIconClick(icon)}
-                className={`w-10 h-10 flex items-center justify-center text-2xl cursor-pointer rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500
+                className={`w-10 h-10 flex items-center justify-center text-2xl cursor-pointer rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary
                   ${form.icon === icon 
-                    ? "bg-blue-100 dark:bg-blue-900/40 text-blue-600 shadow-sm" 
+                    ? "bg-primary/10 text-primary shadow-sm" 
                     : "bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800"
                   }`}
               >
@@ -140,7 +138,7 @@ export default function CategoryForm({ editCategory, onClose }) {
             Cancel
           </Button>
         )}
-        <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white">
+        <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground">
           {editCategory?._id ? "Update Category" : "Add Category"}
         </Button>
       </div>

@@ -30,6 +30,10 @@ import {
   SelectValue,
 } from "../../../components/ui/select";
 import { Calendar } from "../../../components/ui/calendar";
+import {
+  createTransaction,
+  updateTransaction,
+} from "../../../services/transaction.service";
 
 const INITIAL_FORM = {
   amount: "",
@@ -96,11 +100,11 @@ export default function TransactionForm({
     event.preventDefault();
     const isEditing = Boolean(editTransaction && editTransaction._id);
     if (isEditing) {
-      await updateTransaction();
+      await updateTransactionHandler();
       return;
     }
 
-    await createTransaction();
+    await createTransactionHandler();
   }
 
   function handleSuccess(response) {
@@ -132,49 +136,34 @@ export default function TransactionForm({
     return true;
   }
 
-  async function createTransaction() {
+  async function createTransactionHandler() {
     if (!validateForm(form)) {
       return;
     }
 
     const body = { ...form, amount: Number.parseFloat(form.amount) };
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/transaction`, {
-      method: "POST",
-      body: JSON.stringify(body),
-      headers: {
-        "content-type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    handleSuccess(response);
-    if (response.ok) {
+    try {
+      const response = await createTransaction(body);
+      handleSuccess({ ok: true }); // handleSuccess expects a response-like object
       setShowConfetti(true);
       toast.success("Transaction added!");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to create transaction");
     }
   }
 
-  async function updateTransaction() {
+  async function updateTransactionHandler() {
     if (!validateForm(form)) {
       return;
     }
 
     const body = { ...form, amount: Number.parseFloat(form.amount) };
-    const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/transaction/${editTransaction._id}`,
-      {
-        method: "PATCH",
-        body: JSON.stringify(body),
-        headers: {
-          "content-type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    handleSuccess(response);
-    if (response.ok) {
+    try {
+      await updateTransaction(editTransaction._id, body);
+      handleSuccess({ ok: true });
       toast.success("Transaction updated!");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update transaction");
     }
   }
 
@@ -313,7 +302,7 @@ export default function TransactionForm({
                 name="description"
                 value={form.description}
                 onChange={handleChange}
-                className="h-14 rounded-2xl border border-gray-200/80 bg-white/90 px-4 text-base shadow-sm transition-all focus:border-indigo-500 focus:ring-indigo-500/20 dark:border-gray-800 dark:bg-gray-900/70"
+                className="h-14 rounded-2xl border border-gray-200/80 bg-white/90 px-4 text-base shadow-sm transition-all focus:border-primary focus:ring-primary/20 dark:border-gray-800 dark:bg-gray-900/70"
                 placeholder="What was this for?"
                 required
               />
@@ -330,7 +319,7 @@ export default function TransactionForm({
                 }
                 required
               >
-                <SelectTrigger className="h-14 rounded-2xl border border-gray-200/80 bg-white/90 text-sm font-medium shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-800 dark:bg-gray-900/70">
+                <SelectTrigger className="h-14 rounded-2xl border border-gray-200/80 bg-white/90 text-sm font-medium shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-800 dark:bg-gray-900/70">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -357,7 +346,7 @@ export default function TransactionForm({
                     ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20"
                     : isIncome
                       ? "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20"
-                      : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/20"
+                      : "bg-primary hover:bg-primary/90 shadow-primary/20"
                 )}
               >
                 {isEditing ? (

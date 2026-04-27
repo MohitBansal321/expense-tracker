@@ -6,6 +6,7 @@ import { Camera, CheckCircle, UploadCloud, Receipt, Loader2 } from "lucide-react
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../../components/ui/dialog";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
+import { createTransaction } from "../../../services/transaction.service";
 
 export default function ReceiptScanner({ onTransactionCreated }) {
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -153,33 +154,21 @@ export default function ReceiptScanner({ onTransactionCreated }) {
             return;
         }
 
-        const token = Cookies.get("token");
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/transaction`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    ...form,
-                    amount: parseFloat(form.amount),
-                }),
+            await createTransaction({
+                ...form,
+                amount: parseFloat(form.amount),
             });
 
-            if (res.ok) {
-                setSuccess(true);
-                if (onTransactionCreated) {
-                    onTransactionCreated();
-                }
-                setTimeout(() => {
-                    handleClose();
-                }, 1500);
-            } else {
-                setError("Failed to save transaction");
+            setSuccess(true);
+            if (onTransactionCreated) {
+                onTransactionCreated();
             }
+            setTimeout(() => {
+                handleClose();
+            }, 1500);
         } catch (err) {
-            setError("Error saving transaction");
+            setError(err.message || "Error saving transaction");
         }
     }
 
@@ -204,11 +193,11 @@ export default function ReceiptScanner({ onTransactionCreated }) {
         <>
             {/* Trigger Card */}
             <div
-                className="h-full cursor-pointer transition-all duration-300 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 group hover:-translate-y-1 hover:shadow-xl hover:border-purple-500"
+                className="h-full cursor-pointer transition-all duration-300 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 group hover:-translate-y-1 hover:shadow-xl hover:border-primary"
                 onClick={() => setDialogOpen(true)}
             >
                 <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-                    <Receipt className="w-12 h-12 text-purple-600 mb-3 group-hover:scale-110 transition-transform" />
+                    <Receipt className="w-12 h-12 text-primary mb-3 group-hover:scale-110 transition-transform" />
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">Scan Receipt</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Upload a receipt image to auto-fill
@@ -241,10 +230,10 @@ export default function ReceiptScanner({ onTransactionCreated }) {
                         {/* Upload Area */}
                         {!imagePreview && (
                             <div
-                                className="border-2 border-dashed border-purple-400 rounded-xl p-10 text-center cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-colors"
+                                className="border-2 border-dashed border-primary/50 rounded-xl p-10 text-center cursor-pointer hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
                                 onClick={() => fileInputRef.current?.click()}
                             >
-                                <UploadCloud className="w-16 h-16 text-purple-500 mx-auto mb-4" />
+                                <UploadCloud className="w-16 h-16 text-primary mx-auto mb-4" />
                                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">Drop receipt image here</h3>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                                     or click to browse
@@ -290,11 +279,11 @@ export default function ReceiptScanner({ onTransactionCreated }) {
                         {isProcessing && (
                             <div className="mb-6">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <Loader2 className="w-5 h-5 text-purple-600 animate-spin" />
+                                    <Loader2 className="w-5 h-5 text-primary animate-spin" />
                                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Processing receipt... {progress}%</span>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700 overflow-hidden">
-                                    <div className="bg-purple-600 h-2 rounded-full transition-all duration-300 ease-out" style={{ width: `${progress}%` }}></div>
+                                    <div className="bg-primary h-2 rounded-full transition-all duration-300 ease-out" style={{ width: `${progress}%` }}></div>
                                 </div>
                             </div>
                         )}
@@ -367,7 +356,7 @@ export default function ReceiptScanner({ onTransactionCreated }) {
                     <DialogFooter className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
                         <Button variant="ghost" onClick={handleClose}>Cancel</Button>
                         {imagePreview && !extractedData && !isProcessing && (
-                            <Button onClick={processReceipt} className="bg-purple-600 hover:bg-purple-700 text-white">
+                            <Button onClick={processReceipt} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                                 Extract Text
                             </Button>
                         )}
@@ -375,7 +364,7 @@ export default function ReceiptScanner({ onTransactionCreated }) {
                             <Button
                                 onClick={handleSave}
                                 disabled={!form.amount || !form.category_id}
-                                className="bg-green-600 hover:bg-green-700 text-white"
+                                className="bg-primary hover:bg-primary/90 text-primary-foreground"
                             >
                                 Save Transaction
                             </Button>

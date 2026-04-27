@@ -15,6 +15,7 @@ import {
 import { cn } from "../../../lib/utils";
 import { Button } from "../../../components/ui/button";
 import { Badge } from "../../../components/ui/badge";
+import { deleteTransaction } from "../../../services/transaction.service";
 
 export default function TransactionsList({ data, fetchTransactions, setEditTransaction, setCategoryFilter }) {
   const user = useSelector((state) => state.auth.user);
@@ -31,21 +32,17 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
   }
 
   async function remove(_id) {
-    const token = Cookies.get("token");
     if (!window.confirm("Are you sure you want to delete this transaction?")) return;
 
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/transaction/${_id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (res.ok) {
-      fetchTransactions();
-      toast.success("Transaction deleted successfully");
-    } else {
-      toast.error("Failed to delete transaction");
+    try {
+      const result = await deleteTransaction(_id);
+      if (result.success) {
+        fetchTransactions();
+        toast.success("Transaction deleted successfully");
+      }
+    } catch (error) {
+      console.error("Delete failed:", error);
+      toast.error(error.message || "Failed to delete transaction");
     }
   }
 
@@ -97,12 +94,12 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
         </div>
         <div className={cn(
             "bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm border border-gray-100 dark:border-gray-800 p-6 rounded-3xl border-l-[6px] shadow-sm transition-all hover:shadow-md",
-            totals.net >= 0 ? "border-l-indigo-500" : "border-l-orange-500"
+            totals.net >= 0 ? "border-l-primary" : "border-l-orange-500"
         )}>
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Net Balance</p>
           <p className={cn(
               "text-2xl font-bold",
-              totals.net >= 0 ? "text-indigo-600 dark:text-indigo-400" : "text-orange-600 dark:text-orange-400"
+              totals.net >= 0 ? "text-primary" : "text-orange-600 dark:text-orange-400"
           )}>
             ${totals.net.toLocaleString()}
           </p>
@@ -112,14 +109,14 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
       {/* Header & Filter */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <ArrowRightLeft className="w-5 h-5 text-indigo-500" /> Transactions
+            <ArrowRightLeft className="w-5 h-5 text-primary" /> Transactions
         </h3>
         <div className="relative w-full sm:w-64">
             <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
             <select
                 value={selectedCategory}
                 onChange={(e) => handleFilterChange(e.target.value)}
-                className="w-full h-10 pl-9 pr-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 appearance-none cursor-pointer"
+                className="w-full h-10 pl-9 pr-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary appearance-none cursor-pointer"
             >
                 <option value="all">All Categories</option>
                 {user?.categories?.map((cat) => (
@@ -164,7 +161,7 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/30"
+                      className="h-8 w-8 text-primary hover:text-primary/90 hover:bg-primary/10 dark:hover:bg-primary/20"
                       onClick={() => setEditTransaction(row)}
                     >
                       <Pencil className="w-4 h-4" />
@@ -248,7 +245,7 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-9 w-9 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-full"
+                        className="h-9 w-9 text-primary hover:bg-primary/10 dark:hover:bg-primary/20 rounded-full"
                         onClick={() => setEditTransaction(row)}
                       >
                         <Pencil className="w-4.5 h-4.5" />

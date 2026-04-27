@@ -48,6 +48,7 @@ import WelcomeTour from "@/components/common/WelcomeTour";
 import DashboardActions from "../components/DashboardActions";
 import TransactionForm from "@/features/transactions/components/TransactionForm";
 import { cn } from "@/lib/utils";
+import { getDashboardData } from "@/services/stats.service";
 
 // Summary Card Component with Modern Design
 function SummaryCard({ title, value, icon: Icon, color, change, isLoading, highlight = false }) {
@@ -116,7 +117,7 @@ function CategoryBreakdown({ data, isLoading }) {
             <CardHeader className="pb-2">
                 <div className="flex justify-between items-center">
                     <CardTitle className="text-xl font-bold flex items-center gap-2">
-                        <PiggyBank className="w-5 h-5 text-indigo-500" /> Spending by Category
+                        <PiggyBank className="w-5 h-5 text-primary" /> Spending by Category
                     </CardTitle>
                     <Badge variant="secondary" className="rounded-full">
                         {chartData.length} Categories
@@ -210,7 +211,7 @@ function MonthlyTrendChart({ data, isLoading }) {
         <Card className="h-full border shadow-sm rounded-3xl overflow-hidden">
             <CardHeader className="pb-2">
                 <CardTitle className="text-xl font-bold flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-indigo-500" /> Monthly Trend
+                    <TrendingUp className="w-5 h-5 text-primary" /> Monthly Trend
                 </CardTitle>
             </CardHeader>
             <CardContent>
@@ -285,10 +286,10 @@ function RecentTransactions({ transactions, isLoading }) {
         <Card className="h-full border shadow-sm rounded-3xl overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-xl font-bold flex items-center gap-2">
-                    <HistoryIcon className="w-5 h-5 text-indigo-500" /> Recent Activity
+                    <HistoryIcon className="w-5 h-5 text-primary" /> Recent Activity
                 </CardTitle>
                 <Link to="/transactions">
-                    <Button variant="ghost" size="sm" className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 font-bold group">
+                    <Button variant="ghost" size="sm" className="text-primary hover:text-primary/90 hover:bg-primary/10 font-bold group">
                         View All <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                     </Button>
                 </Link>
@@ -316,7 +317,7 @@ function RecentTransactions({ transactions, isLoading }) {
                                             {tx.type === "income" ? <ArrowUp className="w-5 h-5" /> : <ArrowDown className="w-5 h-5" />}
                                         </div>
                                         <div>
-                                            <p className="font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors">
+                                            <p className="font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">
                                                 {tx.description || "Untitled Transaction"}
                                             </p>
                                             <div className="flex items-center gap-2 mt-0.5">
@@ -347,7 +348,7 @@ function RecentTransactions({ transactions, isLoading }) {
                         <p className="text-gray-500 font-bold text-lg mb-2">Your wallet is hungry</p>
                         <p className="text-gray-400 text-sm mb-6 max-w-xs">You haven't recorded any transactions yet. Let's get started!</p>
                         <Link to="/smart-entry">
-                            <Button className="rounded-2xl px-8 font-bold shadow-lg shadow-indigo-200">Start Tracking</Button>
+                            <Button className="rounded-2xl px-8 font-bold shadow-lg shadow-primary/20">Start Tracking</Button>
                         </Link>
                     </div>
                 )}
@@ -368,17 +369,9 @@ export default function Dashboard() {
 
     async function fetchDashboardData() {
         setIsLoading(true);
-        const token = Cookies.get("token");
-
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/dashboard`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (res.ok) {
-                const result = await res.json();
+            const result = await getDashboardData();
+            if (result && result.data) {
                 setDashboardData(result.data);
             }
         } catch (error) {
@@ -397,10 +390,10 @@ export default function Dashboard() {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
                 <div>
                     <div className="flex items-center gap-2 mb-2">
-                        <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-200 flex-shrink-0">
-                            <Sparkles className="w-5 h-5 text-white" />
+                        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-lg shadow-primary/20 flex-shrink-0">
+                            <Sparkles className="w-5 h-5 text-primary-foreground" />
                         </div>
-                        <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border-none rounded-full px-3 font-bold">
+                        <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 border-none rounded-full px-3 font-bold">
                             Live Overview
                         </Badge>
                     </div>

@@ -15,6 +15,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 // Store
 import { setUser } from "@/store/auth.js";
+import { login } from "../../../services/auth.service";
 
 // Auth Layout
 import AuthLayout from "../components/AuthLayout";
@@ -35,27 +36,16 @@ export default function Login() {
     };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/login`, {
-        method: "POST",
-        body: JSON.stringify(form),
-        headers: {
-          "content-type": "application/json",
-        },
-      });
+      const result = await login(form);
 
-      const responseData = await res.json();
-
-      if (res.ok) {
-        const token = responseData.data?.token || responseData.token;
-        const user = responseData.data?.user || responseData.user;
-        Cookie.set("token", token);
-        dispatch(setUser({ user }));
-        navigate("/dashboard");
-      } else {
-        toast.error(responseData.message || "Email or Password are Incorrect");
-      }
+      const token = result.data?.token || result.token;
+      const user = result.data?.user || result.user;
+      Cookie.set("token", token);
+      dispatch(setUser({ user }));
+      navigate("/dashboard");
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      console.error("Login failed:", error);
+      toast.error(error.message || "Email or Password are Incorrect");
     } finally {
       setIsLoading(false);
     }
@@ -105,7 +95,7 @@ export default function Login() {
 
               <Button
                 type="submit"
-                className="mt-6 h-12 w-full bg-[hsl(199,89%,48%)] text-base font-semibold text-white hover:bg-[hsl(199,89%,40%)]"
+                className="mt-6 h-12 w-full bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Sign In"}

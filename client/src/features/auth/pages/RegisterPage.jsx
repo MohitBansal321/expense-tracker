@@ -3,6 +3,7 @@ import * as React from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { UserPlus } from "lucide-react";
 import { toast } from "react-toastify";
+import { register } from "../../../services/auth.service";
 
 // Shadcn UI Components
 import { Button } from "@/components/ui/button";
@@ -33,25 +34,14 @@ export default function Register() {
     };
 
     try {
-      // Send a POST request to the server for user registration
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/register`, {
-        method: "POST",
-        body: JSON.stringify(form),
-        headers: {
-          "content-type": "application/json",
-        },
-      });
-
-      if (res.ok) {
+      const result = await register(form);
+      if (result.success) {
         toast.success("Account created successfully! Please sign in.");
-        // If registration is successful, navigate to the login page
         navigate("/login");
-      } else {
-        const error = await res.json();
-        toast.error(error.message || "Registration failed. Please try again.");
       }
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      console.error("Registration failed:", error);
+      toast.error(error.message || "Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -138,7 +128,7 @@ export default function Register() {
               {/* Sign Up Button */}
               <Button
                 type="submit"
-                className="w-full h-12 text-base font-semibold mt-6 bg-[hsl(199,89%,48%)] text-white hover:bg-[hsl(199,89%,40%)]"
+                className="w-full h-12 text-base font-semibold mt-6 bg-primary text-primary-foreground hover:bg-primary/90"
                 disabled={isLoading}
               >
                 {isLoading ? "Creating account..." : "Sign Up"}

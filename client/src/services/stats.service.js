@@ -14,6 +14,14 @@ export const getDashboardStats = async () => {
 };
 
 /**
+ * Get full dashboard data
+ * @returns {Promise<Object>} Dashboard data
+ */
+export const getDashboardData = async () => {
+    return apiClient.get("/dashboard");
+};
+
+/**
  * Get category breakdown
  * @param {Object} params - Filter parameters
  * @param {string} params.startDate - Start date
