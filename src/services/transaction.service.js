@@ -207,6 +207,37 @@ class TransactionService {
     }
 
     /**
+     * Create multiple transactions in bulk
+     * @param {Array} transactionsData - Array of transaction data
+     * @param {String} userId - User ID
+     * @returns {Array} Created transactions
+     */
+    async createBulkTransactions(transactionsData, userId) {
+        if (!Array.isArray(transactionsData) || transactionsData.length === 0) {
+            throw new AppError("Invalid or empty transactions list provided", 400);
+        }
+
+        const transactionsToInsert = transactionsData.map((data) => {
+            const { amount, description, date, category_id, type } = data;
+            if (!amount || !description || !date || !category_id) {
+                throw new AppError("Missing required fields in one or more transactions", 400);
+            }
+
+            return {
+                amount,
+                description,
+                date,
+                user_id: userId,
+                category_id,
+                type: type || "expense",
+            };
+        });
+
+        const transactions = await Transaction.insertMany(transactionsToInsert);
+        return transactions;
+    }
+
+    /**
      * Update a transaction
      * @param {String} transactionId - Transaction ID
      * @param {Object} updateData - Update data

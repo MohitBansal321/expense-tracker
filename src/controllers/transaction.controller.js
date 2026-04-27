@@ -60,6 +60,15 @@ export const create = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Create multiple transactions
+ * POST /transaction/bulk
+ */
+export const createBulk = asyncHandler(async (req, res) => {
+    const transactions = await transactionService.createBulkTransactions(req.body.transactions, req.user._id);
+    res.json({ message: "Success", count: transactions.length });
+});
+
+/**
  * Update a transaction
  * PATCH /transaction/:id
  */

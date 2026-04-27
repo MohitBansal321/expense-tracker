@@ -30,6 +30,9 @@ router.get("/:id", transactionController.filter);
 // Create transaction
 router.post("/", transactionController.create);
 
+// Create bulk transactions
+router.post("/bulk", transactionController.createBulk);
+
 // Delete transaction
 router.delete("/:id", transactionController.destroy);
 

@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 // Components
 import TransactionChart from "../components/TransactionChart";
 import TransactionForm from "../components/TransactionForm";
+import BulkTransactionForm from "../components/BulkTransactionForm";
 import TransactionsList from "../components/TransactionsList";
 
 export default function Home() {
@@ -36,6 +37,7 @@ export default function Home() {
   const [editTransaction, setEditTransaction] = useState({});
   const [categoryFilter, setCategoryFilter] = useState("");
   const [openForm, setOpenForm] = useState(false);
+  const [openBulkForm, setOpenBulkForm] = useState(false);
 
   // Search states
   const [searchQuery, setSearchQuery] = useState("");
@@ -182,14 +184,24 @@ export default function Home() {
             Manage and track your financial history
           </p>
         </div>
-        <Button
-          variant="outline"
-          onClick={handleExport}
-          className="gap-2"
-        >
-          <Download className="h-4 w-4" />
-          Export CSV
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={() => setOpenBulkForm(true)}
+            className="gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Bulk Add
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleExport}
+            className="gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Export CSV
+          </Button>
+        </div>
       </div>
 
       {/* TransactionChart component */}
@@ -354,6 +366,22 @@ export default function Home() {
             fetchTransactions={handleFormClose}
             editTransaction={editTransaction}
             inline
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for Bulk Transaction Form */}
+      <Dialog open={openBulkForm} onOpenChange={setOpenBulkForm}>
+        <DialogContent className="w-[calc(100vw-1rem)] max-w-5xl gap-0 overflow-y-auto border-none bg-transparent p-0 shadow-none sm:w-full max-h-[90vh]">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Bulk add transactions</DialogTitle>
+            <DialogDescription>
+              Add multiple transactions at once.
+            </DialogDescription>
+          </DialogHeader>
+          <BulkTransactionForm
+            fetchTransactions={fetchTransactions}
+            onClose={() => setOpenBulkForm(false)}
           />
         </DialogContent>
       </Dialog>
