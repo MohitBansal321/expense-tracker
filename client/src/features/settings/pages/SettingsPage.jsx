@@ -1,11 +1,69 @@
 // Settings page with modern Shadcn UI
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Cookies from "js-cookie";
 import { Settings as SettingsIcon, Save, User } from "lucide-react";
 import { setUser } from "@/store/auth";
 import { updateProfile } from "../../../services/auth.service";
 import { toast } from "react-toastify";
+
+// Shadcn UI Components
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+
+export default function Settings() {
+    const user = useSelector((state) => state.auth.user);
+    const dispatch = useDispatch();
+
+    const [form, setForm] = useState({
+        firstName: user?.firstName || "",
+        lastName: user?.lastName || "",
+        password: "",
+        confirmPassword: "",
+    });
+
+    React.useEffect(() => {
+        if (user) {
+            setForm((prev) => ({
+                ...prev,
+                firstName: user.firstName || "",
+                lastName: user.lastName || "",
+            }));
+        }
+    }, [user]);
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+
+        if (form.password && form.password !== form.confirmPassword) {
+            toast.error("Passwords do not match");
+            return;
+        }
+
+        try {
+            const result = await updateProfile({
+                firstName: form.firstName,
+                lastName: form.lastName,
+                password: form.password || undefined,
+            });
+
+            if (result.success) {
+                toast.success("Profile updated successfully!");
+                dispatch(setUser({ user: result.data }));
+                setForm((prev) => ({ ...prev, password: "", confirmPassword: "" }));
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error(error.message || "Something went wrong");
+        }
+    }
+
+    return (
+        <div className="container max-w-4xl mx-auto py-6 px-4">
+            {/* Header */}
+            <div className="flex items-center gap-4 mb-6">
                 <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
                     <SettingsIcon className="h-7 w-7" />
                 </div>
