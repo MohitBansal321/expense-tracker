@@ -23,7 +23,7 @@ export default function ButtonAppBar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
       <div className="container max-w-7xl mx-auto flex h-14 items-center px-4">
         {/* Logo */}
         <Link
@@ -136,7 +136,7 @@ export default function ButtonAppBar() {
 
       {/* Mobile slide-out menu */}
       {isAuthenticated && mobileMenuOpen && (
-        <div className="md:hidden border-t bg-background/95 backdrop-blur animate-in slide-in-from-top-2">
+        <div className="md:hidden bg-background/95 backdrop-blur animate-in slide-in-from-top-2 shadow-inner">
           <nav className="flex flex-col p-4 gap-1">
             {[
               { to: "/dashboard", label: "Dashboard" },
@@ -154,7 +154,7 @@ export default function ButtonAppBar() {
                 </Button>
               </Link>
             ))}
-            <div className="border-t mt-2 pt-2">
+            <div className="mt-2 pt-2">
               <Button variant="outline" className="w-full" onClick={() => { _logout(); setMobileMenuOpen(false); }}>
                 Logout
               </Button>

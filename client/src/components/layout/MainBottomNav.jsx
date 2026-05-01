@@ -41,7 +41,7 @@ export default function MainBottomNav() {
 
     return (
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-[1000] pb-[env(safe-area-inset-bottom)]">
-            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] flex items-center justify-around h-16 px-2">
+            <div className="bg-card/80 ember-glow backdrop-blur-xl flex items-center justify-around h-16 px-2">
                 {navItems.map((item, index) => {
                     const isActive = activeTab === index;
                     const Icon = item.icon;
@@ -54,7 +54,7 @@ export default function MainBottomNav() {
                                 className="flex flex-col items-center justify-center -translate-y-5 group"
                             >
                                 <div className={cn(
-                                    "w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ring-4 ring-white dark:ring-gray-900 group-active:scale-95",
+                                    "w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ring-4 ring-background group-active:scale-95",
                                     isActive 
                                         ? "bg-primary shadow-primary/40" 
                                         : "bg-primary/80 shadow-primary/20 group-hover:bg-primary"

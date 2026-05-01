@@ -98,12 +98,12 @@ export default function BulkTransactionForm({ fetchTransactions, onClose }) {
   }
 
   return (
-    <div className="relative overflow-hidden border backdrop-blur-xl transition-all duration-500 bg-white/95 dark:bg-gray-950/95 border-gray-200/70 dark:border-gray-800/80 rounded-[1.75rem] p-4 sm:p-6 lg:p-7 shadow-2xl">
+    <div className="relative overflow-hidden backdrop-blur-xl transition-all duration-500 bg-card/95 ember-glow/95 rounded-[1.75rem] p-4 sm:p-6 lg:p-7 shadow-2xl">
       <div className="mb-6">
-        <h2 className="text-2xl font-black tracking-tight text-gray-950 dark:text-white sm:text-3xl">
+        <h2 className="text-2xl font-black tracking-tight text-gray-950 text-foreground sm:text-3xl">
           Bulk Add Transactions
         </h2>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-sm text-muted-foreground">
           Quickly add multiple transactions at once.
         </p>
       </div>
@@ -122,13 +122,13 @@ export default function BulkTransactionForm({ fetchTransactions, onClose }) {
           {rows.map((row) => (
             <div
               key={row.id}
-              className="grid grid-cols-[100px_1fr_200px_150px_120px_50px] gap-3 items-center bg-gray-50/50 dark:bg-gray-900/50 p-2 rounded-xl border border-gray-100 dark:border-gray-800"
+              className="grid grid-cols-[100px_1fr_200px_150px_120px_50px] gap-3 items-center bg-card ember-glow/50 p-2 rounded-xl"
             >
               <Select
                 value={row.type}
                 onValueChange={(val) => handleChange(row.id, "type", val)}
               >
-                <SelectTrigger className="h-10 bg-white dark:bg-gray-950">
+                <SelectTrigger className="h-10 bg-card ember-glow">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -141,14 +141,14 @@ export default function BulkTransactionForm({ fetchTransactions, onClose }) {
                 placeholder="Description"
                 value={row.description}
                 onChange={(e) => handleChange(row.id, "description", e.target.value)}
-                className="h-10 bg-white dark:bg-gray-950"
+                className="h-10 bg-card ember-glow"
               />
 
               <Select
                 value={row.category_id}
                 onValueChange={(val) => handleChange(row.id, "category_id", val)}
               >
-                <SelectTrigger className="h-10 bg-white dark:bg-gray-950">
+                <SelectTrigger className="h-10 bg-card ember-glow">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -164,7 +164,7 @@ export default function BulkTransactionForm({ fetchTransactions, onClose }) {
                 type="date"
                 value={row.date}
                 onChange={(e) => handleChange(row.id, "date", e.target.value)}
-                className="h-10 bg-white dark:bg-gray-950"
+                className="h-10 bg-card ember-glow"
               />
 
               <Input
@@ -174,7 +174,7 @@ export default function BulkTransactionForm({ fetchTransactions, onClose }) {
                 value={row.amount}
                 onChange={(e) => handleChange(row.id, "amount", e.target.value)}
                 className={cn(
-                  "h-10 bg-white dark:bg-gray-950 font-semibold",
+                  "h-10 bg-card ember-glow font-semibold",
                   row.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
                 )}
               />
@@ -192,12 +192,12 @@ export default function BulkTransactionForm({ fetchTransactions, onClose }) {
         </div>
       </div>
 
-      <div className="mt-6 flex flex-col sm:flex-row justify-between gap-4 pt-4 border-t dark:border-gray-800">
+      <div className="mt-6 flex flex-col sm:flex-row justify-between gap-4 pt-4 border-t border-border/50">
         <Button
           type="button"
           variant="outline"
           onClick={handleAddRow}
-          className="gap-2 border-dashed border-2 hover:bg-gray-50 dark:hover:bg-gray-900"
+          className="gap-2 border-dashed border-2 hover:bg-muted/80"
         >
           <Plus className="h-4 w-4" />
           Add Row

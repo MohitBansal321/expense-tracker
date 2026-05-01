@@ -184,14 +184,14 @@ export default function Reports() {
                     <div className="flex justify-between items-start">
                         <div>
                             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">{title}</p>
-                            <p className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+                            <p className="text-3xl font-black text-foreground tracking-tight">
                                 ${typeof value === "number" ? value.toLocaleString() : value}
                             </p>
                             {change !== undefined && (
                                 <Badge
                                     className={cn(
                                         "mt-2 rounded-full px-2 py-0.5 border-none font-bold",
-                                        isPositive ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"
+                                        isPositive ? "bg-sage/10 text-sage" : "bg-ember/10 text-ember"
                                     )}
                                 >
                                     {isPositive ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
@@ -199,7 +199,7 @@ export default function Reports() {
                                 </Badge>
                             )}
                         </div>
-                        <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl text-primary">
+                        <div className="p-3 bg-muted rounded-xl text-primary">
                             {Icon}
                         </div>
                     </div>
@@ -217,7 +217,7 @@ export default function Reports() {
                         <BarChart3 className="h-7 w-7" />
                     </div>
                     <div>
-                        <h1 className="text-4xl font-black tracking-tight text-gray-900 dark:text-white">Reports</h1>
+                        <h1 className="text-4xl font-black tracking-tight text-foreground">Reports</h1>
                         <p className="text-gray-400 font-medium">Financial analytics and trends</p>
                     </div>
                 </div>
@@ -272,11 +272,11 @@ export default function Reports() {
 
             {/* Tabs */}
             <Tabs value={tabValue} onValueChange={setTabValue} className="mb-8">
-                <TabsList className="inline-flex h-12 items-center justify-center rounded-2xl bg-gray-100 p-1 text-gray-500 dark:bg-gray-800 w-full md:w-auto">
-                    <TabsTrigger value="monthly" className="rounded-xl px-8 py-2 font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">
+                <TabsList className="inline-flex h-12 items-center justify-center rounded-2xl bg-gray-100 p-1 text-gray-500 bg-card ember-glow w-full md:w-auto">
+                    <TabsTrigger value="monthly" className="rounded-xl px-8 py-2 font-bold data-[state=active]:bg-card data-[state=active]:ember-glow data-[state=active]:text-primary data-[state=active]:shadow-sm">
                         Monthly
                     </TabsTrigger>
-                    <TabsTrigger value="yearly" className="rounded-xl px-8 py-2 font-bold data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">
+                    <TabsTrigger value="yearly" className="rounded-xl px-8 py-2 font-bold data-[state=active]:bg-card data-[state=active]:ember-glow data-[state=active]:text-primary data-[state=active]:shadow-sm">
                         Yearly
                     </TabsTrigger>
                 </TabsList>
@@ -288,7 +288,7 @@ export default function Reports() {
                         </div>
                     ) : fetchError ? (
                         <Card className="p-20 text-center flex flex-col items-center rounded-3xl border-dashed">
-                            <div className="w-16 h-16 rounded-full bg-red-50 text-red-500 flex items-center justify-center mb-4">
+                            <div className="w-16 h-16 rounded-full bg-ember/10 text-ember flex items-center justify-center mb-4">
                                 <Search className="w-8 h-8" />
                             </div>
                             <h3 className="text-xl font-bold mb-2">Failed to load report</h3>
@@ -351,7 +351,7 @@ export default function Reports() {
                                                     <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ paddingBottom: '20px' }} />
                                                     <Bar 
                                                         dataKey="expense" 
-                                                        fill="#ef4444" 
+                                                        fill="#E07A4F" 
                                                         radius={[4, 4, 0, 0]} 
                                                         onClick={(data) => handleDrillDown({ day: data.day })}
                                                         cursor="pointer"
@@ -359,7 +359,7 @@ export default function Reports() {
                                                     />
                                                     <Bar 
                                                         dataKey="income" 
-                                                        fill="#22c55e" 
+                                                        fill="#3e6751" 
                                                         radius={[4, 4, 0, 0]} 
                                                         onClick={(data) => handleDrillDown({ day: data.day })}
                                                         cursor="pointer"
@@ -391,19 +391,19 @@ export default function Reports() {
                                                 <div key={i} className="group">
                                                     <div className="flex justify-between items-center mb-2">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="w-9 h-9 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-lg shadow-sm group-hover:scale-110 transition-transform">
+                                                            <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center text-lg shadow-sm group-hover:scale-110 transition-transform">
                                                                 {cat.icon || "💰"}
                                                             </div>
-                                                            <span className="font-bold text-gray-700 dark:text-gray-300">{cat.category}</span>
+                                                            <span className="font-bold text-foreground">{cat.category}</span>
                                                         </div>
                                                         <div className="text-right">
-                                                            <p className="font-black text-gray-900 dark:text-white">${cat.amount.toLocaleString()}</p>
+                                                            <p className="font-black text-foreground">${cat.amount.toLocaleString()}</p>
                                                             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">
                                                                 {((cat.amount / (monthlyData.summary.totalExpenses || 1)) * 100).toFixed(1)}%
                                                             </p>
                                                         </div>
                                                     </div>
-                                                    <div className="h-2.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                                    <div className="h-2.5 w-full bg-muted rounded-full overflow-hidden">
                                                         <div
                                                             className="h-full bg-primary rounded-full transition-all duration-1000 ease-out"
                                                             style={{
@@ -426,19 +426,19 @@ export default function Reports() {
                                     </CardHeader>
                                     <CardContent className="p-0">
                                         {monthlyData.topExpenses.length > 0 ? (
-                                            <div className="divide-y divide-gray-50 dark:divide-gray-800 font-medium">
+                                            <div className="divide-y divide-border font-medium">
                                                 {monthlyData.topExpenses.map((exp, i) => (
-                                                    <div key={i} className="flex justify-between items-center p-5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors first:pt-0 last:pb-0 last:border-0 border-transparent">
+                                                    <div key={i} className="flex justify-between items-center p-5 hover:bg-muted/80 transition-colors first:pt-0 last:pb-0 last:border-0 border-transparent">
                                                         <div className="flex items-center gap-4">
-                                                            <div className="w-10 h-10 rounded-full bg-red-50 dark:bg-red-900/20 text-red-500 flex items-center justify-center">
+                                                            <div className="w-10 h-10 rounded-full bg-ember/10 text-ember flex items-center justify-center">
                                                                 <TrendingDown className="w-5 h-5" />
                                                             </div>
                                                             <div>
-                                                                <p className="font-bold text-gray-900 dark:text-white truncate max-w-[150px]">{exp.description}</p>
+                                                                <p className="font-bold text-foreground truncate max-w-[150px]">{exp.description}</p>
                                                                 <Badge variant="outline" className="text-[10px] rounded-full border-gray-100 text-gray-400 py-0">{exp.category}</Badge>
                                                             </div>
                                                         </div>
-                                                        <p className="font-black text-red-500 tracking-tight text-lg">-${exp.amount.toLocaleString()}</p>
+                                                        <p className="font-black text-ember tracking-tight text-lg">-${exp.amount.toLocaleString()}</p>
                                                     </div>
                                                 ))}
                                             </div>
@@ -491,17 +491,17 @@ export default function Reports() {
                                                 <Line 
                                                     type="monotone" 
                                                     dataKey="income" 
-                                                    stroke="#22c55e" 
+                                                    stroke="#3e6751" 
                                                     strokeWidth={4} 
-                                                    dot={{ r: 4, fill: '#22c55e', strokeWidth: 2, stroke: '#fff' }}
+                                                    dot={{ r: 4, fill: '#3e6751', strokeWidth: 2, stroke: '#fff' }}
                                                     activeDot={{ r: 8, strokeWidth: 0 }}
                                                 />
                                                 <Line 
                                                     type="monotone" 
                                                     dataKey="expense" 
-                                                    stroke="#ef4444" 
+                                                    stroke="#E07A4F" 
                                                     strokeWidth={4} 
-                                                    dot={{ r: 4, fill: '#ef4444', strokeWidth: 2, stroke: '#fff' }}
+                                                    dot={{ r: 4, fill: '#E07A4F', strokeWidth: 2, stroke: '#fff' }}
                                                     activeDot={{ r: 8, strokeWidth: 0 }}
                                                 />
                                             </LineChart>
@@ -518,28 +518,28 @@ export default function Reports() {
                                     </CardHeader>
                                     <CardContent className="space-y-8">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0">
+                                            <div className="w-12 h-12 rounded-2xl bg-sage/10 text-sage flex items-center justify-center flex-shrink-0">
                                                 <TrendingUp className="w-6 h-6" />
                                             </div>
                                             <div>
                                                 <p className="text-xs font-bold text-gray-400 uppercase tracking-tighter">Peak Prosperity Month</p>
-                                                <p className="text-lg font-black text-gray-900 dark:text-white">
+                                                <p className="text-lg font-black text-foreground">
                                                     {yearlyData.insights.bestMonth}
                                                 </p>
-                                                <p className="text-sm font-bold text-green-600">+${yearlyData.insights.bestMonthSavings.toLocaleString()}</p>
+                                                <p className="text-sm font-bold text-sage">+${yearlyData.insights.bestMonthSavings.toLocaleString()}</p>
                                             </div>
                                         </div>
                                         
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center flex-shrink-0">
+                                            <div className="w-12 h-12 rounded-2xl bg-ember/10 text-ember flex items-center justify-center flex-shrink-0">
                                                 <TrendingDown className="w-6 h-6" />
                                             </div>
                                             <div>
                                                 <p className="text-xs font-bold text-gray-400 uppercase tracking-tighter">Heaviest Spending</p>
-                                                <p className="text-lg font-black text-gray-900 dark:text-white">
+                                                <p className="text-lg font-black text-foreground">
                                                     {yearlyData.insights.worstMonth}
                                                 </p>
-                                                <p className="text-sm font-bold text-red-600">-${yearlyData.insights.worstMonthDeficit.toLocaleString()}</p>
+                                                <p className="text-sm font-bold text-ember">-${yearlyData.insights.worstMonthDeficit.toLocaleString()}</p>
                                             </div>
                                         </div>
 
@@ -549,7 +549,7 @@ export default function Reports() {
                                             </div>
                                             <div>
                                                 <p className="text-xs font-bold text-gray-400 uppercase tracking-tighter">Primary Category</p>
-                                                <p className="text-lg font-black text-gray-900 dark:text-white">
+                                                <p className="text-lg font-black text-foreground">
                                                     {yearlyData.insights.topCategory || "None"}
                                                 </p>
                                                 <p className="text-sm font-bold text-primary">${yearlyData.insights.topCategoryAmount.toLocaleString()}</p>
@@ -570,11 +570,11 @@ export default function Reports() {
                                                     <div className="flex justify-between items-center mb-1.5">
                                                         <div className="flex items-center gap-2">
                                                             <span className="text-lg group-hover:scale-125 transition-transform">{cat.icon || "💰"}</span>
-                                                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{cat.category}</span>
+                                                            <span className="text-sm font-bold text-foreground">{cat.category}</span>
                                                         </div>
-                                                        <span className="font-black text-gray-900 dark:text-white tracking-tight">${cat.amount.toLocaleString()}</span>
+                                                        <span className="font-black text-foreground tracking-tight">${cat.amount.toLocaleString()}</span>
                                                     </div>
-                                                    <div className="h-2 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                                                         <div
                                                             className="h-full bg-primary rounded-full opacity-70 group-hover:opacity-100 transition-opacity duration-500"
                                                             style={{
@@ -609,7 +609,7 @@ function DrillDownDialog({ open, onClose, title, transactions, isLoading }) {
     return (
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[600px] rounded-3xl p-0 overflow-hidden border-none shadow-2xl">
-                <DialogHeader className="p-6 bg-gray-50 dark:bg-gray-900 border-b">
+                <DialogHeader className="p-6 bg-muted border-b">
                     <DialogTitle className="text-2xl font-black tracking-tight">{title}</DialogTitle>
                 </DialogHeader>
                 <div className="p-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
@@ -622,17 +622,17 @@ function DrillDownDialog({ open, onClose, title, transactions, isLoading }) {
                             {transactions.map((tx) => (
                                 <div
                                     key={tx._id}
-                                    className="flex justify-between items-center p-4 rounded-2xl bg-white dark:bg-gray-800 border hover:border-primary/20 transition-colors shadow-sm group"
+                                    className="flex justify-between items-center p-4 rounded-2xl bg-card ember-glow border hover:border-primary/20 transition-colors shadow-sm group"
                                 >
                                     <div className="flex items-center gap-4">
                                         <div className={cn(
                                             "w-10 h-10 rounded-full flex items-center justify-center",
-                                            tx.type === "income" ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"
+                                            tx.type === "income" ? "bg-sage/10 text-sage" : "bg-ember/10 text-ember"
                                         )}>
                                             {tx.type === "income" ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
                                         </div>
                                         <div>
-                                            <p className="font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">{tx.description || "Untitled"}</p>
+                                            <p className="font-bold text-foreground group-hover:text-primary transition-colors">{tx.description || "Untitled"}</p>
                                             <p className="text-xs text-gray-400 font-medium">
                                                 {new Date(tx.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </p>
@@ -640,7 +640,7 @@ function DrillDownDialog({ open, onClose, title, transactions, isLoading }) {
                                     </div>
                                     <p className={cn(
                                         "text-lg font-black tracking-tight",
-                                        tx.type === "income" ? "text-green-600" : "text-red-500"
+                                        tx.type === "income" ? "text-sage" : "text-ember"
                                     )}>
                                         {tx.type === "income" ? "+" : "-"}${tx.amount.toLocaleString()}
                                     </p>
@@ -656,7 +656,7 @@ function DrillDownDialog({ open, onClose, title, transactions, isLoading }) {
                         </div>
                     )}
                 </div>
-                <DialogFooter className="p-4 bg-gray-50 dark:bg-gray-900 border-t items-center justify-center">
+                <DialogFooter className="p-4 bg-muted border-t items-center justify-center">
                     <Button variant="outline" onClick={onClose} className="rounded-xl px-10 font-bold">
                         Close
                     </Button>

@@ -8,11 +8,11 @@ export default function Landing() {
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
     return (
-        <div className="overflow-x-hidden min-h-screen bg-white dark:bg-gray-950">
+        <div className="overflow-x-hidden min-h-screen bg-card ember-glow">
             {/* Hero Section */}
             <section className="relative pt-24 pb-32 md:pt-36 md:pb-40 px-4 overflow-hidden">
                 <div className="absolute inset-0 z-0">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(37,99,235,0.1)_0%,transparent_60%)] dark:bg-[radial-gradient(circle_at_50%_30%,rgba(59,130,246,0.15)_0%,transparent_60%)]" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,hsl(var(--primary)/0.1)_0%,transparent_60%)] dark:bg-[radial-gradient(circle_at_50%_30%,hsl(var(--primary)/0.15)_0%,transparent_60%)]" />
                 </div>
                 
                 <div className="container relative z-10 mx-auto text-center max-w-5xl">
@@ -38,7 +38,7 @@ export default function Landing() {
                                     </Button>
                                 </Link>
                                 <Link to="/login">
-                                    <Button size="lg" variant="outline" className="rounded-full px-8 py-6 text-lg font-semibold border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all">
+                                    <Button size="lg" variant="outline" className="rounded-full px-8 py-6 text-lg font-semibold border-border hover:bg-muted/80 transition-all">
                                         Login
                                     </Button>
                                 </Link>
@@ -49,14 +49,14 @@ export default function Landing() {
             </section>
 
             {/* Problem vs Solution */}
-            <section className="py-20 md:py-32 px-4 bg-gray-50 dark:bg-gray-900/50">
+            <section className="py-20 md:py-32 px-4 bg-muted">
                 <div className="container mx-auto max-w-6xl">
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
                         <div className="md:col-span-5">
-                            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
+                            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
                                 Tired of the chaos?
                             </h2>
-                            <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+                            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
                                 Manual spreadsheets, lost receipts, and forgetting to log expenses lead to inaccurate financial data and stress.
                             </p>
                             
@@ -67,8 +67,8 @@ export default function Landing() {
                                     "Forgotten subscriptions",
                                     "Unclear spending habits",
                                 ].map((text) => (
-                                    <li key={text} className="flex items-center gap-3 text-gray-700 dark:text-gray-300 font-medium">
-                                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 text-xs font-bold leading-none">
+                                    <li key={text} className="flex items-center gap-3 text-foreground font-medium">
+                                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-ember/10 text-ember text-xs font-bold leading-none">
                                             ✕
                                         </span>
                                         {text}
@@ -87,7 +87,7 @@ export default function Landing() {
                                 <h3 className="text-2xl font-bold mb-4 text-primary relative z-10">
                                     The Automated Way
                                 </h3>
-                                <p className="text-gray-700 dark:text-gray-300 mb-8 relative z-10 leading-relaxed">
+                                <p className="text-foreground mb-8 relative z-10 leading-relaxed">
                                     Experience financial clarity with automated tools that do the heavy lifting for you.
                                 </p>
                                 
@@ -98,8 +98,8 @@ export default function Landing() {
                                         "Auto-recurring expenses",
                                         "AI-powered duplicate check",
                                     ].map((text) => (
-                                        <li key={text} className="flex items-center gap-3 text-gray-900 dark:text-gray-100 font-medium">
-                                            <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                                        <li key={text} className="flex items-center gap-3 text-foreground font-medium">
+                                            <CheckCircle2 className="w-6 h-6 text-sage" />
                                             {text}
                                         </li>
                                     ))}
@@ -114,8 +114,8 @@ export default function Landing() {
             <section className="py-20 md:py-32 px-4">
                 <div className="container mx-auto max-w-6xl">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">Smart Entry Features</h2>
-                        <p className="text-xl text-gray-600 dark:text-gray-400">Three ways to add transactions without typing</p>
+                        <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground">Smart Entry Features</h2>
+                        <p className="text-xl text-muted-foreground">Three ways to add transactions without typing</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -136,12 +136,12 @@ export default function Landing() {
                                 desc: "Drag and drop your bank statements to import hundreds of transactions at once.",
                             },
                         ].map((feature, i) => (
-                            <div key={i} className="bg-white dark:bg-gray-900 p-8 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                            <div key={i} className="bg-card ember-glow p-8 rounded-3xl border-none shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
                                 <div className="w-16 h-16 rounded-2xl bg-primary/5 dark:bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                                     {feature.icon}
                                 </div>
-                                <h3 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">{feature.title}</h3>
-                                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{feature.desc}</p>
+                                <h3 className="text-2xl font-bold mb-3 text-foreground">{feature.title}</h3>
+                                <p className="text-muted-foreground leading-relaxed">{feature.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -149,17 +149,17 @@ export default function Landing() {
             </section>
 
             {/* Analytics Preview */}
-            <section className="py-20 md:py-32 px-4 bg-gray-50 dark:bg-gray-900/50">
+            <section className="py-20 md:py-32 px-4 bg-muted">
                 <div className="container mx-auto max-w-6xl">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
                         <div>
                             <p className="text-primary font-bold uppercase tracking-wider mb-2 text-sm">
                                 Powerful Insights
                             </p>
-                            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white leading-tight">
+                            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground leading-tight">
                                 See where your money goes
                             </h2>
-                            <p className="text-lg text-gray-600 dark:text-gray-400 mb-10 leading-relaxed max-w-xl">
+                            <p className="text-lg text-muted-foreground mb-10 leading-relaxed max-w-xl">
                                 Visual reports help you identify spending patterns, understand your habits, and find incredible opportunities to save.
                             </p>
                             
@@ -171,21 +171,21 @@ export default function Landing() {
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-center gap-3">
                                         <div className="text-primary">{item.icon}</div>
-                                        <span className="font-semibold text-gray-900 dark:text-gray-200">{item.text}</span>
+                                        <span className="font-semibold text-foreground dark:text-gray-200">{item.text}</span>
                                     </div>
                                 ))}
                             </div>
                         </div>
                         
                         <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-cyan-400/20 rounded-[2rem] blur-3xl transform -rotate-6"></div>
-                            <div className="relative aspect-auto sm:aspect-square md:aspect-[4/3] bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-2xl p-6 flex flex-col gap-4 overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-sage/20 rounded-[2rem] blur-3xl transform -rotate-6"></div>
+                            <div className="relative aspect-auto sm:aspect-square md:aspect-[4/3] bg-card ember-glow rounded-3xl border-none shadow-2xl p-6 flex flex-col gap-4 overflow-hidden">
                                 <div className="flex gap-4">
-                                    <div className="flex-1 h-24 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse delay-75"></div>
-                                    <div className="flex-1 h-24 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse delay-150"></div>
-                                    <div className="flex-1 h-24 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse delay-300"></div>
+                                    <div className="flex-1 h-24 bg-muted rounded-xl animate-pulse delay-75"></div>
+                                    <div className="flex-1 h-24 bg-muted rounded-xl animate-pulse delay-150"></div>
+                                    <div className="flex-1 h-24 bg-muted rounded-xl animate-pulse delay-300"></div>
                                 </div>
-                                <div className="flex-1 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800 p-4 flex items-end justify-between gap-2">
+                                <div className="flex-1 bg-card ember-glow rounded-xl border-none p-4 flex items-end justify-between gap-2">
                                     {[40, 60, 45, 75, 50, 85, 65, 90, 55, 70].map((h, i) => (
                                         <div key={i} className="w-full bg-primary/80 hover:bg-primary rounded-t-sm transition-all duration-500 cursor-pointer" style={{ height: `${h}%` }}></div>
                                     ))}

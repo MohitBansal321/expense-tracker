@@ -64,16 +64,16 @@ export default function TransactionChart({ data }) {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-3 rounded-lg shadow-xl">
-          <p className="font-bold text-gray-900 dark:text-white mb-2">{label}</p>
+        <div className="bg-card ember-glow border-none p-3 rounded-lg shadow-xl">
+          <p className="font-bold text-popover-foreground mb-2">{label}</p>
           {payload.map((entry, index) => (
             <div key={index} className="flex items-center gap-2 text-sm">
               <div 
                 className="w-2 h-2 rounded-full" 
                 style={{ backgroundColor: entry.color }} 
               />
-              <span className="text-gray-500 dark:text-gray-400">{entry.name}:</span>
-              <span className="font-semibold text-gray-900 dark:text-white">
+              <span className="text-muted-foreground">{entry.name}:</span>
+              <span className="font-semibold text-foreground">
                 ${entry.value.toLocaleString()}
               </span>
             </div>
@@ -85,26 +85,26 @@ export default function TransactionChart({ data }) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 mt-8 shadow-sm">
+    <div className="bg-card border-none ember-glow rounded-xl p-6 mt-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+        <h3 className="text-xl font-bold text-foreground">
           Income vs Expense Trend
         </h3>
         <div className="flex gap-6">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.3)]" />
+            <div className="w-3 h-3 rounded-full bg-ember shadow-[0_0_10px_rgba(224,122,79,0.3)]" />
             <div className="flex flex-col">
-              <span className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold leading-none mb-1">Income</span>
-              <span className="text-sm font-bold text-gray-900 dark:text-white leading-none">
+              <span className="label-caps text-muted-foreground mb-1">Income</span>
+              <span className="text-sm font-bold text-foreground leading-none font-headline">
                 ${totals.income.toLocaleString()}
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.3)]" />
+            <div className="w-3 h-3 rounded-full bg-sage shadow-[0_0_10px_rgba(62,103,81,0.3)]" />
             <div className="flex flex-col">
-              <span className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold leading-none mb-1">Expense</span>
-              <span className="text-sm font-bold text-gray-900 dark:text-white leading-none">
+              <span className="label-caps text-muted-foreground mb-1">Expense</span>
+              <span className="text-sm font-bold text-foreground leading-none font-headline">
                 ${totals.expense.toLocaleString()}
               </span>
             </div>
@@ -122,12 +122,12 @@ export default function TransactionChart({ data }) {
             >
               <defs>
                 <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#22c55e" stopOpacity={0.8}/>
-                  <stop offset="100%" stopColor="#22c55e" stopOpacity={0.3}/>
+                  <stop offset="0%" stopColor="#E07A4F" stopOpacity={0.8}/>
+                  <stop offset="100%" stopColor="#E07A4F" stopOpacity={0.3}/>
                 </linearGradient>
                 <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#ef4444" stopOpacity={0.8}/>
-                  <stop offset="100%" stopColor="#ef4444" stopOpacity={0.3}/>
+                  <stop offset="0%" stopColor="#3e6751" stopOpacity={0.8}/>
+                  <stop offset="100%" stopColor="#3e6751" stopOpacity={0.3}/>
                 </linearGradient>
               </defs>
               <CartesianGrid 
@@ -168,12 +168,12 @@ export default function TransactionChart({ data }) {
           </ResponsiveContainer>
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
               <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
-            <p className="text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
+            <p className="text-muted-foreground max-w-xs mx-auto">
               No transaction data available yet. Add some transactions to see your spending trends.
             </p>
           </div>

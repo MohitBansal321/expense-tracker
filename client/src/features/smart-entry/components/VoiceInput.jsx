@@ -178,11 +178,11 @@ export default function VoiceInput({ onTransactionCreated }) {
 
     if (!isSupported) {
         return (
-            <div className="h-full border border-gray-200 dark:border-gray-800 rounded-2xl bg-gray-50 dark:bg-gray-900/50 opacity-60">
+            <div className="h-full border-none rounded-2xl bg-card ember-glow opacity-60">
                 <div className="flex flex-col items-center justify-center h-full p-8 text-center">
                     <MicOff className="w-12 h-12 text-gray-400 mb-3" />
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Voice Input</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <h3 className="text-lg font-bold text-foreground">Voice Input</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
                         Not supported in this browser
                     </p>
                 </div>
@@ -194,13 +194,13 @@ export default function VoiceInput({ onTransactionCreated }) {
         <>
             {/* Trigger Card */}
             <div
-                className="h-full cursor-pointer transition-all duration-300 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 group hover:-translate-y-1 hover:shadow-xl hover:border-primary"
+                className="h-full cursor-pointer transition-all duration-300 border-none rounded-2xl bg-card ember-glow group hover:-translate-y-1 hover:shadow-xl hover:ring-2 hover:ring-primary/20"
                 onClick={() => setDialogOpen(true)}
             >
                 <div className="flex flex-col items-center justify-center h-full p-8 text-center">
                     <Mic className="w-12 h-12 text-primary mb-3 group-hover:scale-110 transition-transform" />
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Voice Input</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <h3 className="text-lg font-bold text-foreground">Voice Input</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
                         Speak to add transactions
                     </p>
                 </div>
@@ -217,12 +217,12 @@ export default function VoiceInput({ onTransactionCreated }) {
 
                     <div className="mt-4 max-h-[70vh] overflow-y-auto px-1 py-1">
                         {error && (
-                            <div className="bg-red-50 text-red-700 p-3 rounded-md mb-4 text-sm border border-red-200">
+                            <div className="bg-ember/10 text-ember p-3 rounded-md mb-4 text-sm border border-ember/20">
                                 {error}
                             </div>
                         )}
                         {success && (
-                            <div className="bg-green-50 text-green-700 p-3 rounded-md mb-4 text-sm border border-green-200 flex items-center gap-2">
+                            <div className="bg-sage/10 text-sage p-3 rounded-md mb-4 text-sm border border-sage/20 flex items-center gap-2">
                                 <CheckCircle className="w-5 h-5 flex-shrink-0" />
                                 <span>Transaction saved!</span>
                             </div>
@@ -235,7 +235,7 @@ export default function VoiceInput({ onTransactionCreated }) {
                                 className={cn(
                                     "w-24 h-24 rounded-full flex items-center justify-center shadow-lg transition-all text-white outline-none focus:outline-none",
                                     isListening 
-                                        ? "bg-destructive hover:bg-destructive/90 animate-[pulse_1.5s_cubic-bezier(0.4,0,0.6,1)_infinite]" 
+                                        ? "bg-ember hover:bg-ember/90 animate-[pulse_1.5s_cubic-bezier(0.4,0,0.6,1)_infinite]" 
                                         : "bg-primary hover:bg-primary/90 hover:scale-105"
                                 )}
                                 style={{
@@ -244,19 +244,19 @@ export default function VoiceInput({ onTransactionCreated }) {
                             >
                                 {isListening ? <Square className="w-10 h-10 fill-current" /> : <Mic className="w-10 h-10" />}
                             </button>
-                            <h4 className="mt-4 font-medium text-gray-900 dark:text-gray-100">
+                            <h4 className="mt-4 font-medium text-foreground">
                                 {isListening ? "Listening..." : "Tap to speak"}
                             </h4>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">
+                            <p className="text-xs text-muted-foreground mt-1 text-center">
                                 Try: "Spent 25 dollars on lunch" or "50 bucks for groceries"
                             </p>
                         </div>
 
                         {/* Transcript */}
                         {transcript && (
-                            <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800">
+                            <div className="mb-6 p-4 bg-card ember-glow rounded-xl border-none">
                                 <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">You said:</span>
-                                <p className="text-gray-900 dark:text-gray-100 italic text-lg pr-2 leading-relaxed">
+                                <p className="text-foreground italic text-lg pr-2 leading-relaxed">
                                     "{transcript}"
                                 </p>
                             </div>
@@ -266,7 +266,7 @@ export default function VoiceInput({ onTransactionCreated }) {
                         {parsedData && (
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount</label>
+                                    <label className="block text-sm font-medium text-foreground mb-1">Amount</label>
                                     <div className="relative">
                                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
                                         <Input
@@ -282,7 +282,7 @@ export default function VoiceInput({ onTransactionCreated }) {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                                    <label className="block text-sm font-medium text-foreground mb-1">Description</label>
                                     <Input
                                         value={form.description}
                                         onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -292,11 +292,11 @@ export default function VoiceInput({ onTransactionCreated }) {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
+                                        <label className="block text-sm font-medium text-foreground mb-1">Category</label>
                                         <select
                                             value={form.category_id}
                                             onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-                                            className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300"
+                                            className="flex h-10 w-full items-center justify-between rounded-md border-none bg-card ember-glow px-3 py-2 text-sm text-foreground focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
                                             required
                                         >
                                             <option value="" disabled>Select...</option>
@@ -308,11 +308,11 @@ export default function VoiceInput({ onTransactionCreated }) {
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
+                                        <label className="block text-sm font-medium text-foreground mb-1">Type</label>
                                         <select
                                             value={form.type}
                                             onChange={(e) => setForm({ ...form, type: e.target.value })}
-                                            className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300"
+                                            className="flex h-10 w-full items-center justify-between rounded-md border-none bg-card ember-glow px-3 py-2 text-sm text-foreground focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
                                             required
                                         >
                                             <option value="expense">Expense</option>
@@ -324,7 +324,7 @@ export default function VoiceInput({ onTransactionCreated }) {
                         )}
                     </div>
 
-                    <DialogFooter className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <DialogFooter className="mt-6 pt-4 border-t border-border/50">
                         <Button variant="ghost" onClick={handleClose}>Cancel</Button>
                         {parsedData && (
                             <Button

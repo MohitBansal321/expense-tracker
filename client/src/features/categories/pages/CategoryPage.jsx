@@ -44,23 +44,23 @@ export default function Category() {
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4 relative min-h-[80vh]">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
           Manage Categories
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-muted-foreground">
           Customize your expense categories with icons.
         </p>
       </div>
 
       {(user?.categories || []).length === 0 ? (
-        <div className="bg-white dark:bg-gray-900 p-12 text-center rounded-2xl border border-dashed border-gray-300 dark:border-gray-700">
-          <div className="flex justify-center mb-4 text-gray-400 dark:text-gray-600">
+        <div className="bg-card ember-glow p-12 text-center rounded-2xl border-2 border-dashed border-border/50">
+          <div className="flex justify-center mb-4 text-muted-foreground">
             <FolderOpen className="w-20 h-20" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          <h2 className="text-xl font-bold text-foreground mb-2">
             No categories yet
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-sm mx-auto">
+          <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
             Categories help you organize and track your spending. Create your first one to get started!
           </p>
           <Button onClick={() => handleOpen()} className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-6 py-6 h-auto text-base">
@@ -73,14 +73,14 @@ export default function Category() {
           {(user?.categories || []).map((row) => (
             <div
               key={row._id}
-              className="group relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-center transition-all duration-300 hover:border-primary dark:hover:border-primary hover:shadow-xl hover:-translate-y-1"
+              className="group relative bg-card ember-glow border-none rounded-2xl p-6 text-center transition-all duration-300 hover:ring-2 hover:ring-primary/50 hover:shadow-xl hover:-translate-y-1"
             >
               <div className="text-5xl mb-3">{row.icon}</div>
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
+              <h3 className="font-semibold text-foreground truncate">
                 {row.label}
               </h3>
 
-              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm p-1 rounded-lg shadow-sm border border-gray-100 dark:border-gray-800">
+              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1 bg-card ember-glow/90 backdrop-blur-sm p-1 rounded-lg shadow-sm border-none">
                 <button
                   onClick={() => handleOpen(row)}
                   className="p-1.5 text-primary hover:bg-primary/10 rounded-md transition-colors"
@@ -90,7 +90,7 @@ export default function Category() {
                 </button>
                 <button
                   onClick={() => remove(row._id)}
-                  className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md transition-colors"
+                  className="p-1.5 text-ember hover:bg-ember/10 rounded-md transition-colors"
                   title="Delete Category"
                 >
                   <Trash2 className="w-4 h-4" />

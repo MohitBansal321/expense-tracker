@@ -2,8 +2,14 @@
 
 @plugin "tailwindcss-animate";
 
-/* Import Google Font - Inter for excellent readability */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+/* ===================================================================
+   FINANCH EMBER & EARTH — Design System by Stitch
+   "Organic Minimalism" — Warm, grounded, human-centric fintech
+   
+   Primary: Terracotta/Ember  #E07A4F
+   Secondary: Sage Green      #7BA68D
+   Tertiary: Sand Gold        #D4A86A
+   =================================================================== */
 
 @theme {
   --color-background: hsl(var(--background));
@@ -25,79 +31,343 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+  --color-ember: hsl(var(--ember));
+  --color-sage: hsl(var(--sage));
+  --color-sand: hsl(var(--sand));
+  --color-surface-container: hsl(var(--surface-container));
+  --color-surface-container-high: hsl(var(--surface-container-high));
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
+
+  --font-headline: 'Manrope', 'Inter', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
+/* ===================================================================
+   LIGHT MODE — "Warm Parchment & Clay"
+   Exact tokens from Stitch "Ember & Earth" design system
+   =================================================================== */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Surface system from Stitch namedColors */
+    --background: 18 100% 98%;       /* #fff8f5 — surface */
+    --foreground: 20 11% 11%;        /* #1f1b19 — on-surface */
+
+    /* Card: surface-container-lowest = pure white */
+    --card: 0 0% 100%;               /* #ffffff */
+    --card-foreground: 20 11% 11%;   /* #1f1b19 */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 199 89% 48%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 32% 91%;
-    --input: 214.3 32% 91%;
-    --ring: 199 89% 48%;
+    --popover-foreground: 20 11% 11%;
+
+    /* Primary: Terracotta Ember from Stitch */
+    --primary: 19 67% 36%;           /* #9a451e — primary */
+    --primary-foreground: 0 0% 100%; /* #ffffff — on-primary */
+
+    /* Secondary: Sage Green from Stitch */
+    --secondary: 147 25% 32%;        /* #3e6751 — secondary */
+    --secondary-foreground: 0 0% 100%;
+
+    /* Muted: surface-container from Stitch */
+    --muted: 17 36% 94%;             /* #f6ece8 — surface-container */
+    --muted-foreground: 17 17% 28%;  /* #55433c — on-surface-variant */
+
+    /* Accent/Tertiary: Sand Gold from Stitch */
+    --accent: 36 57% 31%;            /* #7b5822 — tertiary */
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive: error from Stitch */
+    --destructive: 0 75% 42%;        /* #ba1a1a — error */
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border: outline-variant from Stitch */
+    --border: 16 35% 79%;            /* #dcc1b7 — outline-variant */
+    --input: 16 35% 79%;
+    --ring: 19 67% 36%;              /* Matches primary */
+
+    /* Success: Uses secondary (Sage) */
+    --success: 147 25% 32%;          /* Same as secondary */
+    --success-foreground: 0 0% 100%;
+
+    /* Warning: Uses tertiary (Sand Gold) */
+    --warning: 36 57% 31%;           /* Same as accent */
+    --warning-foreground: 0 0% 100%;
+
+    /* Signature colors */
+    --ember: 18 68% 59%;             /* #e07a4f — primary-container */
+    --sage: 147 25% 32%;             /* #3e6751 — secondary */
+    --sand: 36 57% 31%;              /* #7b5822 — tertiary */
+
+    /* Surface containers from Stitch */
+    --surface-container: 17 36% 94%; /* #f6ece8 */
+    --surface-container-high: 17 35% 91%; /* #f0e6e2 */
+
     --radius: 0.75rem;
   }
 
+  /* ===================================================================
+     DARK MODE — "Warm Obsidian"
+     Inverse of Stitch palette with warm undertones
+     =================================================================== */
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 199 89% 51%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 199 89% 51%;
+    /* Ember Dark tokens */
+    --background: 223 17% 8%;        /* #111318 — warm near-black */
+    --foreground: 240 15% 90%;       /* #e2e2e9 — on-surface */
+
+    /* Card: elevated warm dark */
+    --card: 223 23% 6%;              /* #0c0e13 - surface_container_lowest */
+    --card-foreground: 240 15% 90%;
+    --popover: 223 23% 6%;
+    --popover-foreground: 240 15% 90%;
+
+    /* Primary: Ember */
+    --primary: 19 100% 79%;          /* #ffb694 — primary */
+    --primary-foreground: 21 93% 17%; /* #552003 - on-primary */
+
+    /* Secondary: Sage */
+    --secondary: 146 36% 73%;        /* #a2d1b6 — secondary */
+    --secondary-foreground: 156 75% 13%; /* #083825 - on_secondary */
+
+    /* Muted: warm dark surface */
+    --muted: 231 12% 12%;            /* #1a1b21 - surface_container_low */
+    --muted-foreground: 17 31% 79%;  /* #d9c2b9 - on_surface_variant */
+
+    /* Accent: Sand Gold */
+    --accent: 37 76% 70%;            /* #ecc078 — tertiary */
+    --accent-foreground: 39 100% 13%; /* #432c00 - on_tertiary */
+
+    /* Destructive: lighter red for dark bg */
+    --destructive: 6 100% 84%;       /* #ffb4ab - error */
+    --destructive-foreground: 356 100% 21%; /* #690005 - on_error */
+
+    /* Borders: outline_variant */
+    --border: 18 16% 28%;            /* #53433c */
+    --input: 18 16% 28%;
+    --ring: 19 100% 79%;             /* primary */
+
+    /* Success/Warning: lighter versions */
+    --success: 146 36% 73%;
+    --success-foreground: 156 75% 13%;
+    --warning: 37 76% 70%;
+    --warning-foreground: 39 100% 13%;
+
+    /* Signature colors */
+    --ember: 19 72% 67%;             /* #e8956e - primary_container */
+    --sage: 146 36% 73%;             /* #a2d1b6 - secondary */
+    --sand: 37 76% 70%;              /* #ecc078 - tertiary */
+
+    --surface-container: 231 10% 13%; /* #1e1f25 */
+    --surface-container-high: 223 8% 17%; /* #282a2f */
   }
 }
 
+/* ===================================================================
+   GLOBAL RESETS & BASE STYLES
+   =================================================================== */
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-background text-foreground font-sans;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    font-feature-settings: "rlig" 1, "calt" 1, "cv11" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
-  
-  /* Hand icon for interactive elements */
-  button, 
-  a, 
-  [role="button"],
-  .cursor-pointer {
-    cursor: pointer !important;
+
+  /* Headlines: Manrope — from Stitch typography system */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-headline);
+    font-weight: 700;
+  }
+  h1 { font-size: 40px; font-weight: 800; line-height: 1.1; letter-spacing: -0.04em; }
+  h2 { font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: -0.03em; }
+  h3 { font-size: 24px; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; }
+
+  /* Warm-tinted scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.4); }
+
+  /* Focus ring — ember-tinted */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring) / 0.5);
+    outline-offset: 2px;
   }
 }
 
-/* Financial number formatting - tabular nums for alignment */
+/* ===================================================================
+   COMMON UI COMPONENTS
+   =================================================================== */
+@layer components {
+  /* Input Fields & Dropdowns */
+  .input-field {
+    @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  
+  /* Dropdown Trigger specific overrides */
+  .dropdown-trigger {
+    @apply items-center justify-between focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 [&>span]:line-clamp-1;
+  }
+
+  /* Base Button */
+  .btn {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  /* Button Variants */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+  .btn-destructive {
+    @apply bg-destructive text-destructive-foreground hover:bg-destructive/90;
+  }
+  .btn-outline {
+    @apply border border-input bg-background hover:bg-accent hover:text-accent-foreground;
+  }
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+  .btn-ghost {
+    @apply hover:bg-accent hover:text-accent-foreground;
+  }
+  .btn-link {
+    @apply text-primary underline-offset-4 hover:underline;
+  }
+
+  /* Button Sizes */
+  .btn-sm {
+    @apply h-9 rounded-md px-3;
+  }
+  .btn-lg {
+    @apply h-11 rounded-md px-8;
+  }
+  .btn-icon {
+    @apply h-10 w-10;
+  }
+  .btn-default {
+    @apply h-10 px-4 py-2;
+  }
+}
+
+/* ===================================================================
+   EMBER & EARTH UTILITY CLASSES
+   =================================================================== */
+
+/* Financial number formatting — tabular nums for alignment */
 .financial-number {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
-}
+}
+
+/* Headline font utility */
+.font-headline {
+  font-family: var(--font-headline);
+  letter-spacing: -0.03em;
+}
+
+/* Label caps — from Stitch typography */
+.label-caps {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ── Thermal Gradient (sage → sand → ember) ── */
+.thermal-gradient {
+  background: linear-gradient(90deg, hsl(var(--sage)), hsl(var(--sand)) 50%, hsl(var(--ember)));
+}
+
+/* ── Ember Glow — warm tinted shadows (from Stitch elevation rules) ── */
+.ember-glow {
+  box-shadow: 0 4px 24px -4px rgba(224, 122, 79, 0.08),
+              0 2px 8px -2px rgba(224, 122, 79, 0.04);
+}
+.dark .ember-glow {
+  box-shadow: 0 4px 24px -4px rgba(232, 149, 110, 0.15),
+              0 2px 8px -2px rgba(232, 149, 110, 0.10);
+}
+
+/* ── Card Hover Effect ── */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px -8px rgba(224, 122, 79, 0.12),
+              0 4px 16px -4px rgba(0, 0, 0, 0.04);
+}
+
+/* ── Horizon Glow — Stitch signature: subtle ember glow at card bottom ── */
+.horizon-glow::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(to top, rgba(224, 122, 79, 0.03), transparent);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* ── Income / Expense Visual Indicators ── */
+.income-text { color: hsl(var(--ember)); }
+.expense-text { color: hsl(var(--sage)); }
+
+/* ── Skeleton loading with warm shimmer ── */
+@keyframes warm-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.warm-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 25%,
+    hsl(var(--muted-foreground) / 0.08) 50%,
+    hsl(var(--muted)) 75%
+  );
+  background-size: 200% 100%;
+  animation: warm-shimmer 1.5s ease-in-out infinite;
+}
+
+/* ── Section divider ── */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(var(--border)), transparent);
+}
+
+/* ── Toast overrides ── */
+.Toastify__toast {
+  font-family: var(--font-body) !important;
+  border-radius: 0.75rem !important;
+}
+
+/* ── Selection color ── */
+::selection {
+  background: hsl(var(--ember) / 0.2);
+  color: hsl(var(--foreground));
+}
+
+/* ── Theme transition ── */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease !important;
+}

@@ -80,26 +80,25 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
     <div className="space-y-8">
       {/* Summary Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 mb-10">
-        <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm border border-gray-100 dark:border-gray-800 p-6 rounded-3xl border-l-[6px] border-l-green-500 shadow-sm transition-all hover:shadow-md">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Total Income</p>
-          <p className="text-2xl font-bold text-green-600 dark:text-green-500">
+        <div className="bg-card ember-glow p-6 rounded-xl border-none shadow-sm transition-all card-hover">
+          <p className="label-caps text-muted-foreground mb-1">Total Income</p>
+          <p className="text-2xl font-bold font-headline text-ember">
             ${totals.income.toLocaleString()}
           </p>
         </div>
-        <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm border border-gray-100 dark:border-gray-800 p-6 rounded-3xl border-l-[6px] border-l-red-500 shadow-sm transition-all hover:shadow-md">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Total Expenses</p>
-          <p className="text-2xl font-bold text-red-600 dark:text-red-500">
+        <div className="bg-card ember-glow p-6 rounded-xl border-none shadow-sm transition-all card-hover">
+          <p className="label-caps text-muted-foreground mb-1">Total Expenses</p>
+          <p className="text-2xl font-bold font-headline text-sage">
             ${totals.expense.toLocaleString()}
           </p>
         </div>
         <div className={cn(
-            "bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm border border-gray-100 dark:border-gray-800 p-6 rounded-3xl border-l-[6px] shadow-sm transition-all hover:shadow-md",
-            totals.net >= 0 ? "border-l-primary" : "border-l-orange-500"
+            "bg-card ember-glow p-6 rounded-xl border-none shadow-sm transition-all card-hover"
         )}>
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Net Balance</p>
+          <p className="label-caps text-muted-foreground mb-1">Net Balance</p>
           <p className={cn(
-              "text-2xl font-bold",
-              totals.net >= 0 ? "text-primary" : "text-orange-600 dark:text-orange-400"
+              "text-2xl font-bold font-headline",
+              totals.net >= 0 ? "text-primary" : "text-sand"
           )}>
             ${totals.net.toLocaleString()}
           </p>
@@ -108,7 +107,7 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
 
       {/* Header & Filter */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
             <ArrowRightLeft className="w-5 h-5 text-primary" /> Transactions
         </h3>
         <div className="relative w-full sm:w-64">
@@ -116,7 +115,7 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
             <select
                 value={selectedCategory}
                 onChange={(e) => handleFilterChange(e.target.value)}
-                className="w-full h-10 pl-9 pr-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary appearance-none cursor-pointer"
+                className="w-full h-10 pl-9 pr-4 bg-card ember-glow text-foreground border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
             >
                 <option value="all">All Categories</option>
                 {user?.categories?.map((cat) => (
@@ -137,31 +136,30 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
               <div
                 key={row._id}
                 className={cn(
-                    "p-5 rounded-3xl border shadow-sm bg-white dark:bg-gray-900 transition-all active:scale-[0.98]",
-                    isIncome ? "border-l-4 border-l-green-500 border-gray-100 dark:border-gray-800" : "border-l-4 border-l-red-500 border-gray-100 dark:border-gray-800"
+                    "p-5 rounded-xl border-none ember-glow bg-card transition-all"
                 )}
               >
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <h4 className="font-bold text-gray-900 dark:text-white leading-tight">{row.description}</h4>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">{formatDate(row.date)}</span>
+                    <h4 className="font-bold text-foreground leading-tight">{row.description}</h4>
+                    <span className="text-xs text-muted-foreground">{formatDate(row.date)}</span>
                   </div>
                   <div className={cn(
-                      "text-lg font-bold",
-                      isIncome ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"
+                      "text-lg font-bold font-headline financial-number",
+                      isIncome ? "text-ember" : "text-sage"
                   )}>
                     {isIncome ? "+" : "-"}${row.amount.toLocaleString()}
                   </div>
                 </div>
-                <div className="flex justify-between items-center pt-3 border-t border-gray-50 dark:border-gray-800">
-                  <Badge variant="outline" className="rounded-lg bg-gray-50/50 dark:bg-gray-800/50 font-medium">
+                <div className="flex justify-between items-center pt-3 border-t border-border">
+                  <Badge variant="outline" className="rounded-full bg-muted font-medium text-muted-foreground border-border">
                     {categoryName(row.category_id)}
                   </Badge>
                   <div className="flex gap-1">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-primary hover:text-primary/90 hover:bg-primary/10 dark:hover:bg-primary/20"
+                      className="h-8 w-8 text-primary hover:text-primary hover:bg-primary/10"
                       onClick={() => setEditTransaction(row)}
                     >
                       <Pencil className="w-4 h-4" />
@@ -169,7 +167,7 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
+                      className="h-8 w-8 text-sage hover:text-sage hover:bg-sage/10"
                       onClick={() => remove(row._id)}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -180,20 +178,20 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
             );
           })
         ) : (
-          <div className="py-16 text-center flex flex-col items-center justify-center border border-dashed border-gray-200 dark:border-gray-800 rounded-[2rem] bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm mt-4">
-             <div className="w-16 h-16 bg-gray-50 dark:bg-gray-800/50 rounded-full flex items-center justify-center mb-4 ring-4 ring-gray-50/50 dark:ring-gray-800/20">
+          <div className="py-16 text-center flex flex-col items-center justify-center border-none rounded-[2rem] bg-card ember-glow/50 backdrop-blur-sm mt-4">
+             <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4 ring-4 ring-background">
                  <Search className="w-6 h-6 text-gray-400 dark:text-gray-500 animate-[pulse_3s_ease-in-out_infinite]" />
              </div>
-             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">No Transactions</h3>
-             <p className="text-sm text-gray-500 dark:text-gray-400 px-4">Try adjusting your filters or add a new transaction.</p>
+             <h3 className="text-lg font-bold text-foreground mb-1">No Transactions</h3>
+             <p className="text-sm text-muted-foreground px-4">Try adjusting your filters or add a new transaction.</p>
           </div>
         )}
       </div>
 
       {/* Desktop View (Table) */}
-      <div className="hidden md:block overflow-hidden rounded-[2rem] border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xl">
+      <div className="hidden md:block overflow-hidden rounded-[2rem] border-none bg-card ember-glow shadow-xl">
         <table className="w-full text-sm text-left">
-          <thead className="text-xs text-gray-500 uppercase tracking-widest bg-gray-50/50 dark:bg-gray-800/50">
+          <thead className="text-xs text-muted-foreground uppercase tracking-widest bg-card ember-glow/50">
             <tr>
               <th className="px-6 py-5 font-semibold text-center">Type</th>
               <th className="px-6 py-5 font-semibold text-center">Amount</th>
@@ -203,19 +201,19 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
               <th className="px-6 py-5 font-semibold text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+          <tbody className="divide-y divide-border/50">
             {transactions.map((row) => {
               const isIncome = row.type === "income";
               return (
                 <tr
                   key={row._id}
-                  className="group hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors"
+                  className="group hover:bg-muted/50 transition-colors"
                 >
                   <td className="px-6 py-4 text-center">
                     <div className="flex justify-center">
                         <div className={cn(
                             "w-10 h-10 rounded-full flex items-center justify-center transition-transform group-hover:scale-110",
-                            isIncome ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400" : "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
+                            isIncome ? "bg-ember/10 text-ember" : "bg-sage/10 text-sage"
                         )}>
                             {isIncome ? <ArrowUp className="w-5 h-5" /> : <ArrowDown className="w-5 h-5" />}
                         </div>
@@ -223,21 +221,21 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
                   </td>
                   <td className="px-6 py-4 text-center">
                     <span className={cn(
-                        "text-base font-bold",
-                        isIncome ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500"
+                        "text-base font-bold font-headline financial-number",
+                        isIncome ? "text-ember" : "text-sage"
                     )}>
                       {isIncome ? "+" : "-"}${row.amount.toLocaleString()}
                     </span>
                   </td>
-                  <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">
+                  <td className="px-6 py-4 font-semibold text-foreground">
                     {row.description}
                   </td>
                   <td className="px-6 py-4">
-                    <Badge variant="outline" className="rounded-full bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 font-medium">
+                    <Badge variant="outline" className="rounded-full bg-muted border-border font-medium">
                       {categoryName(row.category_id)}
                     </Badge>
                   </td>
-                  <td className="px-6 py-4 text-gray-500 dark:text-gray-400 italic">
+                  <td className="px-6 py-4 text-muted-foreground italic">
                     {formatDate(row.date)}
                   </td>
                   <td className="px-6 py-4">
@@ -245,7 +243,7 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-9 w-9 text-primary hover:bg-primary/10 dark:hover:bg-primary/20 rounded-full"
+                        className="h-9 w-9 text-primary hover:bg-primary/10 rounded-full"
                         onClick={() => setEditTransaction(row)}
                       >
                         <Pencil className="w-4.5 h-4.5" />
@@ -253,7 +251,7 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-9 w-9 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-full"
+                        className="h-9 w-9 text-sage hover:bg-sage/10 rounded-full"
                         onClick={() => remove(row._id)}
                       >
                         <Trash2 className="w-4.5 h-4.5" />
@@ -266,12 +264,12 @@ export default function TransactionsList({ data, fetchTransactions, setEditTrans
           </tbody>
         </table>
         {transactions.length === 0 && (
-            <div className="py-24 text-center flex flex-col items-center justify-center min-h-[300px] border-t border-dashed border-gray-100 dark:border-gray-800/50">
-                <div className="w-20 h-20 bg-gray-50 dark:bg-gray-800/50 rounded-full flex items-center justify-center mb-6 ring-8 ring-gray-50/50 dark:ring-gray-800/20 transition-all hover:scale-110 duration-300">
+            <div className="py-24 text-center flex flex-col items-center justify-center min-h-[300px] border-t border-dashed border-border/50">
+                <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6 ring-8 ring-background transition-all hover:scale-110 duration-300">
                     <Search className="w-8 h-8 text-gray-400 dark:text-gray-500 animate-[pulse_3s_ease-in-out_infinite]" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No Transactions Found</h3>
-                <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto text-base">We couldn't find any transactions matching your current filters. Try adjusting your search criteria or add new entry.</p>
+                <h3 className="text-xl font-bold text-foreground mb-2">No Transactions Found</h3>
+                <p className="text-muted-foreground max-w-sm mx-auto text-base">We couldn't find any transactions matching your current filters. Try adjusting your search criteria or add new entry.</p>
             </div>
         )}
       </div>

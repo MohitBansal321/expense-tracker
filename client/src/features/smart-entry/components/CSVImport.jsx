@@ -150,13 +150,13 @@ export default function CSVImport({ onTransactionsImported }) {
         <>
             {/* Trigger Card */}
             <div
-                className="h-full cursor-pointer transition-all duration-300 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 group hover:-translate-y-1 hover:shadow-xl hover:border-primary"
+                className="h-full cursor-pointer transition-all duration-300 border-none rounded-2xl bg-card ember-glow group hover:-translate-y-1 hover:shadow-xl hover:ring-2 hover:ring-primary/20"
                 onClick={() => setDialogOpen(true)}
             >
                 <div className="flex flex-col items-center justify-center h-full p-8 text-center">
                     <FileUp className="w-12 h-12 text-primary mb-3 group-hover:scale-110 transition-transform" />
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Import CSV</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <h3 className="text-lg font-bold text-foreground">Import CSV</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
                         Bulk import from bank exports
                     </p>
                 </div>
@@ -173,12 +173,12 @@ export default function CSVImport({ onTransactionsImported }) {
 
                     <div className="mt-4">
                         {error && (
-                            <div className="bg-red-50 text-red-700 p-3 rounded-md mb-4 text-sm border border-red-200">
+                            <div className="bg-ember/10 text-ember p-3 rounded-md mb-4 text-sm border border-ember/20">
                                 {error}
                             </div>
                         )}
                         {success && importResult && (
-                            <div className="bg-green-50 text-green-700 p-3 rounded-md mb-4 text-sm border border-green-200 flex items-center gap-2">
+                            <div className="bg-sage/10 text-sage p-3 rounded-md mb-4 text-sm border border-sage/20 flex items-center gap-2">
                                 <CheckCircle className="w-5 h-5" />
                                 <span>
                                     Imported {importResult.success} transactions
@@ -190,12 +190,12 @@ export default function CSVImport({ onTransactionsImported }) {
                         {/* Upload Area */}
                         {csvData.length === 0 && (
                             <div
-                                className="border-2 border-dashed border-primary/50 rounded-xl p-12 text-center cursor-pointer hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
+                                className="border-2 border-dashed border-primary/50 rounded-xl p-12 text-center cursor-pointer hover:bg-muted/50 transition-colors"
                                 onClick={() => fileInputRef.current?.click()}
                             >
                                 <UploadCloud className="w-16 h-16 text-primary mx-auto mb-4" />
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Drop CSV file here</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                <h3 className="text-lg font-bold text-foreground">Drop CSV file here</h3>
+                                <p className="text-sm text-muted-foreground mt-1">
                                     Bank statements, exports, or any CSV with transaction data
                                 </p>
                                 <input
@@ -212,15 +212,15 @@ export default function CSVImport({ onTransactionsImported }) {
                         {csvData.length > 0 && !success && (
                             <div className="space-y-6">
                                 <div>
-                                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Map your CSV columns:</h4>
+                                    <h4 className="font-semibold text-foreground mb-3">Map your CSV columns:</h4>
                                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Amount Column *</label>
+                                            <label className="block text-xs font-medium text-foreground mb-1">Amount Column *</label>
                                             <Select
                                                 value={mapping.amount}
                                                 onValueChange={(value) => setMapping({ ...mapping, amount: value })}
                                             >
-                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border-none bg-card ember-glow text-sm focus:ring-2 focus:ring-primary">
                                                     <SelectValue placeholder="Select..." />
                                                 </SelectTrigger>
                                                 <SelectContent className="rounded-md">
@@ -230,12 +230,12 @@ export default function CSVImport({ onTransactionsImported }) {
                                         </div>
 
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Description Column *</label>
+                                            <label className="block text-xs font-medium text-foreground mb-1">Description Column *</label>
                                             <Select
                                                 value={mapping.description}
                                                 onValueChange={(value) => setMapping({ ...mapping, description: value })}
                                             >
-                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border-none bg-card ember-glow text-sm focus:ring-2 focus:ring-primary">
                                                     <SelectValue placeholder="Select..." />
                                                 </SelectTrigger>
                                                 <SelectContent className="rounded-md">
@@ -245,12 +245,12 @@ export default function CSVImport({ onTransactionsImported }) {
                                         </div>
 
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Date Column</label>
+                                            <label className="block text-xs font-medium text-foreground mb-1">Date Column</label>
                                             <Select
                                                 value={mapping.date}
                                                 onValueChange={(value) => setMapping({ ...mapping, date: value })}
                                             >
-                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border-none bg-card ember-glow text-sm focus:ring-2 focus:ring-primary">
                                                     <SelectValue placeholder="Use today's date" />
                                                 </SelectTrigger>
                                                 <SelectContent className="rounded-md">
@@ -261,12 +261,12 @@ export default function CSVImport({ onTransactionsImported }) {
                                         </div>
 
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Default Category *</label>
+                                            <label className="block text-xs font-medium text-foreground mb-1">Default Category *</label>
                                             <Select
                                                 value={defaultCategory}
                                                 onValueChange={(value) => setDefaultCategory(value)}
                                             >
-                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                                <SelectTrigger className="w-full h-10 px-3 rounded-md border-none bg-card ember-glow text-sm focus:ring-2 focus:ring-primary">
                                                     <SelectValue placeholder="Select..." />
                                                 </SelectTrigger>
                                                 <SelectContent className="rounded-md">
@@ -284,14 +284,14 @@ export default function CSVImport({ onTransactionsImported }) {
                                 {/* Preview */}
                                 <div>
                                     <div className="flex items-center gap-3 mb-2">
-                                        <h4 className="font-semibold text-gray-900 dark:text-gray-100">Preview (first 5 rows):</h4>
-                                        <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs px-2 py-1 rounded-full border border-gray-200 dark:border-gray-700">
+                                        <h4 className="font-semibold text-foreground">Preview (first 5 rows):</h4>
+                                        <span className="bg-muted text-gray-600 dark:text-gray-300 text-xs px-2 py-1 rounded-full border-none">
                                             {csvData.length} total rows
                                         </span>
                                     </div>
-                                    <div className="overflow-x-auto max-h-48 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-                                        <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
-                                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-400 sticky top-0">
+                                    <div className="overflow-x-auto max-h-48 border-none bg-card ember-glow rounded-lg shadow-sm">
+                                        <table className="w-full text-left text-sm text-muted-foreground">
+                                            <thead className="text-xs text-gray-700 uppercase bg-muted dark:text-gray-400 sticky top-0">
                                                 <tr>
                                                     {headers.slice(0, 5).map((h) => (
                                                         <th key={h} scope="col" className="px-4 py-3">{h}</th>
@@ -300,7 +300,7 @@ export default function CSVImport({ onTransactionsImported }) {
                                             </thead>
                                             <tbody>
                                                 {csvData.slice(0, 5).map((row, i) => (
-                                                    <tr key={i} className="bg-white border-b dark:bg-gray-900 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                                    <tr key={i} className="border-b border-border/50 bg-card ember-glow last:border-0 hover:bg-muted/80">
                                                         {headers.slice(0, 5).map((h) => (
                                                             <td key={h} className="px-4 py-3 truncate max-w-[150px]">{row[h]}</td>
                                                         ))}
@@ -314,11 +314,11 @@ export default function CSVImport({ onTransactionsImported }) {
                                 {/* Progress */}
                                 {isImporting && (
                                     <div className="mt-4">
-                                        <div className="flex justify-between text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        <div className="flex justify-between text-sm font-medium text-foreground mb-1">
                                             <span>Importing...</span>
                                             <span>{progress}%</span>
                                         </div>
-                                        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 overflow-hidden">
+                                        <div className="w-full bg-gray-200 rounded-full h-2.5 bg-card ember-glow overflow-hidden">
                                             <div className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-out" style={{ width: `${progress}%` }}></div>
                                         </div>
                                     </div>
@@ -327,7 +327,7 @@ export default function CSVImport({ onTransactionsImported }) {
                         )}
                     </div>
 
-                    <DialogFooter className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <DialogFooter className="mt-6 pt-4 border-t border-border/50">
                         <Button variant="ghost" onClick={handleClose}>
                             {success ? "Close" : "Cancel"}
                         </Button>

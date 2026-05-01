@@ -169,7 +169,7 @@ export default function RecurringTransactions() {
         <div className="container mx-auto max-w-6xl py-8 px-4 relative min-h-[80vh]">
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold flex items-center gap-3 text-gray-900 dark:text-white">
+                <h1 className="text-3xl font-bold flex items-center gap-3 text-foreground">
                     <Repeat className="w-8 h-8" /> Recurring Transactions
                 </h1>
                 <Button
@@ -192,29 +192,29 @@ export default function RecurringTransactions() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-24">
                 {isLoading ? (
                     [...Array(6)].map((_, i) => (
-                        <div key={i} className="animate-pulse bg-gray-200 dark:bg-gray-800 rounded-2xl h-48"></div>
+                        <div key={i} className="animate-pulse bg-muted rounded-2xl h-48"></div>
                     ))
                 ) : fetchError ? (
                     <div className="col-span-1 md:col-span-2 lg:col-span-3">
-                        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-8 text-center rounded-2xl">
-                            <h3 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-4">
+                        <div className="bg-ember/10 border border-ember/20 p-8 text-center rounded-2xl">
+                            <h3 className="text-lg font-semibold text-ember mb-4">
                                 Failed to load recurring transactions
                             </h3>
-                            <Button onClick={fetchRecurringTransactions} variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
+                            <Button onClick={fetchRecurringTransactions} variant="outline" className="text-ember border-ember/20 hover:bg-ember/10">
                                 Retry
                             </Button>
                         </div>
                     </div>
                 ) : recurringList.length === 0 ? (
                     <div className="col-span-1 md:col-span-2 lg:col-span-3">
-                        <div className="bg-white dark:bg-gray-900 p-12 text-center rounded-2xl border border-dashed border-gray-300 dark:border-gray-700">
-                            <div className="flex justify-center mb-4 text-gray-400 dark:text-gray-600">
+                        <div className="bg-card ember-glow p-12 text-center rounded-2xl border-2 border-dashed border-border/50">
+                            <div className="flex justify-center mb-4 text-muted-foreground">
                                 <Repeat className="w-16 h-16" />
                             </div>
-                            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                            <h2 className="text-xl font-bold text-foreground mb-2">
                                 No recurring transactions yet
                             </h2>
-                            <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                                 Set up automatic transactions for bills, subscriptions, or regular income
                             </p>
                             <Button onClick={() => openDialog()} className="bg-primary hover:bg-primary/90 text-primary-foreground">
@@ -226,28 +226,28 @@ export default function RecurringTransactions() {
                     recurringList.map((item) => (
                         <div
                             key={item._id}
-                            className={`bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm p-6 overflow-hidden relative transition-all
-                                ${item.type === "income" ? "border-l-4 border-l-green-500" : "border-l-4 border-l-red-500"}
+                            className={`bg-card ember-glow rounded-2xl border-y-0 border-r-0 shadow-sm p-6 overflow-hidden relative transition-all
+                                ${item.type === "income" ? "border-l-4 border-l-sage" : "border-l-4 border-l-ember"}
                                 ${item.isActive ? "opacity-100" : "opacity-60 grayscale-[50%]"}
                             `}
                         >
                             <div className="flex flex-col h-full">
                                 <div className="flex justify-between items-start mb-2">
                                     <div className="max-w-[70%]">
-                                        <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate" title={item.description}>
+                                        <h3 className="text-lg font-bold text-foreground truncate" title={item.description}>
                                             {item.description}
                                         </h3>
-                                        <div className={`text-xl font-black mt-1 ${item.type === "income" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                                        <div className={`text-xl font-black mt-1 ${item.type === "income" ? "text-sage" : "text-ember"}`}>
                                             {item.type === "income" ? "+" : "-"}${item.amount.toFixed(2)}
                                         </div>
                                     </div>
-                                    <div className={`px-2.5 py-1 text-xs font-semibold rounded-full flex-shrink-0 ${item.isActive ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"}`}>
+                                    <div className={`px-2.5 py-1 text-xs font-semibold rounded-full flex-shrink-0 ${item.isActive ? "bg-sage/10 text-sage" : "bg-gray-100 text-gray-600 bg-card ember-glow dark:text-gray-400"}`}>
                                         {item.isActive ? "Active" : "Paused"}
                                     </div>
                                 </div>
 
                                 <div className="flex flex-wrap gap-2 mb-4">
-                                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
+                                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-muted text-gray-600 dark:text-gray-300 border-none">
                                         <Repeat className="w-3 h-3 mr-1" />
                                         {item.frequency.charAt(0).toUpperCase() + item.frequency.slice(1)}
                                     </span>
@@ -258,10 +258,10 @@ export default function RecurringTransactions() {
                                     )}
                                 </div>
 
-                                <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-end">
+                                <div className="mt-auto pt-4 border-t border-border/50 flex justify-between items-end">
                                     <div>
-                                        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Next Execution</p>
-                                        <p className="text-sm font-medium text-gray-900 dark:text-gray-200">
+                                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Next Execution</p>
+                                        <p className="text-sm font-medium text-foreground dark:text-gray-200">
                                             {formatNextExecution(item.nextExecution)}
                                         </p>
                                     </div>
@@ -283,7 +283,7 @@ export default function RecurringTransactions() {
                                         </button>
                                         <button
                                             onClick={() => handleDelete(item._id)}
-                                            className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                            className="p-2 text-gray-500 hover:text-ember hover:bg-ember/10 rounded-lg transition-colors"
                                             title="Delete"
                                         >
                                             <Trash2 className="w-5 h-5" />
@@ -314,12 +314,12 @@ export default function RecurringTransactions() {
                     
                     <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto px-1 py-2">
                         {/* Type Toggle */}
-                        <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+                        <div className="flex bg-muted p-1 rounded-lg">
                             <button
                                 type="button"
                                 className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${
                                     form.type === "expense" 
-                                    ? "bg-white dark:bg-gray-700 text-red-600 shadow-sm" 
+                                    ? "bg-card ember-glow text-ember shadow-sm" 
                                     : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                                 }`}
                                 onClick={() => setForm({ ...form, type: "expense" })}
@@ -330,7 +330,7 @@ export default function RecurringTransactions() {
                                 type="button"
                                 className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all ${
                                     form.type === "income" 
-                                    ? "bg-white dark:bg-gray-700 text-green-600 shadow-sm" 
+                                    ? "bg-card ember-glow text-sage shadow-sm" 
                                     : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                                 }`}
                                 onClick={() => setForm({ ...form, type: "income" })}
@@ -340,7 +340,7 @@ export default function RecurringTransactions() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Description</label>
                             <Input
                                 value={form.description}
                                 onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -349,7 +349,7 @@ export default function RecurringTransactions() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Amount</label>
                             <div className="relative">
                                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
                                 <Input
@@ -365,13 +365,13 @@ export default function RecurringTransactions() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Category</label>
                             <Select
                                 value={form.category_id}
                                 onValueChange={(value) => setForm({ ...form, category_id: value })}
                                 required
                             >
-                                <SelectTrigger className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300">
+                                    <SelectTrigger className="flex h-10 w-full items-center justify-between rounded-md border-none bg-card ember-glow px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50">
                                     <SelectValue placeholder="Select category" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-md">
@@ -385,12 +385,12 @@ export default function RecurringTransactions() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Frequency</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Frequency</label>
                             <Select
                                 value={form.frequency}
                                 onValueChange={(value) => setForm({ ...form, frequency: value })}
                             >
-                                <SelectTrigger className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300">
+                                    <SelectTrigger className="flex h-10 w-full items-center justify-between rounded-md border-none bg-card ember-glow px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-md">
@@ -405,12 +405,12 @@ export default function RecurringTransactions() {
 
                         {form.frequency === "weekly" && (
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Day of Week</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Day of Week</label>
                                 <Select
                                     value={form.dayOfWeek.toString()}
                                     onValueChange={(value) => setForm({ ...form, dayOfWeek: parseInt(value) })}
                                 >
-                                    <SelectTrigger className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300">
+                                        <SelectTrigger className="flex h-10 w-full items-center justify-between rounded-md border-none bg-card ember-glow px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-md">
@@ -426,7 +426,7 @@ export default function RecurringTransactions() {
 
                         {form.frequency === "monthly" && (
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Day of Month</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Day of Month</label>
                                 <Input
                                     type="number"
                                     min="1"
@@ -439,7 +439,7 @@ export default function RecurringTransactions() {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Start Date</label>
                                 <Input
                                     type="date"
                                     value={form.startDate}
@@ -447,7 +447,7 @@ export default function RecurringTransactions() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Date</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">End Date</label>
                                 <Input
                                     type="date"
                                     value={form.endDate}
@@ -458,7 +458,7 @@ export default function RecurringTransactions() {
                         </div>
                     </form>
                     
-                    <DialogFooter className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 pb-0">
+                    <DialogFooter className="mt-4 pt-4 border-t border-border/50 pb-0">
                         <Button variant="ghost" onClick={closeDialog}>Cancel</Button>
                         <Button
                             onClick={handleSubmit}

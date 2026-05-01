@@ -36,9 +36,9 @@ export default function DashboardActions({ onAddTransaction }) {
     }
 
     const getScoreColorClass = (score) => {
-        if (score >= 80) return "text-green-500"; // Green
-        if (score >= 50) return "text-orange-500"; // Orange
-        return "text-red-500"; // Red
+        if (score >= 80) return "text-sage"; // Green
+        if (score >= 50) return "text-sand"; // Orange
+        return "text-ember"; // Red
     };
 
     // Calculate SVG circle properties
@@ -51,37 +51,37 @@ export default function DashboardActions({ onAddTransaction }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {/* Quick Actions */}
             <div className="md:col-span-2">
-                <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 h-full">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                <div className="bg-card ember-glow border-none rounded-3xl p-6 h-full">
+                    <h2 className="text-xl font-bold text-foreground mb-6">
                         Quick Actions
                     </h2>
                     <div className="grid grid-cols-3 gap-4">
                         <Button
-                            variant="outline"
+                            variant="ghost"
                             onClick={onAddTransaction}
-                            className="h-auto py-6 flex flex-col items-center gap-3 rounded-2xl hover:bg-primary/5 hover:border-primary/20 dark:hover:bg-primary/10 dark:hover:border-primary/30"
+                            className="h-auto py-6 flex flex-col items-center gap-3 rounded-2xl bg-muted hover:bg-muted/80 border-none transition-colors"
                         >
                             <PlusCircle className="w-8 h-8 text-primary" />
-                            <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Add Expense</span>
+                            <span className="text-xs sm:text-sm font-semibold text-foreground">Add Expense</span>
                         </Button>
                         
                         <Link to="/smart-entry" className="block outline-none">
                             <Button
-                                variant="outline"
-                                className="w-full h-auto py-6 flex flex-col items-center gap-3 rounded-2xl hover:bg-primary/5 hover:border-primary/20 dark:hover:bg-primary/10 dark:hover:border-primary/30"
+                                variant="ghost"
+                                className="w-full h-auto py-6 flex flex-col items-center gap-3 rounded-2xl bg-muted hover:bg-muted/80 border-none transition-colors"
                             >
                                 <Receipt className="w-8 h-8 text-primary" />
-                                <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Scan Receipt</span>
+                                <span className="text-xs sm:text-sm font-semibold text-foreground">Scan Receipt</span>
                             </Button>
                         </Link>
                         
                         <Link to="/budget" className="block outline-none">
                             <Button
-                                variant="outline"
-                                className="w-full h-auto py-6 flex flex-col items-center gap-3 rounded-2xl hover:bg-primary/5 hover:border-primary/20 dark:hover:bg-primary/10 dark:hover:border-primary/30"
+                                variant="ghost"
+                                className="w-full h-auto py-6 flex flex-col items-center gap-3 rounded-2xl bg-muted hover:bg-muted/80 border-none transition-colors"
                             >
                                 <Wallet className="w-8 h-8 text-primary" />
-                                <span className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">New Budget</span>
+                                <span className="text-xs sm:text-sm font-semibold text-foreground">New Budget</span>
                             </Button>
                         </Link>
                     </div>
@@ -90,8 +90,8 @@ export default function DashboardActions({ onAddTransaction }) {
 
             {/* Financial Health Score */}
             <div className="md:col-span-1">
-                <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 h-full flex flex-col items-center justify-center">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 self-start w-full text-center">
+                <div className="bg-card ember-glow border-none rounded-3xl p-6 h-full flex flex-col items-center justify-center">
+                    <h2 className="text-xl font-bold text-foreground mb-6 self-start w-full text-center">
                         Financial Health
                     </h2>
 
@@ -99,7 +99,7 @@ export default function DashboardActions({ onAddTransaction }) {
                         <svg className="w-32 h-32 transform -rotate-90">
                             {/* Background circle */}
                             <circle
-                                className="text-gray-100 dark:text-gray-800"
+                                className="text-muted"
                                 strokeWidth={strokeWidth}
                                 stroke="currentColor"
                                 fill="transparent"
@@ -122,13 +122,13 @@ export default function DashboardActions({ onAddTransaction }) {
                             />
                         </svg>
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-3xl font-extrabold text-gray-500 dark:text-gray-400">
+                            <span className="text-3xl font-extrabold text-foreground">
                                 {loading ? "..." : healthScore}
                             </span>
                         </div>
                     </div>
 
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400 text-center">
+                    <p className="text-sm font-medium text-muted-foreground text-center">
                         Based on budget adherence
                     </p>
                 </div>

@@ -191,29 +191,29 @@ export default function TransactionForm({
         <div className="space-y-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-gray-200/80 bg-white/85 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 shadow-sm dark:border-gray-800 dark:bg-gray-900/80 dark:text-gray-400">
+              <div className="inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground ember-glow/80">
                 <HeaderIcon className={cn("h-3.5 w-3.5", isIncome ? "text-emerald-500" : "text-rose-500")} />
                 {isIncome ? "Income flow" : "Expense flow"}
               </div>
               <div>
-                <h2 className="text-2xl font-black tracking-tight text-gray-950 dark:text-white sm:text-3xl">
+                <h2 className="text-2xl font-black tracking-tight text-gray-950 text-foreground sm:text-3xl">
                   {title}
                 </h2>
-                <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">
+                <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">
                   {description}
                 </p>
               </div>
             </div>
 
-            <div className="flex w-full rounded-2xl bg-gray-100/90 p-1 sm:w-auto dark:bg-gray-900/90">
+            <div className="flex w-full rounded-2xl p-1 sm:w-auto bg-card ember-glow/90">
               <button
                 type="button"
                 onClick={() => handleTypeChange("expense")}
                 className={cn(
                   "flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all sm:min-w-[118px]",
                   !isIncome
-                    ? "bg-white text-rose-600 shadow-sm dark:bg-gray-800"
-                    : "text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
+                    ? "text-rose-600 bg-card ember-glow"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 Expense
@@ -224,8 +224,8 @@ export default function TransactionForm({
                 className={cn(
                   "flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all sm:min-w-[118px]",
                   isIncome
-                    ? "bg-white text-emerald-600 shadow-sm dark:bg-gray-800"
-                    : "text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
+                    ? "text-emerald-600 bg-card ember-glow"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 Income
@@ -235,7 +235,7 @@ export default function TransactionForm({
 
           <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+              <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Amount
               </label>
               <div className="relative">
@@ -254,35 +254,35 @@ export default function TransactionForm({
                   value={form.amount}
                   onChange={handleChange}
                   className={cn(
-                    "h-14 rounded-2xl border bg-white/90 pl-9 pr-16 text-base font-semibold shadow-sm dark:bg-gray-900/70",
+                    "h-14 rounded-2xl pl-9 pr-16 text-base font-semibold bg-card ember-glow/70 focus:ring-2",
                     isIncome
-                      ? "border-emerald-200/80 focus:border-emerald-500 focus:ring-emerald-500/20 dark:border-emerald-900/60"
-                      : "border-rose-200/80 focus:border-rose-500 focus:ring-rose-500/20 dark:border-rose-900/60"
+                      ? "focus:ring-emerald-500/20"
+                      : "focus:ring-rose-500/20"
                   )}
                   placeholder="0.00"
                   required
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-gray-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground bg-card ember-glow">
                   USD
                 </span>
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+              <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Date
               </label>
               <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="h-14 w-full justify-start rounded-2xl border border-gray-200/80 bg-white/90 px-4 text-left text-sm font-medium shadow-sm hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900/70 dark:hover:bg-gray-900"
+                    className="h-14 w-full justify-start rounded-2xl border-none px-4 text-left text-sm font-medium hover:bg-muted bg-card ember-glow/70"
                   >
                     <CalendarIcon className="mr-3 h-4 w-4 text-gray-400" />
                     {form.date ? dayjs(form.date).format("MMM DD, YYYY") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto rounded-2xl border-gray-200 p-0 shadow-2xl dark:border-gray-800" align="start">
+                <PopoverContent className="w-auto rounded-2xl p-0 bg-card ember-glow border-none" align="start">
                   <Calendar
                     mode="single"
                     selected={form.date}
@@ -295,21 +295,21 @@ export default function TransactionForm({
             </div>
 
             <div className="space-y-2 sm:col-span-2">
-              <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+              <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Description
               </label>
               <Input
                 name="description"
                 value={form.description}
                 onChange={handleChange}
-                className="h-14 rounded-2xl border border-gray-200/80 bg-white/90 px-4 text-base shadow-sm transition-all focus:border-primary focus:ring-primary/20 dark:border-gray-800 dark:bg-gray-900/70"
+                className="h-14 rounded-2xl border-none px-4 text-base transition-all focus:ring-2 focus:ring-primary/20 bg-card ember-glow/70"
                 placeholder="What was this for?"
                 required
               />
             </div>
 
             <div className="space-y-2 sm:col-span-2">
-              <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+              <label className="ml-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Category
               </label>
               <Select
@@ -319,7 +319,7 @@ export default function TransactionForm({
                 }
                 required
               >
-                <SelectTrigger className="h-14 rounded-2xl border border-gray-200/80 bg-white/90 text-sm font-medium shadow-sm transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-800 dark:bg-gray-900/70">
+                <SelectTrigger className="h-14 rounded-2xl border-none px-4 text-sm font-medium transition-all focus:ring-2 focus:ring-primary/20 bg-card ember-glow/70">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -332,8 +332,8 @@ export default function TransactionForm({
               </Select>
             </div>
 
-            <div className="flex flex-col gap-3 border-t border-gray-200/70 pt-4 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800/80">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex flex-col gap-3 pt-4 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-muted-foreground">
                 {isEditing
                   ? "Save changes to update this transaction immediately."
                   : "Your transaction will appear in the list as soon as you save it."}
@@ -365,9 +365,9 @@ export default function TransactionForm({
           </form>
         </div>
 
-        <div className="rounded-[1.5rem] border border-gray-200/80 bg-gradient-to-br from-gray-50 via-white to-gray-100/70 p-5 shadow-sm dark:border-gray-800 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900/80">
+        <div className="rounded-[1.5rem] bg-card p-5 ember-glow">
           <div className="flex items-center justify-between">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Live preview
             </p>
             <div
@@ -397,37 +397,37 @@ export default function TransactionForm({
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-start gap-3 rounded-2xl border border-gray-200/80 bg-white/90 p-4 dark:border-gray-800 dark:bg-gray-900/80">
+              <div className="flex items-start gap-3 rounded-2xl p-4 bg-card ember-glow/80">
                 <CalendarIcon className="mt-0.5 h-4 w-4 text-gray-400" />
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                     Date
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+                  <p className="mt-1 text-sm font-semibold text-foreground">
                     {form.date ? dayjs(form.date).format("dddd, MMM DD YYYY") : "Pick a date"}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 rounded-2xl border border-gray-200/80 bg-white/90 p-4 dark:border-gray-800 dark:bg-gray-900/80">
+              <div className="flex items-start gap-3 rounded-2xl p-4 bg-card ember-glow/80">
                 <Tag className="mt-0.5 h-4 w-4 text-gray-400" />
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                     Category
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+                  <p className="mt-1 text-sm font-semibold text-foreground">
                     {selectedCategory?.label || "Choose a category"}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 rounded-2xl border border-gray-200/80 bg-white/90 p-4 dark:border-gray-800 dark:bg-gray-900/80">
+              <div className="flex items-start gap-3 rounded-2xl p-4 bg-card ember-glow/80">
                 <Wallet className="mt-0.5 h-4 w-4 text-gray-400" />
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                     Entry mode
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+                  <p className="mt-1 text-sm font-semibold text-foreground">
                     {inline ? "Quick modal entry" : "Full editor"}
                   </p>
                 </div>
@@ -440,8 +440,8 @@ export default function TransactionForm({
   );
 
   const wrapperClassName = cn(
-    "relative overflow-hidden border backdrop-blur-xl transition-all duration-500",
-    "bg-white/95 dark:bg-gray-950/95 border-gray-200/70 dark:border-gray-800/80",
+    "relative overflow-hidden backdrop-blur-xl transition-all duration-500",
+    "bg-card/95 ember-glow/95",
     inline ? "rounded-[1.75rem]" : "mt-8 rounded-[2.5rem] shadow-2xl",
     isIncome ? "shadow-emerald-500/10" : "shadow-rose-500/10"
   );

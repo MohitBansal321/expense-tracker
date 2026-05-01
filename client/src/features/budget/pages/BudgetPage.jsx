@@ -39,7 +39,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 // Summary Card Component
 function SummaryCard({ title, value, color, prefix = "$" }) {
     return (
-        <Card className="border-l-[4px] bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-3xl transition-all hover:shadow-lg shadow-sm" style={{ borderLeftColor: color }}>
+        <Card className="border-y-0 border-r-0 border-l-[4px] bg-card ember-glow/50 backdrop-blur-sm rounded-3xl transition-all hover:shadow-lg shadow-sm" style={{ borderLeftColor: color }}>
             <CardContent className="p-5">
                 <p className="text-sm font-medium text-muted-foreground mb-1">{title}</p>
                 <p className="text-3xl font-bold tracking-tight" style={{ color }}>
@@ -61,7 +61,7 @@ function BudgetCard({ budget, onEdit, onDelete }) {
 
     return (
         <Card
-            className="border-l-[4px] bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-3xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 shadow-sm"
+            className="border-y-0 border-r-0 border-l-[4px] bg-card ember-glow/50 backdrop-blur-sm rounded-3xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 shadow-sm"
             style={{ borderLeftColor: progressColor }}
         >
             <CardContent className="p-5">
@@ -457,7 +457,7 @@ export default function Budget() {
                     ))}
                 </div>
             ) : fetchError ? (
-                <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-3xl shadow-sm border border-destructive/20 p-8 text-center flex flex-col items-center">
+                <div className="bg-card ember-glow/50 backdrop-blur-sm rounded-3xl shadow-sm border-none ring-1 ring-destructive/20 p-8 text-center flex flex-col items-center">
                     <AlertCircle className="h-12 w-12 text-destructive mb-4" />
                     <h3 className="text-xl font-semibold mb-2">Failed to load budgets</h3>
                     <p className="text-muted-foreground mb-6">
@@ -466,11 +466,11 @@ export default function Budget() {
                     <Button onClick={fetchBudgets} variant="outline" className="rounded-xl">Retry</Button>
                 </div>
             ) : (
-                <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-3xl shadow-sm border-2 border-dashed border-gray-200 dark:border-gray-800 p-12 text-center flex flex-col items-center justify-center hover:border-primary/50 transition-colors group">
+                <div className="bg-card ember-glow/50 backdrop-blur-sm rounded-3xl shadow-sm border-2 border-dashed border-border/50 p-12 text-center flex flex-col items-center justify-center hover:border-primary/50 transition-colors group">
                     <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
                        <Plus className="h-8 w-8 text-primary" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No Budgets Found</h3>
+                    <h3 className="text-2xl font-bold text-foreground mb-2">No Budgets Found</h3>
                     <p className="text-muted-foreground mb-8 max-w-sm">
                         No budgets set yet. Track your spending limits and achieve your financial goals by creating your first budget!
                     </p>

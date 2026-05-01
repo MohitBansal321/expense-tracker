@@ -193,13 +193,13 @@ export default function ReceiptScanner({ onTransactionCreated }) {
         <>
             {/* Trigger Card */}
             <div
-                className="h-full cursor-pointer transition-all duration-300 border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900 group hover:-translate-y-1 hover:shadow-xl hover:border-primary"
+                className="h-full cursor-pointer transition-all duration-300 border-none rounded-2xl bg-card ember-glow group hover:-translate-y-1 hover:shadow-xl hover:ring-2 hover:ring-primary/20"
                 onClick={() => setDialogOpen(true)}
             >
                 <div className="flex flex-col items-center justify-center h-full p-8 text-center">
                     <Receipt className="w-12 h-12 text-primary mb-3 group-hover:scale-110 transition-transform" />
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Scan Receipt</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <h3 className="text-lg font-bold text-foreground">Scan Receipt</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
                         Upload a receipt image to auto-fill
                     </p>
                 </div>
@@ -216,12 +216,12 @@ export default function ReceiptScanner({ onTransactionCreated }) {
 
                     <div className="mt-4 max-h-[70vh] overflow-y-auto px-1 py-1">
                         {error && (
-                            <div className="bg-red-50 text-red-700 p-3 rounded-md mb-4 text-sm border border-red-200">
+                            <div className="bg-ember/10 text-ember p-3 rounded-md mb-4 text-sm border border-ember/20">
                                 {error}
                             </div>
                         )}
                         {success && (
-                            <div className="bg-green-50 text-green-700 p-3 rounded-md mb-4 text-sm border border-green-200 flex items-center gap-2">
+                            <div className="bg-sage/10 text-sage p-3 rounded-md mb-4 text-sm border border-sage/20 flex items-center gap-2">
                                 <CheckCircle className="w-5 h-5 flex-shrink-0" />
                                 <span>Transaction saved successfully!</span>
                             </div>
@@ -230,12 +230,12 @@ export default function ReceiptScanner({ onTransactionCreated }) {
                         {/* Upload Area */}
                         {!imagePreview && (
                             <div
-                                className="border-2 border-dashed border-primary/50 rounded-xl p-10 text-center cursor-pointer hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
+                                className="border-2 border-dashed border-primary/50 rounded-xl p-10 text-center cursor-pointer hover:bg-muted/50 transition-colors"
                                 onClick={() => fileInputRef.current?.click()}
                             >
                                 <UploadCloud className="w-16 h-16 text-primary mx-auto mb-4" />
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Drop receipt image here</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                <h3 className="text-lg font-bold text-foreground">Drop receipt image here</h3>
+                                <p className="text-sm text-muted-foreground mt-1">
                                     or click to browse
                                 </p>
                                 <input
@@ -254,7 +254,7 @@ export default function ReceiptScanner({ onTransactionCreated }) {
                                 <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="bg-white/90 dark:bg-gray-800/90 p-2 rounded-full shadow-md text-gray-700 dark:text-gray-200 hover:text-blue-600 focus:outline-none"
+                                        className="bg-card ember-glow/90 p-2 rounded-full shadow-md text-foreground hover:text-primary focus:outline-none"
                                         title="Change Image"
                                     >
                                         <Camera className="w-4 h-4" />
@@ -263,7 +263,7 @@ export default function ReceiptScanner({ onTransactionCreated }) {
                                 <img
                                     src={imagePreview}
                                     alt="Receipt"
-                                    className="w-full max-h-48 object-contain rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-black/20"
+                                    className="w-full max-h-48 object-contain rounded-lg border-none bg-card ember-glow"
                                 />
                                 <input
                                     ref={fileInputRef}
@@ -280,9 +280,9 @@ export default function ReceiptScanner({ onTransactionCreated }) {
                             <div className="mb-6">
                                 <div className="flex items-center gap-3 mb-2">
                                     <Loader2 className="w-5 h-5 text-primary animate-spin" />
-                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Processing receipt... {progress}%</span>
+                                    <span className="text-sm font-medium text-foreground">Processing receipt... {progress}%</span>
                                 </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700 overflow-hidden">
+                                <div className="w-full bg-gray-200 rounded-full h-2 bg-card ember-glow overflow-hidden">
                                     <div className="bg-primary h-2 rounded-full transition-all duration-300 ease-out" style={{ width: `${progress}%` }}></div>
                                 </div>
                             </div>
@@ -292,14 +292,14 @@ export default function ReceiptScanner({ onTransactionCreated }) {
                         {imagePreview && !isProcessing && (
                             <div className="space-y-4">
                                 {extractedData && (
-                                    <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 text-sm p-3 rounded-lg border border-blue-200 dark:border-blue-800/30">
+                                    <div className="bg-primary/10 text-primary text-sm p-3 rounded-lg border border-primary/20">
                                         <strong>Extracted:</strong> {extractedData.merchant || "Unknown merchant"}
                                         {extractedData.amount && ` - $${extractedData.amount}`}
                                     </div>
                                 )}
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount</label>
+                                    <label className="block text-sm font-medium text-foreground mb-1">Amount</label>
                                     <div className="relative">
                                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
                                         <Input
@@ -315,7 +315,7 @@ export default function ReceiptScanner({ onTransactionCreated }) {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                                    <label className="block text-sm font-medium text-foreground mb-1">Description</label>
                                     <Input
                                         value={form.description}
                                         onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -325,7 +325,7 @@ export default function ReceiptScanner({ onTransactionCreated }) {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                                        <label className="block text-sm font-medium text-foreground mb-1">Date</label>
                                         <Input
                                             type="date"
                                             value={form.date}
@@ -333,11 +333,11 @@ export default function ReceiptScanner({ onTransactionCreated }) {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
+                                        <label className="block text-sm font-medium text-foreground mb-1">Category</label>
                                         <select
                                             value={form.category_id}
                                             onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-                                            className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300"
+                                            className="flex h-10 w-full items-center justify-between rounded-md border-none bg-card ember-glow px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
                                             required
                                         >
                                             <option value="" disabled>Select...</option>
@@ -353,7 +353,7 @@ export default function ReceiptScanner({ onTransactionCreated }) {
                         )}
                     </div>
 
-                    <DialogFooter className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <DialogFooter className="mt-4 pt-4 border-t border-border/50">
                         <Button variant="ghost" onClick={handleClose}>Cancel</Button>
                         {imagePreview && !extractedData && !isProcessing && (
                             <Button onClick={processReceipt} className="bg-primary hover:bg-primary/90 text-primary-foreground">

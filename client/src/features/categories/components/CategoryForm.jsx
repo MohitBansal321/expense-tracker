@@ -96,7 +96,7 @@ export default function CategoryForm({ editCategory, onClose }) {
   return (
     <form onSubmit={handleSubmit} className="p-4 space-y-6">
       <div>
-        <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+        <label className="block text-sm font-semibold text-foreground mb-2">
           Category Name
         </label>
         <Input
@@ -109,10 +109,10 @@ export default function CategoryForm({ editCategory, onClose }) {
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+        <label className="block text-sm font-semibold text-foreground mb-2">
           Select Icon
         </label>
-        <div className="border border-gray-200 dark:border-gray-800 rounded-lg p-4 max-h-[200px] overflow-y-auto bg-gray-50 dark:bg-gray-900/50">
+        <div className="border-none rounded-lg p-4 max-h-[200px] overflow-y-auto bg-card ember-glow">
           <div className="flex flex-wrap gap-2">
             {icons.map((icon) => (
               <button
@@ -122,7 +122,7 @@ export default function CategoryForm({ editCategory, onClose }) {
                 className={`w-10 h-10 flex items-center justify-center text-2xl cursor-pointer rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary
                   ${form.icon === icon 
                     ? "bg-primary/10 text-primary shadow-sm" 
-                    : "bg-transparent hover:bg-gray-200 dark:hover:bg-gray-800"
+                    : "bg-transparent hover:bg-muted/80"
                   }`}
               >
                 {icon}
@@ -132,7 +132,7 @@ export default function CategoryForm({ editCategory, onClose }) {
         </div>
       </div>
 
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+      <div className="flex justify-end gap-3 pt-4 border-t border-border">
         {onClose && (
           <Button type="button" variant="ghost" onClick={onClose}>
             Cancel

@@ -58,35 +58,35 @@ function SummaryCard({ title, value, icon: Icon, color, change, isLoading, highl
     const borderProps = highlight ? { borderColor: `${color}80`, glowColor: `${color}50` } : {};
 
     const cardContent = (
-        <Card className="h-full overflow-hidden border bg-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+        <Card className="h-full overflow-hidden border-none bg-card ember-glow card-hover rounded-xl">
             <CardContent className="p-6">
                 <div className="flex justify-between items-start">
                     <div className="flex-1">
-                        <p className="text-sm font-medium text-muted-foreground mb-2">
+                        <p className="label-caps text-muted-foreground mb-3">
                             {title}
                         </p>
                         {isLoading ? (
                             <Skeleton className="h-10 w-32" />
                         ) : (
-                            <div className="text-4xl font-bold mb-2" style={{ color }}>
+                            <div className="text-4xl font-bold font-headline mb-2" style={{ color }}>
                                 $<CountUp value={value || 0} duration={1.5} />
                             </div>
                         )}
                         {change !== undefined && !isLoading && (
                             <div className="flex items-center gap-1 mt-2">
                                 {isPositive ? (
-                                    <ArrowUp className="h-4 w-4 text-green-500" />
+                                    <ArrowUp className="h-4 w-4" style={{ color: 'hsl(var(--ember))' }} />
                                 ) : (
-                                    <ArrowDown className="h-4 w-4 text-red-500" />
+                                    <ArrowDown className="h-4 w-4" style={{ color: 'hsl(var(--sage))' }} />
                                 )}
-                                <span className={cn("text-xs font-medium", isPositive ? 'text-green-500' : 'text-red-500')}>
+                                <span className={cn("text-xs font-medium")} style={{ color: isPositive ? 'hsl(var(--ember))' : 'hsl(var(--sage))' }}>
                                     {Math.abs(change)}% vs last month
                                 </span>
                             </div>
                         )}
                     </div>
                     <div
-                        className="p-3 rounded-2xl flex items-center justify-center shadow-inner"
+                        className="p-3 rounded-xl flex items-center justify-center"
                         style={{ backgroundColor: `${color}15` }}
                     >
                         <Icon className="h-8 w-8" style={{ color }} />
@@ -102,7 +102,14 @@ function SummaryCard({ title, value, icon: Icon, color, change, isLoading, highl
 
 // Category Breakdown Component
 function CategoryBreakdown({ data, isLoading }) {
-    const colors = ["#4CAF50", "#2196F3", "#FF9800", "#E91E63", "#9C27B0", "#00BCD4", "#FF5722", "#795548"];
+    const colors = [
+        "hsl(var(--ember))", 
+        "hsl(var(--sage))", 
+        "hsl(var(--sand))", 
+        "hsl(var(--primary))", 
+        "hsl(var(--secondary))", 
+        "hsl(var(--accent))"
+    ];
 
     const chartData = useMemo(() => data?.map((item, index) => ({
         name: item.categoryName,
@@ -113,7 +120,7 @@ function CategoryBreakdown({ data, isLoading }) {
     const total = useMemo(() => chartData.reduce((sum, item) => sum + item.value, 0), [chartData]);
 
     return (
-        <Card className="h-full border shadow-sm rounded-3xl overflow-hidden">
+        <Card className="h-full border-none ember-glow rounded-xl overflow-hidden">
             <CardHeader className="pb-2">
                 <div className="flex justify-between items-center">
                     <CardTitle className="text-xl font-bold flex items-center gap-2">
@@ -150,9 +157,12 @@ function CategoryBreakdown({ data, isLoading }) {
                                     <RechartsTooltip 
                                         contentStyle={{ 
                                             borderRadius: '16px', 
-                                            border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--card-foreground))',
-                                            boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' 
+                                            border: 'none', 
+                                            backgroundColor: 'hsl(var(--card))', 
+                                            color: 'hsl(var(--card-foreground))',
+                                            boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' 
                                         }} 
+                                        itemStyle={{ color: 'hsl(var(--card-foreground))', fontWeight: 600 }}
                                     />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -166,13 +176,13 @@ function CategoryBreakdown({ data, isLoading }) {
                                                 className="w-2.5 h-2.5 rounded-full shadow-sm group-hover:scale-125 transition-transform"
                                                 style={{ backgroundColor: item.color }}
                                             />
-                                            <span className="font-semibold text-gray-700 dark:text-gray-300">{item.name}</span>
+                                            <span className="font-semibold text-foreground">{item.name}</span>
                                         </div>
-                                        <span className="font-bold text-gray-900 dark:text-white">
+                                        <span className="font-bold text-foreground">
                                             {((item.value / total) * 100).toFixed(0)}%
                                         </span>
                                     </div>
-                                    <div className="w-full bg-gray-100 dark:bg-gray-800 h-2 rounded-full overflow-hidden">
+                                    <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
                                         <div
                                             className="h-full rounded-full transition-all duration-1000 ease-out"
                                             style={{
@@ -187,11 +197,11 @@ function CategoryBreakdown({ data, isLoading }) {
                     </div>
                 ) : (
                     <div className="py-12 text-center">
-                        <div className="mx-auto w-16 h-16 rounded-3xl bg-gray-50 flex items-center justify-center mb-4 text-gray-400">
+                        <div className="mx-auto w-16 h-16 rounded-xl bg-muted flex items-center justify-center mb-4 text-muted-foreground">
                             <Search className="h-8 w-8 opacity-20" />
                         </div>
-                        <p className="text-gray-500 font-semibold mb-1">No spending data this month</p>
-                        <p className="text-xs text-gray-400">Add expenses to see breakdown</p>
+                        <p className="text-muted-foreground font-semibold mb-1">No spending data this month</p>
+                        <p className="text-xs text-muted-foreground/70">Add expenses to see breakdown</p>
                     </div>
                 )}
             </CardContent>
@@ -208,7 +218,7 @@ function MonthlyTrendChart({ data, isLoading }) {
     })) || [], [data]);
 
     return (
-        <Card className="h-full border shadow-sm rounded-3xl overflow-hidden">
+        <Card className="h-full border-none ember-glow rounded-xl overflow-hidden">
             <CardHeader className="pb-2">
                 <CardTitle className="text-xl font-bold flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-primary" /> Monthly Trend
@@ -238,9 +248,12 @@ function MonthlyTrendChart({ data, isLoading }) {
                                     cursor={{ fill: 'hsl(var(--muted))' }}
                                     contentStyle={{ 
                                         borderRadius: '16px', 
-                                        border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--card-foreground))',
-                                        boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' 
+                                        border: 'none', 
+                                        backgroundColor: 'hsl(var(--card))', 
+                                        color: 'hsl(var(--card-foreground))',
+                                        boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' 
                                     }} 
+                                    itemStyle={{ color: 'hsl(var(--card-foreground))', fontWeight: 600 }}
                                 />
                                 <Legend 
                                     verticalAlign="top" 
@@ -250,13 +263,13 @@ function MonthlyTrendChart({ data, isLoading }) {
                                 />
                                 <Bar 
                                     dataKey="Income" 
-                                    fill="#22c55e" 
+                                    fill="hsl(var(--ember))" 
                                     radius={[6, 6, 0, 0]} 
                                     barSize={24}
                                 />
                                 <Bar 
                                     dataKey="Expense" 
-                                    fill="#ef4444" 
+                                    fill="hsl(var(--sage))" 
                                     radius={[6, 6, 0, 0]} 
                                     barSize={24}
                                 />
@@ -265,7 +278,7 @@ function MonthlyTrendChart({ data, isLoading }) {
                     </div>
                 ) : (
                     <div className="py-20 text-center">
-                        <p className="text-gray-400 font-medium italic">No trend data available yet</p>
+                        <p className="text-muted-foreground font-medium italic">No trend data available yet</p>
                     </div>
                 )}
             </CardContent>
@@ -283,7 +296,7 @@ function RecentTransactions({ transactions, isLoading }) {
     };
 
     return (
-        <Card className="h-full border shadow-sm rounded-3xl overflow-hidden">
+        <Card className="h-full border-none ember-glow rounded-xl overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-xl font-bold flex items-center gap-2">
                     <HistoryIcon className="w-5 h-5 text-primary" /> Recent Activity
@@ -306,34 +319,31 @@ function RecentTransactions({ transactions, isLoading }) {
                         {transactions.map((tx) => (
                             <div
                                 key={tx._id}
-                                className="p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all border border-transparent hover:border-gray-100 dark:hover:border-gray-700 group"
+                                className="p-4 rounded-xl hover:bg-muted transition-all border-none group"
                             >
                                 <div className="flex justify-between items-start mb-2">
                                     <div className="flex items-center gap-3">
                                         <div className={cn(
-                                            "w-10 h-10 rounded-full flex items-center justify-center transition-transform group-hover:rotate-12",
-                                            tx.type === "income" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
-                                        )}>
+                                            "w-10 h-10 rounded-full flex items-center justify-center transition-transform group-hover:rotate-12"
+                                        )} style={tx.type === "income" ? { backgroundColor: 'hsla(var(--ember), 0.2)', color: 'hsl(var(--ember))' } : { backgroundColor: 'hsla(var(--sage), 0.2)', color: 'hsl(var(--sage))' }}>
                                             {tx.type === "income" ? <ArrowUp className="w-5 h-5" /> : <ArrowDown className="w-5 h-5" />}
                                         </div>
                                         <div>
-                                            <p className="font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">
+                                            <p className="font-bold text-foreground group-hover:text-primary transition-colors">
                                                 {tx.description || "Untitled Transaction"}
                                             </p>
                                             <div className="flex items-center gap-2 mt-0.5">
-                                                <Badge variant="outline" className="text-[10px] py-0 px-2 rounded-full border-gray-200 text-gray-500 font-medium">
+                                                <Badge variant="outline" className="text-[10px] py-0 px-2 rounded-full border-border text-muted-foreground font-medium">
                                                     {getCategoryName(tx.category_id)}
                                                 </Badge>
-                                                <span className="text-[10px] text-gray-400 flex items-center gap-1 font-medium">
+                                                <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-medium">
                                                     <Calendar className="w-3 h-3" /> {dayjs(tx.date).format("MMM D, YYYY")}
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className={cn(
-                                        "text-lg font-black tracking-tight",
-                                        tx.type === "income" ? "text-green-600" : "text-red-600"
-                                    )}>
+                                    <div className="text-lg font-black tracking-tight financial-number"
+                                        style={{ color: tx.type === "income" ? 'hsl(var(--ember))' : 'hsl(var(--sage))' }}>
                                         {tx.type === "income" ? "+" : "-"}$<CountUp value={tx.amount || 0} duration={0.8} />
                                     </div>
                                 </div>
@@ -342,13 +352,13 @@ function RecentTransactions({ transactions, isLoading }) {
                     </AnimatedList>
                 ) : (
                     <div className="py-20 text-center flex flex-col items-center">
-                        <div className="w-20 h-20 rounded-full bg-gray-50 flex items-center justify-center mb-6">
-                            <Wallet className="h-10 w-10 text-gray-300" />
+                        <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-6">
+                            <Wallet className="h-10 w-10 text-muted-foreground" />
                         </div>
-                        <p className="text-gray-500 font-bold text-lg mb-2">Your wallet is hungry</p>
-                        <p className="text-gray-400 text-sm mb-6 max-w-xs">You haven't recorded any transactions yet. Let's get started!</p>
+                        <p className="text-foreground font-bold text-lg mb-2">Your wallet is hungry</p>
+                        <p className="text-muted-foreground text-sm mb-6 max-w-xs">You haven't recorded any transactions yet. Let's get started!</p>
                         <Link to="/smart-entry">
-                            <Button className="rounded-2xl px-8 font-bold shadow-lg shadow-primary/20">Start Tracking</Button>
+                            <Button className="rounded-xl px-8 font-bold ember-glow">Start Tracking</Button>
                         </Link>
                     </div>
                 )}
@@ -397,15 +407,15 @@ export default function Dashboard() {
                             Live Overview
                         </Badge>
                     </div>
-                    <h1 className="text-5xl font-black tracking-tight text-gray-900 dark:text-white">Dashboard</h1>
-                    <p className="text-gray-400 mt-2 font-medium">
+                    <h1 className="text-5xl font-black tracking-tight text-foreground">Dashboard</h1>
+                    <p className="text-muted-foreground mt-2 font-medium">
                         Welcome back! Here's what's happening with your money in {dayjs().format("MMMM")}.
                     </p>
                 </div>
                 <div className="flex gap-2">
                     <Button 
                         variant="outline" 
-                        className="rounded-2xl border-gray-200 font-bold px-6 hover:bg-gray-50 flex items-center gap-2"
+                        className="rounded-xl border-border font-bold px-6 hover:bg-muted flex items-center gap-2"
                         onClick={() => fetchDashboardData()}
                     >
                         Refresh Data
@@ -422,7 +432,7 @@ export default function Dashboard() {
                     title="Total Income"
                     value={summary.totalIncome}
                     icon={TrendingUp}
-                    color="#22c55e"
+                    color="hsl(var(--ember))"
                     change={summary.incomeChange}
                     isLoading={isLoading}
                 />
@@ -430,7 +440,7 @@ export default function Dashboard() {
                     title="Total Expenses"
                     value={summary.totalExpenses}
                     icon={TrendingDown}
-                    color="#ef4444"
+                    color="hsl(var(--sage))"
                     change={summary.expenseChange}
                     isLoading={isLoading}
                 />
@@ -438,7 +448,7 @@ export default function Dashboard() {
                     title="Net Savings"
                     value={summary.netSavings}
                     icon={PiggyBank}
-                    color="#6366f1"
+                    color="hsl(var(--sand))"
                     isLoading={isLoading}
                     highlight={true}
                 />
@@ -446,7 +456,7 @@ export default function Dashboard() {
                     title="Activity Count"
                     value={summary.transactionCount}
                     icon={Wallet}
-                    color="#a855f7"
+                    color="hsl(var(--primary))"
                     isLoading={isLoading}
                 />
             </div>
