@@ -223,7 +223,19 @@ class BudgetService {
     async getBudgetAlerts(userId) {
         const now = new Date();
         const budgets = await Budget.find({ user_id: userId, isActive: true });
+
+        if (!budgets.length) {
+            return [];
+        }
+
         const alerts = [];
+
+        // Fetch user once to get categories and avoid N+1 query issue
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return [];
+        }
 
         for (const budget of budgets) {
             const periodStart = this.calculatePeriodStart(budget.period, now);
@@ -239,7 +251,6 @@ class BudgetService {
                 budget.amount > 0 ? Math.round((currentSpending / budget.amount) * 100) : 0;
 
             if (percentageUsed >= budget.alertThreshold) {
-                const user = await User.findById(userId);
                 const category = user.categories.find(
                     (c) => c._id.toString() === budget.category_id?.toString()
                 );
