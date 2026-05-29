@@ -1,5 +1,6 @@
 import statsService from "../services/stats.service.js";
 import asyncHandler from "../middleware/async-handler.middleware.js";
+import { sendSuccess } from "../utils/response.util.js";
 
 /**
  * Stats Controller
@@ -12,5 +13,5 @@ import asyncHandler from "../middleware/async-handler.middleware.js";
  */
 export const index = asyncHandler(async (req, res) => {
     const data = await statsService.getGlobalStats();
-    res.json({ data });
+    sendSuccess(res, data);
 });

@@ -14,7 +14,7 @@ import { generateCSVFilename, setCSVHeaders } from "../utils/csv.util.js";
  */
 export const index = asyncHandler(async (req, res) => {
     const transactions = await transactionService.getTransactions(req.user._id);
-    res.json({ data: transactions });
+    sendSuccess(res, transactions);
 });
 
 /**
@@ -26,7 +26,7 @@ export const filter = asyncHandler(async (req, res) => {
         req.user._id,
         req.params.id
     );
-    res.json({ data: transactions });
+    sendSuccess(res, transactions);
 });
 
 /**
@@ -55,8 +55,8 @@ export const exportCSV = asyncHandler(async (req, res) => {
  * POST /transaction
  */
 export const create = asyncHandler(async (req, res) => {
-    await transactionService.createTransaction(req.body, req.user._id);
-    res.json({ message: "Success" });
+    const transaction = await transactionService.createTransaction(req.body, req.user._id);
+    sendCreated(res, transaction, "Transaction created successfully");
 });
 
 /**
@@ -65,7 +65,7 @@ export const create = asyncHandler(async (req, res) => {
  */
 export const createBulk = asyncHandler(async (req, res) => {
     const transactions = await transactionService.createBulkTransactions(req.body.transactions, req.user._id);
-    res.json({ message: "Success", count: transactions.length });
+    sendCreated(res, { count: transactions.length }, "Transactions created successfully");
 });
 
 /**
@@ -73,8 +73,8 @@ export const createBulk = asyncHandler(async (req, res) => {
  * PATCH /transaction/:id
  */
 export const update = asyncHandler(async (req, res) => {
-    await transactionService.updateTransaction(req.params.id, req.body);
-    res.json({ message: "success" });
+    const transaction = await transactionService.updateTransaction(req.params.id, req.user._id, req.body);
+    sendSuccess(res, transaction, "Transaction updated successfully");
 });
 
 /**
@@ -82,8 +82,8 @@ export const update = asyncHandler(async (req, res) => {
  * DELETE /transaction/:id
  */
 export const destroy = asyncHandler(async (req, res) => {
-    await transactionService.deleteTransaction(req.params.id);
-    res.json({ message: "success" });
+    await transactionService.deleteTransaction(req.params.id, req.user._id);
+    sendSuccess(res, null, "Transaction deleted successfully");
 });
 
 /**

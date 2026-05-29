@@ -1355,10 +1355,7 @@ define(['exports'], (function (exports) { 'use strict';
           request,
           state
         }) => {
-          // TODO: `state` should never be undefined...
-          if (state) {
-            state.originalRequest = request;
-          }
+          state.originalRequest = request;
         };
         this.cachedResponseWillBeUsed = async ({
           event,
@@ -1366,8 +1363,7 @@ define(['exports'], (function (exports) { 'use strict';
           cachedResponse
         }) => {
           if (event.type === 'install') {
-            if (state && state.originalRequest && state.originalRequest instanceof Request) {
-              // TODO: `state` should never be undefined...
+            if (state.originalRequest && state.originalRequest instanceof Request) {
               const url = state.originalRequest.url;
               if (cachedResponse) {
                 this.notUpdatedURLs.push(url);
