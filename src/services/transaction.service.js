@@ -5,6 +5,7 @@ import { AppError } from "../middleware/error.middleware.js";
 import { ERROR_MESSAGES } from "../constants/index.js";
 import { calculateSimilarity } from "../utils/similarity.util.js";
 import { convertToCSV } from "../utils/csv.util.js";
+import { escapeRegex } from "../utils/security.util.js";
 
 /**
  * Transaction Service
@@ -101,7 +102,7 @@ class TransactionService {
 
         // Search by description
         if (query) {
-            matchConditions.description = { $regex: query, $options: "i" };
+            matchConditions.description = { $regex: escapeRegex(query), $options: "i" };
         }
 
         // Filter by date range
