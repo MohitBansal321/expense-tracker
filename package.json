@@ -27,5 +27,8 @@
     "passport-jwt": "^4.0.0",
     "redis": "^4.7.0",
     "uuid": "^11.0.5"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^11.2.0"
   }
 }
