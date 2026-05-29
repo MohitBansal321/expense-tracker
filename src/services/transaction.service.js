@@ -285,14 +285,30 @@ class TransactionService {
 
         const duplicates = [];
         const seen = new Map();
+        const amountBuckets = new Map();
 
         for (const tx of transactions) {
             // Create a key based on amount and approximate date (within 3 days)
             const dateKey = new Date(tx.date);
             dateKey.setHours(0, 0, 0, 0);
 
+            const txAmountCents = Math.round(tx.amount * 100);
+            const candidateKeys = new Set();
+
+            for (let offset = -1; offset <= 1; offset++) {
+                const bucketKeys = amountBuckets.get(txAmountCents + offset);
+                if (bucketKeys) {
+                    for (const k of bucketKeys) {
+                        candidateKeys.add(k);
+                    }
+                }
+            }
+
             // Check for similar transactions
-            for (const [key, existingTx] of seen) {
+            for (const key of candidateKeys) {
+                const existingTx = seen.get(key);
+                if (!existingTx) continue;
+
                 const [existingAmount, existingDate, existingDesc] = key.split("|");
                 const daysDiff = Math.abs(dateKey - new Date(existingDate)) / (1000 * 60 * 60 * 24);
 
@@ -321,6 +337,11 @@ class TransactionService {
 
             const key = `${tx.amount}|${dateKey.toISOString()}|${tx.description}`;
             seen.set(key, tx);
+
+            if (!amountBuckets.has(txAmountCents)) {
+                amountBuckets.set(txAmountCents, new Set());
+            }
+            amountBuckets.get(txAmountCents).add(key);
         }
 
         return duplicates;
