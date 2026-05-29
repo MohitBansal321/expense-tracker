@@ -6,6 +6,29 @@ import { ERROR_MESSAGES } from "../constants/index.js";
 import { calculateSimilarity } from "../utils/similarity.util.js";
 import { convertToCSV } from "../utils/csv.util.js";
 
+const monthlyGroupAndSortStages = [
+    {
+        $group: {
+            _id: {
+                year: { $year: "$date" },
+                month: { $month: "$date" },
+            },
+            transactions: {
+                $push: {
+                    amount: "$amount",
+                    description: "$description",
+                    date: "$date",
+                    type: "$type",
+                    _id: "$_id",
+                    category_id: "$category_id",
+                },
+            },
+            totalExpenses: { $sum: "$amount" },
+        },
+    },
+    { $sort: { "_id.year": -1, "_id.month": -1 } },
+];
+
 /**
  * Transaction Service
  * Handles all transaction-related business logic
@@ -22,26 +45,7 @@ class TransactionService {
             {
                 $match: { user_id: userId },
             },
-            {
-                $group: {
-                    _id: {
-                        year: { $year: "$date" },
-                        month: { $month: "$date" },
-                    },
-                    transactions: {
-                        $push: {
-                            amount: "$amount",
-                            description: "$description",
-                            date: "$date",
-                            type: "$type",
-                            _id: "$_id",
-                            category_id: "$category_id",
-                        },
-                    },
-                    totalExpenses: { $sum: "$amount" },
-                },
-            },
-            { $sort: { "_id.year": -1, "_id.month": -1 } },
+            ...monthlyGroupAndSortStages,
         ]);
 
         return transactions;
@@ -62,26 +66,7 @@ class TransactionService {
             {
                 $match: { user_id: userId, category_id: category_id },
             },
-            {
-                $group: {
-                    _id: {
-                        year: { $year: "$date" },
-                        month: { $month: "$date" },
-                    },
-                    transactions: {
-                        $push: {
-                            amount: "$amount",
-                            description: "$description",
-                            date: "$date",
-                            type: "$type",
-                            _id: "$_id",
-                            category_id: "$category_id",
-                        },
-                    },
-                    totalExpenses: { $sum: "$amount" },
-                },
-            },
-            { $sort: { "_id.year": -1, "_id.month": -1 } },
+            ...monthlyGroupAndSortStages,
         ]);
 
         return transactions;
