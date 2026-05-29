@@ -101,7 +101,8 @@ class TransactionService {
 
         // Search by description
         if (query) {
-            matchConditions.description = { $regex: query, $options: "i" };
+            const escapedQuery = String(query).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            matchConditions.description = { $regex: escapedQuery, $options: "i" };
         }
 
         // Filter by date range
