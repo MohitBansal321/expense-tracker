@@ -73,7 +73,7 @@ export const createBulk = asyncHandler(async (req, res) => {
  * PATCH /transaction/:id
  */
 export const update = asyncHandler(async (req, res) => {
-    await transactionService.updateTransaction(req.params.id, req.body);
+    await transactionService.updateTransaction(req.params.id, req.user._id, req.body);
     res.json({ message: "success" });
 });
 
@@ -82,7 +82,7 @@ export const update = asyncHandler(async (req, res) => {
  * DELETE /transaction/:id
  */
 export const destroy = asyncHandler(async (req, res) => {
-    await transactionService.deleteTransaction(req.params.id);
+    await transactionService.deleteTransaction(req.params.id, req.user._id);
     res.json({ message: "success" });
 });
 
