@@ -7,7 +7,6 @@ import VoiceInput from "../components/VoiceInput";
 export default function SmartEntry() {
     function handleTransactionCreated() {
         // Optionally refresh or show notification
-        console.log("Transaction created via smart entry");
     }
 
     return (

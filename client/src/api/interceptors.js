@@ -23,11 +23,6 @@ export const requestInterceptor = (config) => {
  * Handle responses before they are processed
  */
 export const responseInterceptor = (response) => {
-    // Log response in development
-    if (import.meta.env.DEV) {
-        console.log("API Response:", response);
-    }
-
     return response;
 };
 
