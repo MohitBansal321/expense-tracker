@@ -390,6 +390,7 @@ class TransactionService {
 
         // Build category frequency map based on similar descriptions
         const categoryScores = new Map();
+        const words = descLower.split(/\s+/);
 
         for (const tx of pastTransactions) {
             if (!tx.description || !tx.category_id) continue;
@@ -398,7 +399,6 @@ class TransactionService {
             const similarity = calculateSimilarity(descLower, txDescLower);
 
             // Also check for keyword matching
-            const words = descLower.split(/\s+/);
             const txWords = txDescLower.split(/\s+/);
             let keywordMatch = 0;
             for (const word of words) {
