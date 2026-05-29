@@ -2,7 +2,6 @@ import * as React from "react"
 import { Check } from "lucide-react"
 
 import { cn } from "../../lib/utils"
-import { Badge } from "./badge"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./command"
 import { Popover, PopoverContent, PopoverTrigger } from "./popover"
 import { Button } from "./button"
