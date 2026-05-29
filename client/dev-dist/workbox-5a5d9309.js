@@ -1158,14 +1158,6 @@ define(['exports'], (function (exports) { 'use strict';
               paramName: 'capture'
             });
           }
-          // We want to check if Express-style wildcards are in the pathname only.
-          // TODO: Remove this log message in v4.
-          const valueToCheck = capture.startsWith('http') ? captureUrl.pathname : capture;
-          // See https://github.com/pillarjs/path-to-regexp#parameters
-          const wildcards = '[*:?+]';
-          if (new RegExp(`${wildcards}`).exec(valueToCheck)) {
-            logger.debug(`The '$capture' parameter contains an Express-style wildcard ` + `character (${wildcards}). Strings are now always interpreted as ` + `exact matches; use a RegExp for partial or wildcard matches.`);
-          }
         }
         const matchCallback = ({
           url
