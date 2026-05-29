@@ -2074,7 +2074,7 @@ define(['exports'], (function (exports) { 'use strict';
        * @return {boolean}
        */
       hasCallback(name) {
-        for (const plugin of this._strategy.plugins) {
+        for (const plugin of this._plugins) {
           if (name in plugin) {
             return true;
           }
@@ -2114,7 +2114,7 @@ define(['exports'], (function (exports) { 'use strict';
        * @return {Array<Function>}
        */
       *iterateCallbacks(name) {
-        for (const plugin of this._strategy.plugins) {
+        for (const plugin of this._plugins) {
           if (typeof plugin[name] === 'function') {
             const state = this._pluginStateMap.get(plugin);
             const statefulCallback = param => {
