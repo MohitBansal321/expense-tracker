@@ -241,11 +241,12 @@ class TransactionService {
      * Update a transaction
      * @param {String} transactionId - Transaction ID
      * @param {Object} updateData - Update data
+     * @param {String} userId - User ID
      * @returns {Object} Updated transaction
      */
-    async updateTransaction(transactionId, updateData) {
-        const transaction = await Transaction.findByIdAndUpdate(
-            transactionId,
+    async updateTransaction(transactionId, updateData, userId) {
+        const transaction = await Transaction.findOneAndUpdate(
+            { _id: transactionId, user_id: userId },
             { $set: updateData },
             { new: true }
         );
@@ -260,10 +261,11 @@ class TransactionService {
     /**
      * Delete a transaction
      * @param {String} transactionId - Transaction ID
+     * @param {String} userId - User ID
      * @returns {Object} Deletion result
      */
-    async deleteTransaction(transactionId) {
-        const result = await Transaction.deleteOne({ _id: transactionId });
+    async deleteTransaction(transactionId, userId) {
+        const result = await Transaction.deleteOne({ _id: transactionId, user_id: userId });
 
         if (result.deletedCount === 0) {
             throw new AppError(ERROR_MESSAGES.TRANSACTION_NOT_FOUND, 404);
