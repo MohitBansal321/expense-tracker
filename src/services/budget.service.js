@@ -74,50 +74,80 @@ class BudgetService {
         // Get all budgets for the user
         const budgets = await Budget.find({ user_id: userId, isActive: true });
 
+        if (!budgets || budgets.length === 0) {
+            return {
+                budgets: [],
+                summary: {
+                    totalBudget: 0,
+                    totalSpending: 0,
+                    budgetsOverLimit: 0,
+                    budgetsNearLimit: 0,
+                },
+            };
+        }
+
         // Get user categories for mapping
         const user = await User.findById(userId);
         const categoryMap = {};
-        user.categories.forEach((cat) => {
-            categoryMap[cat._id.toString()] = cat;
-        });
+        if (user && user.categories) {
+            user.categories.forEach((cat) => {
+                categoryMap[cat._id.toString()] = cat;
+            });
+        }
+
+        // Pre-calculate period starts for all budgets
+        const budgetsWithPeriods = budgets.map((budget) => ({
+            budget,
+            periodStart: this.calculatePeriodStart(budget.period, now),
+        }));
+
+        // Find the earliest period start date among all budgets
+        const earliestPeriodStart = new Date(
+            Math.min(...budgetsWithPeriods.map((b) => b.periodStart.getTime()))
+        );
+
+        // Fetch all relevant transactions in a single query
+        const transactions = await Transaction.find({
+            user_id: userId,
+            type: { $ne: "income" },
+            date: { $gte: earliestPeriodStart, $lte: now },
+        })
+            .select("category_id amount date")
+            .lean();
 
         // Calculate current period spending for each budget
-        const budgetsWithSpending = await Promise.all(
-            budgets.map(async (budget) => {
-                // Calculate period start date
-                const periodStart = this.calculatePeriodStart(budget.period, now);
+        const budgetsWithSpending = budgetsWithPeriods.map(({ budget, periodStart }) => {
+            const categoryIdStr = budget.category_id?.toString();
+            let currentSpending = 0;
 
-                // Get spending for this category in the current period
-                const currentSpending = await this.calculateSpending(
-                    userId,
-                    budget.category_id,
-                    periodStart,
-                    now
-                );
+            for (const t of transactions) {
+                if (t.category_id?.toString() === categoryIdStr && new Date(t.date) >= periodStart) {
+                    currentSpending += t.amount;
+                }
+            }
 
-                const percentageUsed =
-                    budget.amount > 0 ? Math.round((currentSpending / budget.amount) * 100) : 0;
-                const isOverBudget = currentSpending > budget.amount;
-                const isNearLimit = percentageUsed >= budget.alertThreshold;
+            const percentageUsed =
+                budget.amount > 0 ? Math.round((currentSpending / budget.amount) * 100) : 0;
+            const isOverBudget = currentSpending > budget.amount;
+            const isNearLimit = percentageUsed >= budget.alertThreshold;
 
-                return {
-                    _id: budget._id,
-                    category_id: budget.category_id,
-                    categoryName: categoryMap[budget.category_id?.toString()]?.label || "Unknown",
-                    categoryIcon: categoryMap[budget.category_id?.toString()]?.icon || "",
-                    amount: budget.amount,
-                    period: budget.period,
-                    alertThreshold: budget.alertThreshold,
-                    currentSpending,
-                    percentageUsed,
-                    remaining: Math.max(0, budget.amount - currentSpending),
-                    isOverBudget,
-                    isNearLimit,
-                    periodStart,
-                    createdAt: budget.createdAt,
-                };
-            })
-        );
+            return {
+                _id: budget._id,
+                category_id: budget.category_id,
+                categoryName: categoryMap[categoryIdStr]?.label || "Unknown",
+                categoryIcon: categoryMap[categoryIdStr]?.icon || "",
+                amount: budget.amount,
+                period: budget.period,
+                alertThreshold: budget.alertThreshold,
+                currentSpending,
+                percentageUsed,
+                remaining: Math.max(0, budget.amount - currentSpending),
+                isOverBudget,
+                isNearLimit,
+                periodStart,
+                createdAt: budget.createdAt,
+            };
+        });
 
         // Calculate summary
         const summary = {
@@ -223,26 +253,56 @@ class BudgetService {
     async getBudgetAlerts(userId) {
         const now = new Date();
         const budgets = await Budget.find({ user_id: userId, isActive: true });
+
+        if (!budgets || budgets.length === 0) {
+            return [];
+        }
+
+        // Get user for category mapping
+        const user = await User.findById(userId);
+        const categoryMap = {};
+        if (user && user.categories) {
+            user.categories.forEach((cat) => {
+                categoryMap[cat._id.toString()] = cat;
+            });
+        }
+
+        // Pre-calculate period starts
+        const budgetsWithPeriods = budgets.map((budget) => ({
+            budget,
+            periodStart: this.calculatePeriodStart(budget.period, now),
+        }));
+
+        const earliestPeriodStart = new Date(
+            Math.min(...budgetsWithPeriods.map((b) => b.periodStart.getTime()))
+        );
+
+        // Fetch all relevant transactions in a single query
+        const transactions = await Transaction.find({
+            user_id: userId,
+            type: { $ne: "income" },
+            date: { $gte: earliestPeriodStart, $lte: now },
+        })
+            .select("category_id amount date")
+            .lean();
+
         const alerts = [];
 
-        for (const budget of budgets) {
-            const periodStart = this.calculatePeriodStart(budget.period, now);
+        for (const { budget, periodStart } of budgetsWithPeriods) {
+            const categoryIdStr = budget.category_id?.toString();
+            let currentSpending = 0;
 
-            const currentSpending = await this.calculateSpending(
-                userId,
-                budget.category_id,
-                periodStart,
-                now
-            );
+            for (const t of transactions) {
+                if (t.category_id?.toString() === categoryIdStr && new Date(t.date) >= periodStart) {
+                    currentSpending += t.amount;
+                }
+            }
 
             const percentageUsed =
                 budget.amount > 0 ? Math.round((currentSpending / budget.amount) * 100) : 0;
 
             if (percentageUsed >= budget.alertThreshold) {
-                const user = await User.findById(userId);
-                const category = user.categories.find(
-                    (c) => c._id.toString() === budget.category_id?.toString()
-                );
+                const category = categoryMap[categoryIdStr];
 
                 alerts.push({
                     budgetId: budget._id,
