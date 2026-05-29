@@ -1355,7 +1355,6 @@ define(['exports'], (function (exports) { 'use strict';
           request,
           state
         }) => {
-          // TODO: `state` should never be undefined...
           if (state) {
             state.originalRequest = request;
           }
@@ -1367,7 +1366,6 @@ define(['exports'], (function (exports) { 'use strict';
         }) => {
           if (event.type === 'install') {
             if (state && state.originalRequest && state.originalRequest instanceof Request) {
-              // TODO: `state` should never be undefined...
               const url = state.originalRequest.url;
               if (cachedResponse) {
                 this.notUpdatedURLs.push(url);
@@ -2116,7 +2114,11 @@ define(['exports'], (function (exports) { 'use strict';
       *iterateCallbacks(name) {
         for (const plugin of this._strategy.plugins) {
           if (typeof plugin[name] === 'function') {
-            const state = this._pluginStateMap.get(plugin);
+            let state = this._pluginStateMap.get(plugin);
+            if (state === undefined) {
+              state = {};
+              this._pluginStateMap.set(plugin, state);
+            }
             const statefulCallback = param => {
               const statefulParam = Object.assign(Object.assign({}, param), {
                 state
