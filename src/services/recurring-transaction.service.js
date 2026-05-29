@@ -162,10 +162,16 @@ class RecurringTransactionService {
             $or: [{ endDate: null }, { endDate: { $gte: now } }],
         });
 
+        if (dueTransactions.length === 0) {
+            return [];
+        }
+
+        const newTransactions = [];
+        const bulkOps = [];
         const results = [];
 
         for (const recurring of dueTransactions) {
-            // Create the actual transaction
+            // Prepare the actual transaction
             const transaction = new Transaction({
                 user_id: recurring.user_id,
                 amount: recurring.amount,
@@ -174,19 +180,25 @@ class RecurringTransactionService {
                 category_id: recurring.category_id,
                 date: now,
             });
+            newTransactions.push(transaction);
 
-            await transaction.save();
-
-            // Update the recurring transaction
+            // Calculate next execution
             recurring.lastExecuted = now;
-            recurring.nextExecution = recurring.calculateNextExecution();
+            const nextExecution = recurring.calculateNextExecution();
+            const isFinished = isEndDateReached(nextExecution, recurring.endDate);
 
-            // Check if end date is reached
-            if (isEndDateReached(recurring.nextExecution, recurring.endDate)) {
-                recurring.isActive = false;
-            }
-
-            await recurring.save();
+            bulkOps.push({
+                updateOne: {
+                    filter: { _id: recurring._id },
+                    update: {
+                        $set: {
+                            lastExecuted: now,
+                            nextExecution: nextExecution,
+                            isActive: !isFinished
+                        }
+                    }
+                }
+            });
 
             results.push({
                 recurringId: recurring._id,
@@ -195,6 +207,12 @@ class RecurringTransactionService {
                 description: recurring.description,
             });
         }
+
+        // Bulk insert transactions
+        await Transaction.insertMany(newTransactions);
+
+        // Bulk update recurring transactions
+        await RecurringTransaction.bulkWrite(bulkOps);
 
         return results;
     }

@@ -5,6 +5,31 @@ import { AppError } from "../middleware/error.middleware.js";
 import { ERROR_MESSAGES } from "../constants/index.js";
 import { calculateSimilarity } from "../utils/similarity.util.js";
 import { convertToCSV } from "../utils/csv.util.js";
+import { escapeRegex } from "../utils/security.util.js";
+
+
+const monthlyGroupAndSortStages = [
+    {
+        $group: {
+            _id: {
+                year: { $year: "$date" },
+                month: { $month: "$date" },
+            },
+            transactions: {
+                $push: {
+                    amount: "$amount",
+                    description: "$description",
+                    date: "$date",
+                    type: "$type",
+                    _id: "$_id",
+                    category_id: "$category_id",
+                },
+            },
+            totalExpenses: { $sum: "$amount" },
+        },
+    },
+    { $sort: { "_id.year": -1, "_id.month": -1 } },
+];
 
 /**
  * Transaction Service
@@ -22,26 +47,7 @@ class TransactionService {
             {
                 $match: { user_id: userId },
             },
-            {
-                $group: {
-                    _id: {
-                        year: { $year: "$date" },
-                        month: { $month: "$date" },
-                    },
-                    transactions: {
-                        $push: {
-                            amount: "$amount",
-                            description: "$description",
-                            date: "$date",
-                            type: "$type",
-                            _id: "$_id",
-                            category_id: "$category_id",
-                        },
-                    },
-                    totalExpenses: { $sum: "$amount" },
-                },
-            },
-            { $sort: { "_id.year": -1, "_id.month": -1 } },
+            ...monthlyGroupAndSortStages,
         ]);
 
         return transactions;
@@ -62,26 +68,7 @@ class TransactionService {
             {
                 $match: { user_id: userId, category_id: category_id },
             },
-            {
-                $group: {
-                    _id: {
-                        year: { $year: "$date" },
-                        month: { $month: "$date" },
-                    },
-                    transactions: {
-                        $push: {
-                            amount: "$amount",
-                            description: "$description",
-                            date: "$date",
-                            type: "$type",
-                            _id: "$_id",
-                            category_id: "$category_id",
-                        },
-                    },
-                    totalExpenses: { $sum: "$amount" },
-                },
-            },
-            { $sort: { "_id.year": -1, "_id.month": -1 } },
+            ...monthlyGroupAndSortStages,
         ]);
 
         return transactions;
@@ -101,7 +88,7 @@ class TransactionService {
 
         // Search by description
         if (query) {
-            matchConditions.description = { $regex: query, $options: "i" };
+            matchConditions.description = { $regex: escapeRegex(query), $options: "i" };
         }
 
         // Filter by date range
@@ -240,12 +227,13 @@ class TransactionService {
     /**
      * Update a transaction
      * @param {String} transactionId - Transaction ID
+     * @param {String} userId - User ID
      * @param {Object} updateData - Update data
      * @returns {Object} Updated transaction
      */
-    async updateTransaction(transactionId, updateData) {
-        const transaction = await Transaction.findByIdAndUpdate(
-            transactionId,
+    async updateTransaction(transactionId, userId, updateData) {
+        const transaction = await Transaction.findOneAndUpdate(
+            { _id: transactionId, user_id: userId },
             { $set: updateData },
             { new: true }
         );
@@ -260,10 +248,11 @@ class TransactionService {
     /**
      * Delete a transaction
      * @param {String} transactionId - Transaction ID
+     * @param {String} userId - User ID
      * @returns {Object} Deletion result
      */
-    async deleteTransaction(transactionId) {
-        const result = await Transaction.deleteOne({ _id: transactionId });
+    async deleteTransaction(transactionId, userId) {
+        const result = await Transaction.deleteOne({ _id: transactionId, user_id: userId });
 
         if (result.deletedCount === 0) {
             throw new AppError(ERROR_MESSAGES.TRANSACTION_NOT_FOUND, 404);
@@ -411,6 +400,7 @@ class TransactionService {
 
         // Build category frequency map based on similar descriptions
         const categoryScores = new Map();
+        const words = descLower.split(/\s+/);
 
         for (const tx of pastTransactions) {
             if (!tx.description || !tx.category_id) continue;
@@ -419,7 +409,6 @@ class TransactionService {
             const similarity = calculateSimilarity(descLower, txDescLower);
 
             // Also check for keyword matching
-            const words = descLower.split(/\s+/);
             const txWords = txDescLower.split(/\s+/);
             let keywordMatch = 0;
             for (const word of words) {
