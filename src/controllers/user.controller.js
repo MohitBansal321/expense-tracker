@@ -12,7 +12,7 @@ import { sendSuccess } from "../utils/response.util.js";
  * GET /user
  */
 export const index = (req, res) => {
-    res.json({ user: req.user });
+    sendSuccess(res, { user: req.user });
 };
 
 /**
