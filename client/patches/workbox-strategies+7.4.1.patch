@@ -1,0 +1,22 @@
+diff --git a/node_modules/workbox-strategies/StrategyHandler.js b/node_modules/workbox-strategies/StrategyHandler.js
+index 65e2199..f905a85 100644
+--- a/node_modules/workbox-strategies/StrategyHandler.js
++++ b/node_modules/workbox-strategies/StrategyHandler.js
+@@ -372,7 +372,7 @@ class StrategyHandler {
+      * @return {boolean}
+      */
+     hasCallback(name) {
+-        for (const plugin of this._strategy.plugins) {
++        for (const plugin of this._plugins) {
+             if (name in plugin) {
+                 return true;
+             }
+@@ -412,7 +412,7 @@ class StrategyHandler {
+      * @return {Array<Function>}
+      */
+     *iterateCallbacks(name) {
+-        for (const plugin of this._strategy.plugins) {
++        for (const plugin of this._plugins) {
+             if (typeof plugin[name] === 'function') {
+                 const state = this._pluginStateMap.get(plugin);
+                 const statefulCallback = (param) => {
