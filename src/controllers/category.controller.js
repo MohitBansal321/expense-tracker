@@ -1,5 +1,6 @@
 import categoryService from "../services/category.service.js";
 import asyncHandler from "../middleware/async-handler.middleware.js";
+import { sendSuccess, sendCreated } from "../utils/response.util.js";
 
 /**
  * Category Controller
@@ -12,7 +13,7 @@ import asyncHandler from "../middleware/async-handler.middleware.js";
  */
 export const create = asyncHandler(async (req, res) => {
     const result = await categoryService.createCategory(req.body, req.user);
-    res.json(result);
+    sendCreated(res, result, "Category created successfully");
 });
 
 /**
@@ -21,7 +22,7 @@ export const create = asyncHandler(async (req, res) => {
  */
 export const update = asyncHandler(async (req, res) => {
     const response = await categoryService.updateCategory(req.params.id, req.body, req.user);
-    res.json({ response });
+    sendSuccess(res, response, "Category updated successfully");
 });
 
 /**
@@ -30,5 +31,5 @@ export const update = asyncHandler(async (req, res) => {
  */
 export const destroy = asyncHandler(async (req, res) => {
     const user = await categoryService.deleteCategory(req.params.id, req.user);
-    res.json({ user });
+    sendSuccess(res, user, "Category deleted successfully");
 });
